@@ -1,4 +1,4 @@
-Source: plainbox-provider-sru
+Source: plainbox-provider-somerville-sanity
 Section: utils
 Priority: optional
 Maintainer: Checkbox Developers <checkbox-dev@lists.launchpad.net>
@@ -16,9 +16,9 @@ Build-Depends: autoconf,
                python3-checkbox-ng,
                python3-debian
 Standards-Version: 3.9.6
-Homepage: http://launchpad.net/plainbox-provider-sru
 
-Package: plainbox-provider-sru
+
+Package: plainbox-provider-somerville-sanity
 Architecture: all
 Depends: plainbox-provider-checkbox (>= 0.27),
          python3 (>= 3.2),
@@ -26,7 +26,7 @@ Depends: plainbox-provider-checkbox (>= 0.27),
          ${misc:Depends},
          ${shlibs:Depends}
 X-Plainbox-Provider: yes
-Description: CheckBox SRU jobs provider
+Description: CheckBox somerville sanity jobs provider
  This package provides the SRU (Stable Release Updates) jobs. It is used together
  alongside with Plainbox.
  .
@@ -34,4 +34,4 @@ Description: CheckBox SRU jobs provider
  All jobs have an unique name. There are many types of jobs, some are fully
  automated others are fully manual.
  .
- SRU jobs are used during SRU testing.
+ Document: https://checkbox.readthedocs.io/en/latest/

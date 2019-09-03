@@ -33,7 +33,22 @@ command: [ -f ${PLAINBOX_SESSION_SHARE}/screenshot_opencv_validation.jpg ] && ca
 _description: Attaches the screenshot captured in graphics/screenshot_opencv_validation.
 _summary: Attach the screenshot captured for the automatically validated screenshot test
 
-id: sru
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/copy_submission_file
+requires: package.name == 'dkms'
+command:
+ report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
+ checkboxk_ng_folder="/home/u/.local/share/checkbox-ng"
+ mkdir -p "$report_folder"
+ cp "$checkboxk_ng_folder"/* "$report_folder"
+ rm "$checkboxk_ng_folder"/*
+ mv "$(find $report_folder -type f | grep tar)" /tmp/c3-local-submission.tar.xz
+_summary: copy reports to folder
+_description:
+ copy the file for c3 submission.
+
+id: somerville_sanity
 _name: All SRU Tests (Ubuntu Desktop)
 unit: test plan
 _description:

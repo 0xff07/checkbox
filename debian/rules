@@ -15,7 +15,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	python3 manage.py install --prefix=/usr --layout=unix \
-			--root=$(CURDIR)/debian/plainbox-provider-sru/
+			--root=$(CURDIR)/debian/plainbox-provider-somerville-sanity/
 
 override_dh_gencontrol:
 	python3 manage.py packaging
