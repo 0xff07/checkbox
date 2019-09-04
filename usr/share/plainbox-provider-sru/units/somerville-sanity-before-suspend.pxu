@@ -1,20 +1,5 @@
-plugin: shell
-category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/copy_submission_file
-requires: package.name == 'dkms'
-command:
- report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
- checkboxk_ng_folder="/home/u/.local/share/checkbox-ng"
- mkdir -p "$report_folder"
- cp "$checkboxk_ng_folder"/* "$report_folder"
- rm "$checkboxk_ng_folder"/*
- mv "$(find $report_folder -type f | grep tar)" /tmp/c3-local-submission.tar.xz
-_summary: copy reports to folder
-_description:
- copy the file for c3 submission.
-
-id: somerville_sanity
-_name: All SRU Tests (Ubuntu Desktop)
+id: somerville_sanity_before_suspend
+_name: somerville_sanity_before_suspend (Ubuntu Desktop)
 unit: test plan
 _description:
     This test plan contains tests that are useful for validating a Stable
@@ -51,8 +36,6 @@ include:
     1_screenshot_.*.jpg
     graphics/1_screenshot_fullscreen_video_.*
     1_screenshot_fullscreen_video_.*.jpg
-    install/apt-get-gets-updates
-    mediacard/sd-preinserted
     memory/info
     ethernet/detect
     ethernet/info_automated
@@ -74,29 +57,6 @@ include:
     wireless/wireless_connection_open_ac_nm_.*
     bluetooth4/beacon_eddystone_url_.*
     miscellanea/fan_stress_reaction
-    suspend/audio_before_suspend
-    suspend/cpu_before_suspend
-    suspend/network_before_suspend
-    suspend/memory_before_suspend
-    suspend/suspend_advanced_auto
-    suspend/suspend-single-log-attach
-    suspend/audio_after_suspend_auto
-    suspend/network_resume_time_auto
-    suspend/wifi_resume_time_auto
-    suspend/usb_storage_preinserted_after_suspend
-    suspend/record_playback_after_suspend_auto
-    after-suspend-bluetooth4/beacon_eddystone_url_.*
-    suspend/cpu_after_suspend_auto
-    suspend/memory_after_suspend_auto
-    after-suspend-wireless/wireless_connection_wpa_bg_nm_.*
-    after-suspend-wireless/wireless_connection_open_bg_nm_.*
-    after-suspend-wireless/wireless_connection_wpa_n_nm_.*
-    after-suspend-wireless/wireless_connection_open_n_nm_.*
-    after-suspend-wireless/wireless_connection_wpa_ac_nm_.*
-    after-suspend-wireless/wireless_connection_open_ac_nm_.*
-    suspend/gpu_lockup_after_suspend
-    suspend/screenshot_after_suspend
-    screenshot_after_suspend.jpg
     miscellanea/copy_submission_file
 bootstrap_include:
     device
