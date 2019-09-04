@@ -1,3 +1,9 @@
+plainbox-provider-somerville-sanity (0.4.2) bionic; urgency=medium
+
+  * bump version
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 17:24:16 +0800
+
 plainbox-provider-somerville-sanity (0.4.1) bionic; urgency=medium
 
   * add more test plan example in help.

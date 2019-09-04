@@ -3,7 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: Commercial Engineering <commercial-engineering@canonical.com>
 Standards-Version: 3.9.7
-
+Build-Depends: debhelper (>= 9), dh-modaliases
+Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider-somerville-sanity
 
 Package: plainbox-provider-somerville-sanity
 Architecture: all
