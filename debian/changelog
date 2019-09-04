@@ -1,3 +1,9 @@
+plainbox-provider-somerville-sanity (0.2) bionic; urgency=medium
+
+  * to be as a plug-in of plainbox-provider-sru
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 14:54:20 +0800
+
 plainbox-provider-somerville-sanity (0.1) bionic; urgency=medium
 
   * init, fork from plainbox-provider-sru
