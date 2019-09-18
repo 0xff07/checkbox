@@ -1,3 +1,9 @@
+plainbox-provider-somerville-sanity (0.4.2ubuntu1) bionic; urgency=medium
+
+  * move checkbox-run-plan to prepare-checkbox-sanity
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 18 Sep 2019 16:37:30 +0800
+
 plainbox-provider-somerville-sanity (0.4.2) bionic; urgency=medium
 
   * bump version
