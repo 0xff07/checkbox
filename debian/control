@@ -1,12 +1,12 @@
-Source: plainbox-provider-somerville-sanity
+Source: plainbox-provider-pc-sanity
 Section: utils
 Priority: optional
 Maintainer: Commercial Engineering <commercial-engineering@canonical.com>
 Standards-Version: 3.9.7
 Build-Depends: debhelper (>= 9), dh-modaliases
-Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider-somerville-sanity
+Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider-pc-sanity
 
-Package: plainbox-provider-somerville-sanity
+Package: plainbox-provider-pc-sanity
 Architecture: all
 Depends: plainbox-provider-checkbox (>= 0.27),
          python3 (>= 3.2),
@@ -14,7 +14,7 @@ Depends: plainbox-provider-checkbox (>= 0.27),
          plainbox-provider-sru,
          ${misc:Depends},
          ${shlibs:Depends}
-Description: CheckBox somerville sanity jobs provider which inject units to sru plain
+Description: CheckBox pc sanity jobs provider which inject units to sru plain
  This package provides the SRU (Stable Release Updates) jobs. It is used together
  alongside with Plainbox.
  .

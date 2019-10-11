@@ -1,42 +1,5 @@
-plainbox-provider-somerville-sanity (0.4.2ubuntu1) bionic; urgency=medium
+plainbox-provider-pc-sanity (0.0.1) bionic; urgency=medium
 
-  * move checkbox-run-plan to prepare-checkbox-sanity
+  * alpha version
 
- -- Alex Tu <alex.tu@canonical.com>  Wed, 18 Sep 2019 16:37:30 +0800
-
-plainbox-provider-somerville-sanity (0.4.2) bionic; urgency=medium
-
-  * bump version
-
- -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 17:24:16 +0800
-
-plainbox-provider-somerville-sanity (0.4.1) bionic; urgency=medium
-
-  * add more test plan example in help.
-
- -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 16:44:48 +0800
-
-plainbox-provider-somerville-sanity (0.4) bionic; urgency=medium
-
-  * add test unit to set pm_test to different levels.
-    This can be used test which suspend level failed.
-
- -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 15:38:11 +0800
-
-plainbox-provider-somerville-sanity (0.3) bionic; urgency=medium
-
-  * separate the plain to before and after suspend.
-
- -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 15:23:34 +0800
-
-plainbox-provider-somerville-sanity (0.2) bionic; urgency=medium
-
-  * to be as a plug-in of plainbox-provider-sru
-
- -- Alex Tu <alex.tu@canonical.com>  Wed, 04 Sep 2019 14:54:20 +0800
-
-plainbox-provider-somerville-sanity (0.1) bionic; urgency=medium
-
-  * init, fork from plainbox-provider-sru
-
- -- Alex Tu <alex.tu@canonical.com>  Tue, 03 Sep 2019 16:59:04 +0800
+ -- Alex Tu <alex.tu@canonical.com>  Sat, 12 Oct 2019 02:59:06 +0800
