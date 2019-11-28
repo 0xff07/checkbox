@@ -1,3 +1,9 @@
+plainbox-provider-pc-sanity (0.0.2) bionic; urgency=medium
+
+  * rename to generic names
+
+ -- Alex Tu <alex.tu@canonical.com>  Thu, 28 Nov 2019 19:06:58 +0800
+
 plainbox-provider-pc-sanity (0.0.1) bionic; urgency=medium
 
   * alpha version
