@@ -1,5 +1,5 @@
-id: somerville_sanity_before_suspend
-_name: somerville_sanity_before_suspend (Ubuntu Desktop)
+id: pc_sanity_before_suspend
+_name: pc_sanity_before_suspend (Ubuntu Desktop)
 unit: test plan
 _description:
     This test plan contains tests that are useful for validating a Stable

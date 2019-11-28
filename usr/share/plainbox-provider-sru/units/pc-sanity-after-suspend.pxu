@@ -1,4 +1,4 @@
-id: somerville_sanity_after_suspend
+id: pc_sanity_after_suspend
 _name: All SRU Tests (Ubuntu Desktop)
 unit: test plan
 _description:
