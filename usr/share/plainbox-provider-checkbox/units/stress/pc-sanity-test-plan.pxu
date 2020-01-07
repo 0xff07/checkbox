@@ -35,3 +35,30 @@ _description: Power Management reboot and power off stress tests (automated)
 include:
     stress/poweroff_10      certification-status=blocker
     stress/poweroff_10_log
+
+
+id: stress-100-reboot-poweroff-automated
+unit: test plan
+_name: Power Management reboot and power off stress tests (automated)
+_description: Power Management reboot and power off stress tests (automated)
+include:
+    stress/reboot_100        certification-status=blocker
+    stress/reboot_100_log
+    stress/poweroff_100      certification-status=blocker
+    stress/poweroff_100_log
+
+id: stress-100-reboot-automated
+unit: test plan
+_name: Power Management reboot and power off stress tests (automated)
+_description: Power Management reboot and power off stress tests (automated)
+include:
+    stress/reboot_100        certification-status=blocker
+    stress/reboot_100_log
+
+id: stress-100-poweroff-automated
+unit: test plan
+_name: Power Management reboot and power off stress tests (automated)
+_description: Power Management reboot and power off stress tests (automated)
+include:
+    stress/poweroff_100      certification-status=blocker
+    stress/poweroff_100_log
