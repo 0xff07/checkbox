@@ -1,3 +1,9 @@
+plainbox-provider-pc-sanity (0.2.1) bionic; urgency=medium
+
+  * add a quick poweroff and reboot stress
+
+ -- Alex Tu <alex.tu@canonical.com>  Tue, 07 Jan 2020 15:31:39 +0800
+
 plainbox-provider-pc-sanity (0.2.0~alex1) bionic; urgency=medium
 
   * test oem-generic-auto.pxu from QA
