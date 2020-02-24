@@ -4,86 +4,9 @@ unit: test plan
 _description:
     This test plan is for smoke test as sanity before release image.
 include:
-    #
-    # HEAD:
-    #
-    miscellanea/submission-resources
-    miscellanea/prepare-sanity-env
-    ubuntur_report_attachment
-    acpi_sleep_attachment
-    codecs_attachment
-    cpuinfo_attachment
-    dmesg_attachment
-    dmidecode_attachment
-    efi_attachment
-    lspci_attachment
-    meminfo_attachment
-    modprobe_attachment
-    modules_attachment
-    sysctl_attachment
-    lsmod_attachment
-    #
-    # BODY: START
-    #
-    audio/alsa_record_playback_automated
-    bluetooth/detect-output
-    camera/detect
-    camera/multiple-resolution-images_.*
-    graphics/xorg-version
-    graphics/1_compiz_check_.*
-    graphics/xorg-failsafe
-    graphics/xorg-process
-    graphics/1_screenshot_.*
-    1_screenshot_.*.jpg
-    graphics/1_screenshot_fullscreen_video_.*
-    1_screenshot_fullscreen_video_.*.jpg
-    memory/info
-    ethernet/detect
-    ethernet/info_automated
-    miscellanea/dkms_build_validation
-    networking/http
-    networking/gateway_ping
-    power-management/tickless_idle
-    power-management/rtc
-    power-management/fwts_wakealarm
-    power-management/fwts_wakealarm-log-attach
-    usb/detect
-    usb/storage-preinserted
-    wireless/wireless_scanning_.*
-    wireless/wireless_connection_wpa_bg_nm_.*
-    wireless/wireless_connection_open_bg_nm_.*
-    wireless/wireless_connection_wpa_n_nm_.*
-    wireless/wireless_connection_open_n_nm_.*
-    wireless/wireless_connection_wpa_ac_nm_.*
-    wireless/wireless_connection_open_ac_nm_.*
-    #
-    # after suspend
-    #
-    suspend/gpu_lockup_after_suspend
-    suspend/screenshot_after_suspend
-    screenshot_after_suspend.jpg
 nested_part:
-    #
-    # fwts 3 times in power saving mode
-    #
-    com.canonical.certification::stress-suspend-3-cycles-with-idle60-reboots-automated
-    #
-    # after suspend
-    #
-    com.canonical.certification::after-suspend-reference-cert-automated
-    com.canonical.certification::after-suspend-wireless-cert-automated
-    #
-    # switch graphic
-    #
-    com.canonical.certification::graphics-discrete-gpu-cert-automated
-    #
-    # fwts 3 times in persormance mode
-    #
-    com.canonical.certification::graphics-discrete-gpu-stress-suspend-3-cycles-with-idle60s-reboots-automated
-    #
-    # TAIL:
-    #
-    pc-sanity-collect-info-in-the-end
+    com.canonical.certification::client-cert-auto
+    com.canonical.certification::sru
 bootstrap_include:
     device
     graphics_card
