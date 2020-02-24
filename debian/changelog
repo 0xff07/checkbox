@@ -1,3 +1,10 @@
+plainbox-provider-pc-sanity (0.2.5) bionic; urgency=medium
+
+  * drop SRU plan because of it is not expected to be run on non-public
+    projects.
+
+ -- Alex Tu <alex.tu@canonical.com>  Mon, 24 Feb 2020 17:45:28 +0800
+
 plainbox-provider-pc-sanity (0.2.4) bionic; urgency=medium
 
   * divert the smoke test plan to cover existed auto plans.

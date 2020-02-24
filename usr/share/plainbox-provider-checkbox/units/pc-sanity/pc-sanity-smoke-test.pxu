@@ -6,7 +6,6 @@ _description:
 include:
 nested_part:
     com.canonical.certification::client-cert-auto
-    com.canonical.certification::sru
 bootstrap_include:
     device
     graphics_card
