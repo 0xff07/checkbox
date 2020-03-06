@@ -11,10 +11,9 @@ Architecture: all
 Depends: plainbox-provider-checkbox (>= 0.27),
          python3 (>= 3.2),
          python3-checkbox-support (>= 0.27),
-         plainbox-provider-sru,
          ${misc:Depends},
          ${shlibs:Depends}
-Description: CheckBox pc sanity jobs provider which inject units to sru plain
+Description: CheckBox pc sanity jobs provider which inject units to plainbox-provider-checkbox
  This package provides the SRU (Stable Release Updates) jobs. It is used together
  alongside with Plainbox.
  .
