@@ -1,3 +1,9 @@
+plainbox-provider-pc-sanity (0.2.6ubuntu1) bionic; urgency=medium
+
+  * bump version
+
+ -- Alex Tu <alex.tu@canonical.com>  Sat, 07 Mar 2020 16:32:54 +0800
+
 plainbox-provider-pc-sanity (0.2.6) bionic; urgency=medium
 
   * remove SRU dependency

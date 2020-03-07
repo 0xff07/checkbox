@@ -14,11 +14,4 @@ Depends: plainbox-provider-checkbox (>= 0.27),
          ${misc:Depends},
          ${shlibs:Depends}
 Description: CheckBox pc sanity jobs provider which inject units to plainbox-provider-checkbox
- This package provides the SRU (Stable Release Updates) jobs. It is used together
- alongside with Plainbox.
- .
- Jobs are smallest units of testing that can be performed by Plainbox.
- All jobs have an unique name. There are many types of jobs, some are fully
- automated others are fully manual.
- .
- Document: https://checkbox.readthedocs.io/en/latest/
+ CheckBox pc sanity jobs provider which inject units to plainbox-provider-checkbox
