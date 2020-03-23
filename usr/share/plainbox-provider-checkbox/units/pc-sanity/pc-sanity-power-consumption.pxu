@@ -1,0 +1,23 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/turbostate-short-idle-c10
+command:
+ set -x
+ report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
+ mkdir -p "$report_folder"
+ dpkg -s linux-tools-"$(uname -r)" || sudo apt-get install -y linux-tools-"$(uname -r)"
+ for i in $(sudo turbostat --list | sed 's/,/ /g'); do
+         if [ -z "${i##*pc*}" ]; then
+                 echo $i
+                 if [ -z "$COL" ]; then
+                         COL="$i";
+                 else
+                         COL="$COL,$i";
+                 fi
+         fi;
+ done;
+ sudo turbostat --num_iterations 20 --show "$COL" 2>&1 | tee "$report_folder"/turbostat-pkgpc.log
+ tail -n1 "$report_folder"/turbostat-pkgpc.log | grep "0.00$" && false
+_summary: check if target machine can get cpu pkg c10 in short idle.
+_description:
+ check if target machine can get cpu pkg c10 in short idle.
