@@ -1,0 +1,19 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/thermal
+command:
+ set -x
+ report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
+ mkdir -p "$report_folder"
+ if lspci -nnk  | grep driver | grep proc_thermal;then
+        true;
+ else
+        dmesg > $report_folder/dmesg.log
+        lspci -nnk > $report_folder/dmesg.log
+        lsmod > $report_folder/lsmod.log
+        false;
+ fi
+_summary: check if thermal driver installed.
+_description:
+ check if thermal driver installed.
+
