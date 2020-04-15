@@ -4,6 +4,10 @@ unit: test plan
 _description:
     This test plan is for smoke test as sanity before release image.
 include:
+    com.canonical.certification::miscellanea/turbostate-short-idle-c10
+    com.canonical.certification::miscellanea/thermal
+    com.canonical.certification::miscellanea/dump_libsmbios_tokens
+    com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment
 nested_part:
     com.canonical.certification::client-cert-auto
 bootstrap_include:
