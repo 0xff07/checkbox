@@ -3,8 +3,9 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_i2c_hid
 command:
  set -x
+ dmesg | grep i2c | grep input || exit 1
  lsmod | grep i2c_hid || exit 1
-_summary: check if i2c_hid driver be loaded.
+_summary: check if i2c device exists and i2c_hid driver be loaded.
 _description:
- check if i2c_hid driver be loaded.
+ check if i2c device exists and i2c_hid driver be loaded.
 
