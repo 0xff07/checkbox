@@ -8,6 +8,7 @@ include:
     com.canonical.certification::miscellanea/thermal
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
     com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment
+    com.canonical.certification::miscellanea/check_i2c_hid
 nested_part:
     com.canonical.certification::client-cert-auto
 bootstrap_include:
