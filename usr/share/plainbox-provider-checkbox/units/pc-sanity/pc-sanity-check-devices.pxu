@@ -1,0 +1,10 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_i2c_hid
+command:
+ set -x
+ lsmod | grep i2c_hid || exit 1
+_summary: check if i2c_hid driver be loaded.
+_description:
+ check if i2c_hid driver be loaded.
+
