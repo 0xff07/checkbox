@@ -3,9 +3,12 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_i2c_hid
 command:
  set -x
- dmesg | grep i2c | grep input || exit 1
- lsmod | grep i2c_hid || exit 1
-_summary: check if i2c device exists and i2c_hid driver be loaded.
+ if sudo dmidecode -t 3 | grep -i "Notebook\|Laptop"; then
+    dmesg | grep i2c | grep input || exit 1
+ else
+    echo "this machine is not laptop, no need to check i2c touchpad"
+ fi
+_summary: check if i2c device exists
 _description:
- check if i2c device exists and i2c_hid driver be loaded.
+ check if i2c device exists
 
