@@ -1,3 +1,9 @@
+plainbox-provider-pc-sanity (0.2.6ubuntu2) UNRELEASED; urgency=medium
+
+  * to confirm the CPU package state in long idle
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 22 Apr 2020 14:25:12 +0800
+
 plainbox-provider-pc-sanity (0.2.6ubuntu1) bionic; urgency=medium
 
   * bump version
