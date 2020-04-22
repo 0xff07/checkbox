@@ -19,3 +19,14 @@ command:
 _summary: to confirm the dell-recoery is what we expected.
 _description:
  we don't support RSTe raid, so gate it based on https://docs.google.com/document/d/13G8VkaFB8W2ck-vtzu4OqkYFmi7-w0ooi6qNpxJLtPY/edit#
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_dell_recovery_version
+requires: package.name == 'dell-recovery'
+command:
+ set -x
+ dpkg -l | grep dell-recovery | grep ^ii | awk '{print $3}' | grep -q somerville
+_summary: to confirm the dell-recoery is what we expected.
+_description:
+ based on the meeting conclusion of 4/22, we need somerville version before Mario agree Canonical take the duty of dell-recovery sru.

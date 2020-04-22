@@ -1,6 +1,7 @@
 plainbox-provider-pc-sanity (0.2.6ubuntu2) UNRELEASED; urgency=medium
 
   * add gate_rste_raid case
+  * based on the meeting conclusion of 4/22, we need somerville version.
 
  -- Alex Tu <alex.tu@canonical.com>  Wed, 22 Apr 2020 15:49:10 +0800
 
