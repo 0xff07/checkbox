@@ -4,7 +4,7 @@ id: miscellanea/check_dell_recovery_version
 requires: package.name == 'dell-recovery'
 command:
  set -x
- dpkg -l | grep dell-recovery | awk '{print $3}' | grep -q somerville
+ dpkg -l | grep dell-recovery | grep ^ii | awk '{print $3}' | grep -q somerville
 _summary: to confirm the dell-recoery is what we expected.
 _description:
  based on the meeting conclusion of 4/22, we need somerville version before Mario agree Canonical take the duty of dell-recovery sru.
