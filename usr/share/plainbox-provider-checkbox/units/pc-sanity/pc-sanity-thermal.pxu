@@ -17,3 +17,18 @@ _summary: check if thermal driver installed.
 _description:
  check if thermal driver installed.
 
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/thermald
+command:
+ set -x
+ systemctl is-active --quiet thermald
+ RETVAL=$?
+ if [ $RETVAL -ne 0 ];
+ then
+     journalctl -b -u thermald
+     exit $RETVAL
+ fi
+_summary: Check if thermald is active.
+_description:
+ Check if thermald is active.
