@@ -30,12 +30,11 @@ command:
 _description:
   Log tlp-stat for both tlp on/off and generate differences
 
-id: tlp_diff
+id: tlp_diff_auto
 _name: tlp-diff (Ubuntu Desktop)
 _description:
   This test plan is to generate differences between tlp on/off
 unit: test plan
 include:
-  com.canonical.certification::miscellanea/tlp_diff_prepare
   com.canonical.certification::miscellanea/tlp_diff_run
 
