@@ -1,0 +1,57 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/screen-pkg-not-public
+command:
+ set -e
+ whitelist_git="https://git.launchpad.net/~alextu/+git/fvr_whitelist"
+ platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
+ WHITELST_FOLDER=""
+ clean() {
+     rm -rf "$WHITELST_FOLDER"
+     exit $1
+ }
+ prepare() {
+     (sudo apt-get update > /dev/null || (echo "apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
+     echo "[INFO] getting whitelist from $whitelist_git."
+     [ -n "$whitelist_git" ] && (git clone "$whitelist_git" || exit 1) && WHITELST_FOLDER="$PWD"/"$(basename "$whitelist_git")"
+ }
+ pkg_need_update() {
+     [ -z "$1" ] && >&2 echo "[ERROR]get empty pkg in ${FUNCNAME[1]}" && clean 1
+     echo "[ERROR] find a update-able pkg: $1 $2" && clean 1
+ }
+ pkg_not_public() {
+     [ -z "$1" ] && >&2 echo "[ERROR]get empty pkg in" "${FUNCNAME[1]}" && clean 1
+     # check if the pkg on white list.
+     if [ -d "$WHITELST_FOLDER" ] && [ -f "$WHITELST_FOLDER"/common ]; then
+         while IFS= read -r green_light; do
+             [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+         done < "$WHITELST_FOLDER"/common
+     fi
+     if [ -d "$WHITELST_FOLDER" ] && [ -f "$WHITELST_FOLDER"/"$platform" ]; then
+         while IFS= read -r green_light; do
+             [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+         done < "$WHITELST_FOLDER"/"$platform"
+     fi
+     >&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2"&& clean 1
+ }
+ prepare
+ echo "[INFO] staring screen all installed packages."
+ while IFS= read -r pkgname; do
+    progress=">""$progress"
+    [ "$progress" == ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" ] && echo "$progress" && progress=""
+    pkgver="$(dpkg-query -W -f='${Version}' "$pkgname")"
+    pub_madison="$(apt-cache madison  "$pkgname")"
+    can_pkgver="$(apt-cache policy  "$pkgname" | grep Candidate | awk '{print $2}')"
+    if [ -z "$pub_madison" ]; then
+         pkg_not_public "$pkgname" "$pkgver"
+    elif [ -n "${pub_madison##*$can_pkgver*}" ]; then
+         pkg_not_public "$pkgname" "$pkgver"
+    elif dpkg --compare-versions "$can_pkgver" "gt" "$pkgver"; then
+         [ -z "${pkgver##*oem*}" ] || [ -z "${pkgver##*somerville*}" ] && pkg_need_update  "$pkgname" "$pkgver"
+    fi
+ done < <(dpkg -l | grep 'ii' | awk '{print $2}')
+ rm -rf "$WHITELST_FOLDER"
+_summary: check if pkgs not on public archive
+_description:
+ check if pkgs not on public archive
+
