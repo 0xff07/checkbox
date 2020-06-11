@@ -3,22 +3,23 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/screen-pkg-not-public
 command:
  set -e
- whitelist_git="https://git.launchpad.net/~alextu/+git/fvr_whitelist"
+ allowlist_git="https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"
+ oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)"
  platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
- WHITELST_FOLDER=""
+ allowlst_folder=""
  STATUS="pass"
  clean() {
-    rm -rf "$WHITELST_FOLDER"
+    rm -rf "$allowlst_folder"
     [ -z "$1" ] || exit $1
     [ "$STATUS" != "pass" ] && exit 1
     exit 0
  }
  prepare() {
      (sudo apt-get update > /dev/null || (>&2 echo "[ERROR]apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
-     echo "[INFO] getting whitelist from $whitelist_git."
-     [ -n "$whitelist_git" ] &&\
-     (git clone "$whitelist_git" || (>&2 echo "[ERROR]git clone "$whitelist_git" filed, please check it." | exit 1)) &&\
-     WHITELST_FOLDER="$PWD"/"$(basename "$whitelist_git")"
+     echo "[INFO] getting allowlist from $allowlist_git."
+     [ -n "$allowlist_git" ] &&\
+     (git clone "$allowlist_git" || (>&2 echo "[ERROR]git clone "$allowlist_git" filed, please check it." | exit 1)) &&\
+     allowlst_folder="$PWD"/"$(basename "$allowlist_git")"
  }
  pkg_need_update() {
      [ -z "$1" ] && >&2 echo "[ERROR][CODE]get empty pkg in ${FUNCNAME[1]}" && clean 1
@@ -26,16 +27,25 @@ command:
  }
  pkg_not_public() {
      [ -z "$1" ] && >&2 echo "[ERROR][CODE]get empty pkg in" "${FUNCNAME[1]}" && clean 1
-     # check if the pkg on white list.
-     if [ -d "$WHITELST_FOLDER" ] && [ -f "$WHITELST_FOLDER"/common ]; then
-         while IFS= read -r green_light; do
-             [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
-         done < "$WHITELST_FOLDER"/common
-     fi
-     if [ -d "$WHITELST_FOLDER" ] && [ -f "$WHITELST_FOLDER"/"$platform" ]; then
-         while IFS= read -r green_light; do
-             [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
-         done < "$WHITELST_FOLDER"/"$platform"
+     # check if the pkg on allow list.
+     if [ -d "$allowlst_folder" ]; then
+        if [ -f "$allowlst_folder"/common ]; then
+            while IFS= read -r green_light; do
+                [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+            done < "$allowlst_folder"/common
+        fi
+        if [ -d "$allowlst_folder"/"$oem" ]; then
+            if [ -f "$allowlst_folder"/"$oem"/common ]; then
+                while IFS= read -r green_light; do
+                    [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+                done < "$allowlst_folder"/"$oem"/common
+            fi
+            if [ -f "$allowlst_folder"/"$oem"/"$platform" ]; then
+                while IFS= read -r green_light; do
+                    [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+                done < "$allowlst_folder"/"$oem"/"$platform"
+            fi
+        fi
      fi
      >&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2"&& STATUS="failed"
  }
