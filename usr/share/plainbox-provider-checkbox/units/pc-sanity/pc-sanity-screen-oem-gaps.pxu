@@ -4,8 +4,8 @@ id: miscellanea/screen-pkg-not-public
 command:
  set -e
  allowlist_git="https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"
- oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)"
- platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
+ oem=""
+ platform=""
  allowlst_folder=""
  STATUS="pass"
  clean() {
@@ -15,6 +15,28 @@ command:
     exit 0
  }
  prepare() {
+     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)"
+     [ -z "$oem" ] && oem="$(grep -q sutton <(ubuntu-report show | grep DCD) && echo sutton)"
+     [ -z "$oem" ] && oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)"
+     case "$oem" in
+        "somerville")
+            platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
+            ;;
+        "sutton")
+            platform_meta="$(dpkg-query -W -f='${Package}\n'  "oem-"$oem".*-meta")"
+            oem="$(echo "$platform_meta" | cut -d'-' -f2 )"
+            platform="$(echo "$platform_meta" | cut -d'-' -f3 )"
+            ;;
+        "stella")
+            platform_meta="$(dpkg-query -W -f='${Package}\n'  "oem-"$oem".*-meta")"
+            oem="$(echo "$platform_meta" | cut -d'-' -f2 )"
+            platform="$(echo "$platform_meta" | cut -d'-' -f3 )"
+            ;;
+        *)
+            >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[1]}" && clean 1
+            ;;
+     esac
+     [ -z "$platform" ] && (>&2 echo "[ERROR][CODE]got an empty platform name for $oem in ${FUNCNAME[1]}" && clean 1)
      (sudo apt-get update > /dev/null || (>&2 echo "[ERROR]apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
      echo "[INFO] getting allowlist from $allowlist_git."
      [ -n "$allowlist_git" ] &&\
@@ -22,38 +44,24 @@ command:
      allowlst_folder="$PWD"/"$(basename "$allowlist_git")"
  }
  pkg_need_update() {
-     [ -z "$1" ] && >&2 echo "[ERROR][CODE]get empty pkg in ${FUNCNAME[1]}" && clean 1
+     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
      >&2 echo "[ERROR] find a update-able pkg: $1 $2" && STATUS="failed"
  }
  pkg_not_public() {
-     [ -z "$1" ] && >&2 echo "[ERROR][CODE]get empty pkg in" "${FUNCNAME[1]}" && clean 1
+     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in" "${FUNCNAME[1]}" && clean 1
      # check if the pkg on allow list.
-     if [ -d "$allowlst_folder" ]; then
-        if [ -f "$allowlst_folder"/common ]; then
-            while IFS= read -r green_light; do
-                [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
-            done < "$allowlst_folder"/common
-        fi
-        if [ -d "$allowlst_folder"/"$oem" ]; then
-            if [ -f "$allowlst_folder"/"$oem"/common ]; then
-                while IFS= read -r green_light; do
-                    [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
-                done < "$allowlst_folder"/"$oem"/common
-            fi
-            if [ -f "$allowlst_folder"/"$oem"/"$platform" ]; then
-                while IFS= read -r green_light; do
-                    [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
-                done < "$allowlst_folder"/"$oem"/"$platform"
-            fi
-        fi
-     fi
+     for F in "$allowlst_folder"/common "$allowlst_folder"/"$oem"/common "$allowlst_folder"/"$oem"/"$platform"; do
+        [ -f "$F" ] && while IFS= read -r green_light; do
+            [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
+        done < "$F"
+     done
      >&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2"&& STATUS="failed"
  }
  prepare
  echo "[INFO] staring screen all installed packages."
  while IFS= read -r pkgname; do
     progress=">""$progress"
-    [ "$progress" == ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" ] && echo "$progress" && progress=""
+    [ "${#progress}" == "70" ] && echo "$progress" && progress=""
     pkgver="$(dpkg-query -W -f='${Version}' "$pkgname")"
     pub_madison="$(apt-cache madison  "$pkgname")"
     can_pkgver="$(apt-cache policy  "$pkgname" | grep Candidate | awk '{print $2}')"
