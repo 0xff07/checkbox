@@ -15,9 +15,10 @@ command:
     exit 0
  }
  prepare() {
-     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)"
-     [ -z "$oem" ] && oem="$(grep -q sutton <(ubuntu-report show | grep DCD) && echo sutton)"
-     [ -z "$oem" ] && oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)"
+     oem="$(grep -q sutton <(ubuntu-report show | grep DCD) && echo sutton)" ||\
+     oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
+     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
+     (>&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[1]}" && clean 1)
      case "$oem" in
         "somerville")
             platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
@@ -33,7 +34,7 @@ command:
             platform="$(echo "$platform_meta" | cut -d'-' -f3 )"
             ;;
         *)
-            >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[1]}" && clean 1
+            >&2 echo "[ERROR][CODE]we should not be here in ${FUNCNAME[1]} : ${LINENO}" && clean 1
             ;;
      esac
      [ -z "$platform" ] && (>&2 echo "[ERROR][CODE]got an empty platform name for $oem in ${FUNCNAME[1]}" && clean 1)
