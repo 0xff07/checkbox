@@ -12,6 +12,7 @@ include:
     com.canonical.certification::miscellanea/check_i2c_hid
     com.canonical.certification::miscellanea/check_dell_recovery_version
     com.canonical.certification::miscellanea/gate_rste_raid
+    com.canonical.certification::miscellanea/screen-pkg-not-public
 nested_part:
     com.canonical.certification::client-cert-auto
 bootstrap_include:
