@@ -40,8 +40,9 @@ command:
      (sudo apt-get update > /dev/null || (>&2 echo "[ERROR]apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
      echo "[INFO] getting allowlist from $allowlist_git."
      [ -n "$allowlist_git" ] &&\
-     (git clone "$allowlist_git" || (>&2 echo "[ERROR]git clone "$allowlist_git" filed, please check it." | exit 1)) &&\
+     (git clone --depth=1 "$allowlist_git" || (>&2 echo "[ERROR]git clone "$allowlist_git" filed, please check it." | exit 1)) &&\
      allowlst_folder="$PWD"/"$(basename "$allowlist_git")"
+     echo "[INFO] git hash of current allowlist: $(git -C "$allowlst_folder" rev-parse --short HEAD)"
  }
  pkg_need_update() {
      [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
