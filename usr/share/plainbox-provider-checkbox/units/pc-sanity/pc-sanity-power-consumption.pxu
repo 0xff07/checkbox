@@ -29,8 +29,8 @@ command:
  set -x
  report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
  mkdir -p "$report_folder"
- dpkg -s linux-tools-"$(uname -r)" || sudo apt-get install -y linux-tools-"$(uname -r)"
- dpkg -s xautomation || sudo apt-get install -y xautomation
+ dpkg -s linux-tools-"$(uname -r)" || sudo apt-get install -y linux-tools-"$(uname -r)" || exit 1
+ dpkg -s xautomation || sudo apt-get install -y xautomation || exit 1
  gsettings set org.gnome.desktop.session idle-delay 10
  sleep 10
  for i in $(sudo turbostat --list | sed 's/,/ /g'); do
@@ -44,9 +44,9 @@ command:
          fi;
  done;
  sudo turbostat --num_iterations 20 --show "$COL" 2>&1 | tee "$report_folder"/turbostat-pkgpc-longidle.log
- tail -n1 "$report_folder"/turbostat-pkgpc-longidle.log | grep "0.00$" && false
  DISPLAY=:0 xte 'key Up'
  gsettings set org.gnome.desktop.session idle-delay 0
+ tail -n1 "$report_folder"/turbostat-pkgpc-longidle.log | grep "0.00$" && false
 _summary: check if target machine can get cpu pkg c10 in long idle.
 _description:
  check if target machine can get cpu pkg c10 in long idle. detail history: https://trello.com/c/3C0b5Nkt

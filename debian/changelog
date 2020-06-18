@@ -1,12 +1,16 @@
-plainbox-provider-pc-sanity (0.2.7ubuntu1) UNRELEASED; urgency=medium
+plainbox-provider-pc-sanity (0.2.8) UNRELEASED; urgency=medium
 
-  [Kai-Chuan Hsieh]
+  [ Kai-Chuan Hsieh ]
   * Add job to check if thermald is active.
 
   [Alex Tu]
   * remove turbostat checking for shortidle
 
- -- Kai-Chuan Hsieh <kaichuan.hsieh@canonical.com>  Thu, 30 Apr 2020 15:50:35 +0800
+  [ Yuan-Chen Cheng ]
+  * pc-sanity-power-consumption.pxu: fix issues that long idle always passed,
+    and also failed if requirements neither exists nor can be installed.
+
+ -- Yuan-Chen Cheng <yc.cheng@canonical.com>  Thu, 18 Jun 2020 15:02:17 +0800
 
 plainbox-provider-pc-sanity (0.2.7) bionic; urgency=medium
 
