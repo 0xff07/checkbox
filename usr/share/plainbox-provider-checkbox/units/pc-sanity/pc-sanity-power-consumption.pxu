@@ -46,7 +46,7 @@ command:
  sudo turbostat --num_iterations 20 --show "$COL" 2>&1 | tee "$report_folder"/turbostat-pkgpc-longidle.log
  DISPLAY=:0 xte 'key Up'
  gsettings set org.gnome.desktop.session idle-delay 0
- tail -n1 "$report_folder"/turbostat-pkgpc-longidle.log | grep "0.00$" && false
+ ! (tail -n1 "$report_folder"/turbostat-pkgpc-longidle.log | grep "0.00$")
 _summary: check if target machine can get cpu pkg c10 in long idle.
 _description:
  check if target machine can get cpu pkg c10 in long idle. detail history: https://trello.com/c/3C0b5Nkt
