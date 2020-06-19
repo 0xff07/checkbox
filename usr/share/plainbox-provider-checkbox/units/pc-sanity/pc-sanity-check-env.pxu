@@ -22,11 +22,22 @@ _description:
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/check_dell_recovery_version
-requires: package.name == 'dell-recovery'
+id: miscellanea/check_oem_recovery_version
+requires: package.name == 'dell-recovery' or package.name == 'ubuntu-recovery'
 command:
  set -x
- dpkg -l | grep dell-recovery | grep ^ii | awk '{print $3}' | grep -q somerville
+ pkg_name=$(dpkg -l | grep " dell-recovery ")
+ if [ $? -eq 0 ]; then
+   dpkg -l | grep dell-recovery | grep ^ii | awk '{print $3}' | grep -q somerville
+ else
+   pkg_name=$(dpkg -l | grep " ubuntu-recovery ")
+   if [ $? -eq 0 ]; then
+     dpkg -l | grep ubuntu-recovery | grep ^ii | awk '{print $3}' | grep -q ouagadougou
+   else
+     exit 1
+   fi
+ fi
 _summary: to confirm the dell-recoery is what we expected.
 _description:
  based on the meeting conclusion of 4/22, we need somerville version before Mario agree Canonical take the duty of dell-recovery sru.
+ Let it support ubuntu-recovery and dell-recovery.
