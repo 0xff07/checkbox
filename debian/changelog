@@ -1,4 +1,4 @@
-plainbox-provider-pc-sanity (0.2.8) UNRELEASED; urgency=medium
+plainbox-provider-pc-sanity (0.2.8) bionic; urgency=medium
 
   [ Kai-Chuan Hsieh ]
   * Add job to check if thermald is active.
