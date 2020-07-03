@@ -5,6 +5,13 @@ import os
 import glob
 import argparse
 
+def is_laptop():
+    with open('/sys/class/dmi/id/chassis_type', 'r') as fobj:
+        chassis_type=fobj.read().replace('\n', '')
+        if chassis_type == '10' or chassis_type == '9' or chassis_type == '13':
+            return True
+    print("Not laptop, notebook or AIO platform, abort EDID check.")
+    return False
 
 def find_internal_panel_edid():
     """ Find internal panel edid """
@@ -85,6 +92,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--edid", help="path of a EDID file from /sys/class/drm/", type=str)
     args = parser.parse_args()
+    if not is_laptop():
+        return 0
 
     if args.edid is None:
         edidfile = find_internal_panel_edid()
