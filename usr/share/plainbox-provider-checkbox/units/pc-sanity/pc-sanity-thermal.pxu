@@ -1,5 +1,85 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-rapl
+command:
+ test -d /sys/class/powercap/intel-rapl
+_summary: Check if Intel RAPL power capping driver is installed
+_description:
+ Check if Intel RAPL power capping  driver is installed
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-rapl-mmio
+command:
+ test -d /sys/class/powercap/intel-rapl-mmio
+_summary: Check if Intel RAPL-mmio power capping driver is installed
+_description:
+ Check if Intel RAPL-mmio power capping driver is installed
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-p-state
+command:
+ test -d /sys/devices/system/cpu/intel_pstate
+_summary: Check if Intel P State driver is installed
+_description:
+ Check if Intel P State driver is installed
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-powerclamp
+command:
+ grep -q 'intel_powerclamp' /sys/class/thermal/cooling_device*/type
+_summary: Check if Intel Power clamp driver is installed
+_description:
+ Check if Intel Power clamp driver is installed
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-cpu-thermal
+command:
+ grep -q 'B0D4\|B0DB\|TCPU\|cpu' /sys/class/thermal/thermal_zone*/type
+_summary: Check if Intel cpu thermal zone registered
+_description:
+ Thermald checks if /sys/class/thermal/thermal_zone* contains type B0D4, B0DB, and TCPU.
+ They are devices defined in BIOS and enumerated by int340x thermal driver.
+ If those devices aren't defined in BIOS, thermald will capture coretemp under
+ /sys/class/hwmon/hwmon* to create cpu thermal zone named cpu.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-x86-pkg-temp-thermal
+command:
+ grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type
+_summary: Check if X86 package temperature thermal driver is installed
+_description:
+ Check if X86 package temperature thermal driver is installed
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/valid-thermal-zone-trip-points
+command:
+ for zone in /sys/class/thermal/thermal_zone*
+ do
+     tp_type=$(cat $zone/type)
+     if [ "${tp_type:0:7}" = "iwlwifi" ]; then
+         continue
+     fi
+     for tp_temp in $(cat $zone/trip_point_*_temp)
+     do
+         if [ $tp_temp -lt 0 ]; then
+             echo "$zone contain invalid trip point"
+             exit 1
+         fi
+     done
+ done
+_summary: Check if all trip points are valid
+_description:
+ Check if all trip points are valid, but ignore iwlwifi registered
+ trip points.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermal
 command:
  set -x
@@ -21,7 +101,6 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermald
 command:
- set -x
  systemctl is-active --quiet thermald
  RETVAL=$?
  if [ $RETVAL -ne 0 ];
@@ -29,6 +108,6 @@ command:
      journalctl -b -u thermald
      exit $RETVAL
  fi
-_summary: Check if thermald is active.
+_summary: Check if thermald is active
 _description:
- Check if thermald is active.
+ Check if thermald is active

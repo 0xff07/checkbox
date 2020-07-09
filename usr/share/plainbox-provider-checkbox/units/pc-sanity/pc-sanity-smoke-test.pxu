@@ -5,6 +5,13 @@ _description:
     This test plan is for smoke test as sanity before release image.
 include:
     com.canonical.certification::miscellanea/turbostate-long-idle-c10
+    com.canonical.certification::miscellanea/intel-rapl
+    com.canonical.certification::miscellanea/intel-rapl-mmio
+    com.canonical.certification::miscellanea/intel-p-state
+    com.canonical.certification::miscellanea/intel-powerclamp
+    com.canonical.certification::miscellanea/intel-cpu-thermal
+    com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
+    com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
     com.canonical.certification::miscellanea/thermal
     com.canonical.certification::miscellanea/thermald
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
