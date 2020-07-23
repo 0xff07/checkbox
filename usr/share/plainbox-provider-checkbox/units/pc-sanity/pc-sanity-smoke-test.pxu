@@ -20,6 +20,7 @@ include:
     com.canonical.certification::miscellanea/check_oem_recovery_version
     com.canonical.certification::miscellanea/gate_rste_raid
     com.canonical.certification::miscellanea/screen-pkg-not-public
+    com.canonical.certification::miscellanea/edid-continuous-frequency
 nested_part:
     com.canonical.certification::client-cert-auto
 bootstrap_include:
