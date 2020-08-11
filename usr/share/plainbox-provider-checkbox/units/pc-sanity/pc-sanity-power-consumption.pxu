@@ -32,7 +32,7 @@ command:
  dpkg -s linux-tools-"$(uname -r)" || sudo apt-get install -y linux-tools-"$(uname -r)" || exit 1
  dpkg -s xautomation || sudo apt-get install -y xautomation || exit 1
  gsettings set org.gnome.desktop.session idle-delay 10
- sleep 10
+ sleep 30
  for i in $(sudo turbostat --list | sed 's/,/ /g'); do
          if [ -z "${i##*pc*}" ]; then
                  echo $i
@@ -43,9 +43,11 @@ command:
                  fi
          fi;
  done;
- sudo turbostat --num_iterations 20 --show "$COL" 2>&1 | tee "$report_folder"/turbostat-pkgpc-longidle.log
+ sudo turbostat --num_iterations 30 --show "$COL" 2>&1 | tee "$report_folder"/turbostat-pkgpc-longidle.log
  DISPLAY=:0 xte 'key Up'
  gsettings set org.gnome.desktop.session idle-delay 0
+ # cat additional message for reference
+ sudo cat /sys/kernel/debug/pmc_core/package_cstate_show
  # set false in the end when it failed so that test case be marked as failed.
  ! (tail -n1 "$report_folder"/turbostat-pkgpc-longidle.log | grep "0.00$")
 _summary: check if target machine can get cpu pkg c10 in long idle.
