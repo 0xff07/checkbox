@@ -1,3 +1,9 @@
+plainbox-provider-pc-sanity (0.2.9) UNRELEASED; urgency=medium
+
+  * add debsums checking
+
+ -- Alex Tu <alex.tu@canonical.com>  Tue, 18 Aug 2020 15:44:22 +0800
+
 plainbox-provider-pc-sanity (0.2.8) bionic; urgency=medium
 
   [ Kai-Chuan Hsieh ]

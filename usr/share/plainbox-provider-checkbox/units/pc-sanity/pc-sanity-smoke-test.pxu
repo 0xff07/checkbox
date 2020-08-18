@@ -4,6 +4,7 @@ unit: test plan
 _description:
     This test plan is for smoke test as sanity before release image.
 include:
+    com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/turbostate-long-idle-c10
     com.canonical.certification::miscellanea/intel-rapl
     com.canonical.certification::miscellanea/intel-rapl-mmio
