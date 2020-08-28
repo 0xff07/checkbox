@@ -6,6 +6,7 @@ _description:
 include:
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/turbostate-long-idle-c10
+    com.canonical.certification::miscellanea/turbostate-s2i-power-residency
     com.canonical.certification::miscellanea/intel-rapl
     com.canonical.certification::miscellanea/intel-rapl-mmio
     com.canonical.certification::miscellanea/intel-p-state
