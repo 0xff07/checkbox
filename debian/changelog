@@ -1,6 +1,8 @@
 plainbox-provider-pc-sanity (0.2.9) UNRELEASED; urgency=medium
 
   * add debsums checking
+  * miscellanea/turbostate-s2i-power-residency : to check expected power state
+    during s2i
 
  -- Alex Tu <alex.tu@canonical.com>  Tue, 18 Aug 2020 15:44:22 +0800
 
