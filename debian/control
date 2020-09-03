@@ -13,5 +13,6 @@ Depends: plainbox-provider-checkbox (>= 0.27),
          python3-checkbox-support (>= 0.27),
          ${misc:Depends},
          ${shlibs:Depends}
-Description: CheckBox pc sanity jobs provider which inject units to plainbox-provider-checkbox
- CheckBox pc sanity jobs provider which inject units to plainbox-provider-checkbox
+X-Plainbox-Provider: yes
+Description: CheckBox pc sanity jobs provider which forked from plainbox-provider-sru
+ This is a provider as staging pool before upstream to ppc.

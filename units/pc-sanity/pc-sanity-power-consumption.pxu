@@ -8,7 +8,7 @@ user: root
 command:
  set -x
  check-turbostat-power-residency.sh --s2i
-_summary: check if target machine can get expected power residency on e.g. cpu pkg c10, s0ix, gfxrc6..etc
+_summary: check if expected power residency on s2i
 _description:
  check if target machine can get expected power residency on e.g. cpu pkg c10, s0ix, gfxrc6..etc
  this test case refer to Intel document : https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting
