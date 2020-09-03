@@ -1,8 +1,8 @@
-plainbox-provider-pc-sanity (1.0.0) UNRELEASED; urgency=medium
+plainbox-provider-pc-sanity (1.0.0) focal; urgency=medium
 
   * refactor folder layout based on plainbox-provider-sru-1.19.0+git202006190355+pkg65~ubuntu20.04.
 
- -- Alex Tu <alex.tu@canonical.com>  Thu, 03 Sep 2020 18:30:20 +0800
+ -- Alex Tu <alex.tu@canonical.com>  Thu, 03 Sep 2020 18:55:41 +0800
 
 plainbox-provider-pc-sanity (0.2.9) bionic; urgency=medium
 
