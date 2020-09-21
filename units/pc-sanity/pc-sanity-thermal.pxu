@@ -105,7 +105,12 @@ command:
  RETVAL=$?
  if [ $RETVAL -ne 0 ];
  then
-     journalctl -b -u thermald
+     journalctl -b -u thermald > $PLAINBOX_SESSION_SHARE/journalctl.log
+     echo "The log for thermald: $PLAINBOX_SESSION_SHARE/journalctl.log"
+     grep -q "Unsupported cpu model" < $PLAINBOX_SESSION_SHARE/journalctl.log && \
+     echo "Debugging Tips:"
+     echo "Please check the upstream code(https://github.com/intel/thermal_daemon/blob/master/src/thd_engine.cpp) for the target id in id_table[] " && \
+     echo "If the ID not there, then open a upstream bug like https://github.com/intel/thermal_daemon/issues/275 "
      exit $RETVAL
  fi
 _summary: Check if thermald is active
