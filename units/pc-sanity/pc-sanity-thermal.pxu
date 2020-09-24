@@ -2,7 +2,14 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl
 command:
- test -d /sys/class/powercap/intel-rapl
+ if test -d /sys/class/powercap/intel-rapl; then
+     exit 0
+ else
+     echo "Is CONFIG_INTEL_RAPL configured?"
+     echo "List node under /sys/class/powercap"
+     ls /sys/class/powercap
+     exit 1
+ fi
 _summary: Check if Intel RAPL power capping driver is installed
 _description:
  Check if Intel RAPL power capping  driver is installed
@@ -11,16 +18,30 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl-mmio
 command:
- test -d /sys/class/powercap/intel-rapl-mmio
+ if test -d /sys/class/powercap/intel-rapl-mmio; then
+     exit 0
+ else
+     echo "Lack of MMIO interface for power capping"
+     lspci -nnk
+     exit 1
+ fi
 _summary: Check if Intel RAPL-mmio power capping driver is installed
 _description:
- Check if Intel RAPL-mmio power capping driver is installed
+ Intel RAPL (Running Average Power Limit) relies on proc_thermal
+ driver to provide MMIO interface for power capping
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-p-state
 command:
- test -d /sys/devices/system/cpu/intel_pstate
+ if test -d /sys/devices/system/cpu/intel_pstate; then
+     exit 0
+ else
+     echo "Is CONFIG_X86_INTEL_PSTATE configured?"
+     echo "List node under /sys/devices/system/cpu"
+     ls /sys/devices/system/cpu
+     exit 1
+ fi
 _summary: Check if Intel P State driver is installed
 _description:
  Check if Intel P State driver is installed
@@ -29,7 +50,14 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-powerclamp
 command:
- grep -q 'intel_powerclamp' /sys/class/thermal/cooling_device*/type
+ if grep -q 'intel_powerclamp' /sys/class/thermal/cooling_device*/type; then
+     exit 0
+ else
+     echo "Is CONFIG_INTEL_POWERCLAMP configured?"
+     echo "List node type under /sys/class/thermal/cooling_device*"
+     grep . /sys/class/thermal/cooling_device*/type
+     exit 1
+ fi
 _summary: Check if Intel Power clamp driver is installed
 _description:
  Check if Intel Power clamp driver is installed
