@@ -52,7 +52,7 @@ command:
  pkg_not_public() {
      [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in" "${FUNCNAME[1]}" && clean 1
      # check if the pkg on allow list.
-     for F in "$allowlst_folder"/common "$allowlst_folder"/"$oem"/common "$allowlst_folder"/"$oem"/"$platform"; do
+     for F in "$allowlst_folder"/testtools "$allowlst_folder"/common "$allowlst_folder"/"$oem"/common "$allowlst_folder"/"$oem"/"$platform"; do
         [ -f "$F" ] && while IFS= read -r green_light; do
             [ "$1" == "$green_light" ] && echo "[INFO] manager gave a greenlight for :" "$1" "$2" && return 0
         done < "$F"
