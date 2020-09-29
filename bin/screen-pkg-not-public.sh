@@ -75,12 +75,6 @@ pkg_not_public() {
     # check if the pkg on allow list.
     if_allowing "$1" || (>&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2" && pkg_need_allowing "$1")
 }
-pkg_src_not_trust() {
-    [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
-    [ -z "$2" ] && >&2 echo "[ERROR][CODE]got an empty pkg src in ${FUNCNAME[1]}" && clean 1
-    # check if the pkg is not provided by trust source (e.g. PPA)
-    >&2 echo "[ERROR] The latest version $2 of package $1 comes from untrust source $3" && STATUS="failed"
-}
 prepare
 echo "[INFO] staring screen all installed packages."
 
