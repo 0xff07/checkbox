@@ -18,22 +18,23 @@ prepare() {
     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
     (>&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[1]}" && clean 1)
     case "$oem" in
-       "somerville")
-           platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
-           ;;
-       "sutton")
-           platform_meta="$(dpkg-query -W -f='${Package}\n'  "oem-""$oem"".*-meta")"
-           oem="$(echo "$platform_meta" | cut -d'-' -f2 )"
-           platform="$(echo "$platform_meta" | cut -d'-' -f3 )"
-           ;;
-       "stella")
-           platform_meta="$(dpkg-query -W -f='${Package}\n'  "oem-""$oem"".*-meta")"
-           oem="$(echo "$platform_meta" | cut -d'-' -f2 )"
-           platform="$(echo "$platform_meta" | cut -d'-' -f3 )"
-           ;;
-       *)
-           >&2 echo "[ERROR][CODE]we should not be here in ${FUNCNAME[1]} : ${LINENO}" && clean 1
-           ;;
+        "somerville")
+            platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
+            ;;
+        "sutton"|"stella")
+            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
+                _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
+                if [ "$_code_name" == "factory" ] ||
+                    [ "$_code_name" == "meta" ]; then
+                    continue
+                fi
+                oem="$(echo "$pkg" | cut -d'-' -f2 )"
+                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+            done
+            ;;
+        *)
+            >&2 echo "[ERROR][CODE]we should not be here in ${FUNCNAME[1]} : ${LINENO}" && clean 1
+            ;;
     esac
     [ -z "$platform" ] && (>&2 echo "[ERROR][CODE]got an empty platform name for $oem in ${FUNCNAME[1]}" && clean 1)
     (sudo apt-get update > /dev/null || (>&2 echo "[ERROR]apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
@@ -51,6 +52,8 @@ pkg_need_update() {
     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
     >&2 echo "[ERROR] find a update-able pkg: $1 $2" && pkg_need_allowing "$1"
 }
+# return 0 for allowing
+# return 1 for not allowing
 if_allowing() {
     local allowed="NO"
     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
@@ -70,7 +73,7 @@ if_allowing() {
 pkg_not_public() {
     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in" "${FUNCNAME[1]}" && clean 1
     # check if the pkg on allow list.
-    if_allowing "$1" || (>&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2"&& pkg_need_allowing "$1")
+    if_allowing "$1" || (>&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2" && pkg_need_allowing "$1")
 }
 prepare
 echo "[INFO] staring screen all installed packages."
