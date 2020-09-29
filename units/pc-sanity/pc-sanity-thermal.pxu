@@ -38,7 +38,21 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-cpu-thermal
 command:
- grep -q 'B0D4\|B0DB\|TCPU\|cpu' /sys/class/thermal/thermal_zone*/type
+ if grep -q 'B0D4\|B0DB\|TCPU' /sys/class/thermal/thermal_zone*/type; then
+     exit 0
+ elif grep -q 'coretemp' /sys/class/hwmon/hwmon*/name; then
+     exit 0
+ else
+     echo "No valid sysfs node to create cpu thermal zone"
+     lspci -nnk
+     echo "node in thermal class"
+     paste <(ls -d /sys/class/thermal/thermal_zone*) <(cat /sys/class/thermal/thermal_zone*/type) \
+           <(cat /sys/class/thermal/thermal_zone*/temp) \
+           | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/'
+     echo "node in hwmon class"
+     cat /sys/class/hwmon/hwmon*/name
+     exit 1
+ fi
 _summary: Check if Intel cpu thermal zone registered
 _description:
  Thermald checks if /sys/class/thermal/thermal_zone* contains type B0D4, B0DB, and TCPU.
