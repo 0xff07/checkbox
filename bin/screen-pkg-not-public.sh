@@ -46,7 +46,6 @@ prepare() {
 pkg_need_allowing() {
     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
     >&2 echo "[ERROR] Please send a MP to $allowlist_git for manager review $1" && STATUS="failed"
-    clean
 }
 pkg_need_update() {
     [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
