@@ -65,9 +65,9 @@ if_allowing() {
        done < "$F"
     done
     if [ "$allowed" == "NO" ]; then
-	   return 1
+        return 1
     else
-	   return 0
+        return 0
     fi
 }
 pkg_not_public() {
@@ -75,24 +75,80 @@ pkg_not_public() {
     # check if the pkg on allow list.
     if_allowing "$1" || (>&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2" && pkg_need_allowing "$1")
 }
+pkg_src_not_trust() {
+    [ -z "$1" ] && >&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1
+    [ -z "$2" ] && >&2 echo "[ERROR][CODE]got an empty pkg src in ${FUNCNAME[1]}" && clean 1
+    # check if the pkg is not provided by trust source (e.g. PPA)
+    >&2 echo "[ERROR] The latest version $2 of package $1 comes from untrust source $3" && STATUS="failed"
+}
 prepare
 echo "[INFO] staring screen all installed packages."
-while IFS= read -r pkgname; do
-   progress=">""$progress"
-   [ "${#progress}" == "70" ] && echo "$progress" && progress=""
-   pkgver="$(dpkg-query -W -f='${Version}' "$pkgname")"
-   pub_madison="$(apt-cache madison  "$pkgname")"
-   can_pkgver="$(apt-cache policy  "$pkgname" | grep Candidate | awk '{print $2}')"
-   if [ -z "${pkgname##oem-fix*}" ]; then
-        if_allowing "$pkgname" || pkg_need_allowing "$pkgname"
-   fi
 
-   if [ -z "$pub_madison" ]; then
-        pkg_not_public "$pkgname" "$pkgver"
-   elif [ -n "${pub_madison##*$can_pkgver*}" ]; then
-        pkg_not_public "$pkgname" "$pkgver"
-   elif dpkg --compare-versions "$can_pkgver" "gt" "$pkgver"; then
-        [ -z "${pkgver##*oem*}" ] || [ -z "${pkgver##*somerville*}" ] && pkg_need_update  "$pkgname" "$pkgver"
-   fi
-done < <(dpkg -l | grep 'ii' | awk '{print $2}')
+pf_meta_pkg="$(dpkg -S /etc/apt/sources.list.d/oem-"${oem}"-*-meta.list | awk '{print $1}' | sed 's/://Ig')"
+pf_factory_meta_pkg="${pf_meta_pkg/oem-${oem}-/oem-${oem}-factory-}"
+
+while IFS= read -r line; do
+    progress=">""$progress"
+    [ "${#progress}" == "70" ] && echo "$progress" && progress=""
+
+    pkg_name="$(echo "${line}" | awk '{print $2}')"
+    pkg_ver="$(echo "${line}" | awk '{print $3}')"
+    pkg_curr_madison="$(apt-cache madison "${pkg_name}" | grep "$pkg_ver" || true)"
+
+    # FIXME: I don't think the upgradable is need to in "id: miscellanea/screen-pkg-not-public"
+    # Should have the other something like "id: miscellanea/check-oem-pkg-updatable"
+    # Remove this section can speed up this test scope
+    # Alarm if package is old
+    # TODO: detect somerville only?
+    if [ -z "${pkg_ver##*oem*}" ] || [ -z "${pkg_ver##*somerville*}" ]; then
+        if if_allowing "$pkg_name"; then
+            continue
+        else
+            can_pkg_ver="$(apt-cache policy "$pkg_name" | grep Candidate | awk '{print $2}')"
+            if dpkg --compare-versions "$can_pkg_ver" "gt" "$pkg_ver"; then
+                pkg_need_update "$pkg_name" "$pkg_ver"
+            fi
+        fi
+    fi
+
+    # If empty then meaning on one know where is this package come from
+    # (e.g. a package only in CESG)
+    if [ -z "${pkg_curr_madison}" ]; then
+        can_pkg_ver="$(apt-cache policy "$pkg_name" | grep Candidate | awk '{print $2}')"
+        pkg_can_madison="$(apt-cache madison "${pkg_name}" | grep "$can_pkg_ver" || true)"
+        # If the candidate version is from ubuntu-archive then it'll be
+        #  covered by SRU process.
+        if [ -n "${pkg_can_madison}" ] &&
+            { [ -z "${pkg_can_madison##*security.ubuntu.com/ubuntu*}" ] ||
+            [ -z "${pkg_can_madison##*archive.ubuntu.com/ubuntu*}" ]; }; then
+            continue
+        fi
+        pkg_not_public "$pkg_name" "$pkg_ver"
+        continue
+    fi
+
+    # If the installed package is from ubuntu-archive then we're good
+    # (no matter which version is candidate because we expected the
+    #  all source list are under control at lease before GM)
+    if [ -z "${pkg_curr_madison##*security.ubuntu.com/ubuntu*}" ] ||
+        [ -z "${pkg_curr_madison##*archive.ubuntu.com/ubuntu*}" ]; then
+        continue
+    fi
+
+    # If the installed package is from canonical-archive then we need to
+    #  make sure the packages were review.
+    if [ -z "${pkg_curr_madison##*archive.canonical.com*}" ]; then
+        # If the package is platform meta package then it should be control by meta generator
+        if [ "$pkg_name" == "$pf_meta_pkg" ] || [ "$pkg_name" == "$pf_factory_meta_pkg" ]; then
+            continue
+        fi
+        # Otherwise, need to review
+        pkg_not_public "$pkg_name" "$pkg_ver"
+        continue
+    fi
+
+    # For unkown source of package (e.g. from a ppa), then review
+    pkg_not_public "$pkg_name" "$pkg_ver"
+
+done < <(dpkg -l | grep 'ii')
 clean
