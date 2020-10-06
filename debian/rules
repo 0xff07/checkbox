@@ -11,7 +11,8 @@ override_dh_auto_build:
 	python3 manage.py i18n
 
 override_dh_auto_test:
-	python3 manage.py validate 
+	python3 manage.py validate
+	bats test/*.bat
 
 override_dh_auto_install:
 	python3 manage.py install --prefix=/usr --layout=unix \

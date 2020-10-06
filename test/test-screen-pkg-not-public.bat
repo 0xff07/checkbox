@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-BIN_FOLDER="../bin"
+# execute this test file by `bats test/test-screen-pkg-not-public.bat`
+BIN_FOLDER="bin"
 
 function if_allowing() {
     return 1
@@ -52,6 +53,7 @@ function apt-cache() {
     screen_pkg "ii  ubuntu-desktop                                1.450.2                                     amd64        The Ubuntu desktop system"
     [ "$?" == "0" ]
     unset -f apt-cache
+
 }
 
 @test "screen out pkgs we hacked" {
@@ -112,29 +114,22 @@ function apt-cache() {
 }
 
 @test "screen out pkgs only on oem archive." {
-    function apt-cache() {
-       case "$1" in
-        "madison")
-        echo "pkg-only-on-oem-archive | 20.04ubuntu7 | http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages"
-        ;;
-        "policy")
-        echo "
-        pkg-only-on-oem-archive:
-         Installed: 20.04ubuntu7
-         Candidate: 20.04ubuntu7
-         Version table:
-        *** 20.04ubuntu7 500
-        500 http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages
-        500 http://dell.archive.canonical.com focal/somerville-melisa i386 Packages
-        "
-        ;;
-        *)
-        return 1;
-        ;;
-       esac
-    }
+    dpkg_list_string="ii  pkg-only-on-oemarchive                                1.187.3                                     all          Firmware for Linux kernel drivers"
+    aptcache_medison_string="
+    pkg-only-on-oem-archive | 20.04ubuntu7 | http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages
+    "
+    apt_cache_policy_string="
+    pkg-only-on-oem-archive:
+     Installed: 20.04ubuntu7
+     Candidate: 20.04ubuntu7
+     Version table:
+    *** 20.04ubuntu7 500
+    500 http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages
+    500 http://dell.archive.canonical.com focal/somerville-melisa i386 Packages
+    "
+
     export -f apt-cache
     # we expect it failed.
-    ! screen_pkg "ii  pkg-only-on-oemarchive                                1.187.3                                     all          Firmware for Linux kernel drivers"
+    ! screen_pkg "$dpkg_list_string"
     unset -f apt-cache
 }
