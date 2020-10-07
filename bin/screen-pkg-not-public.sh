@@ -11,7 +11,7 @@ platform=""
 allowlst_folder=""
 JOB_STATUS="pass"
 clean() {
-   rm -rf "$allowlst_folder"
+   rm -rf $allowlst_folder
    [ -z "$1" ] || exit "$1"
    [ "$JOB_STATUS" != "pass" ] && exit 1
    exit 0
@@ -47,7 +47,7 @@ prepare() {
     echo "[INFO] getting allowlist from $allowlist_git."
     [ -n "$allowlist_git" ] &&\
     allowlst_folder="$PWD"/"$(basename "$allowlist_git")" &&\
-    rm -rf $allowlst_folder &&\
+    rm -rf "$allowlst_folder" &&\
     (git clone --depth=1 "$allowlist_git" || (>&2 echo "[ERROR]git clone ""$allowlist_git"" failed, please check it." | exit 1))
     echo "[INFO] git hash of current allowlist: $(git -C "$allowlst_folder" rev-parse --short HEAD)"
 }
