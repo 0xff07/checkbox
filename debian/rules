@@ -14,6 +14,7 @@ override_dh_auto_test:
 	python3 manage.py validate
 	shellcheck bin/*.sh
 	bats test/*.bat
+	flake8 bin/*.py
 
 override_dh_auto_install:
 	python3 manage.py install --prefix=/usr --layout=unix \
