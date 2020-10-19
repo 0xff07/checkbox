@@ -1,0 +1,9 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-nvidia
+command:
+ set -x
+ check-nvidia.sh
+_summary: check if nvidia dgpu behave as we expected.
+_description:
+ Nvidia introduce runtime D3 (runtime pm) from Nvidia driver version 450. This test case is used to check if everything work as expected.

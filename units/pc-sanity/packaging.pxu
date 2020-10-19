@@ -2,4 +2,3 @@
 unit: packaging meta-data
 os-id: debian
 Depends: plainbox-provider-certification-client
-
