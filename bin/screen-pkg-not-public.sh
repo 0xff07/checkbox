@@ -147,7 +147,7 @@ run_main() {
     while IFS= read -r line; do
         progress=">""$progress"
         [ "${#progress}" == "70" ] && echo "$progress" && progress=""
-        screen_pkg "$line" || true
+        screen_pkg "$line" || JOB_STATUS="failed"
     done < <(dpkg -l | grep 'ii')
     clean
 }

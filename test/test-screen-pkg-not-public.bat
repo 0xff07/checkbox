@@ -17,6 +17,34 @@ function teardown() {
     >&2 echo "JOB_STATUS="$JOB_STATUS
 }
 
+@test "run_main() reflect the JOB_STATUS" {
+    status_failed=1
+    status_passed=0
+    function screen_pkg(){
+        return "$status_simulate"
+    }
+    function prepare(){
+        echo "empty"
+    }
+    function clean(){
+        echo "empty"
+    }
+    function dpkg(){
+        echo "ii"
+    }
+
+    status_simulate=$status_passed
+    # we expect it pass.
+    run_main
+    [ "$JOB_STATUS" == "pass" ]
+
+    status_simulate=$status_failed
+    # we expect it failed.
+    run_main
+    [ "$JOB_STATUS" == "failed" ]
+
+}
+
 function apt-cache() {
    case "$1" in
     "madison")
