@@ -13,10 +13,6 @@ function setup() {
     platform="fossa-melisa"
 }
 
-function teardown() {
-    >&2 echo "JOB_STATUS="$JOB_STATUS
-}
-
 @test "run_main() reflect the JOB_STATUS" {
     set -e
     status_failed=1
@@ -79,8 +75,8 @@ function apt-cache() {
     "
     export -f apt-cache
     # we expect it passed.
-    screen_pkg "ii  ubuntu-desktop                                1.450.2                                     amd64        The Ubuntu desktop system"
-    [ "$?" == "0" ]
+    run screen_pkg "ii  ubuntu-desktop                                1.450.2                                     amd64        The Ubuntu desktop system"
+    [ "$status" -eq 0 ]
     unset -f apt-cache
 
 }
@@ -106,7 +102,8 @@ function apt-cache() {
     "
     export -f apt-cache
     # we expect it failed.
-    ! screen_pkg "$dpkg_list_string"
+    run screen_pkg "$dpkg_list_string"
+    [ "$status" -eq 1 ]
     unset -f apt-cache
 }
 
@@ -131,20 +128,22 @@ function apt-cache() {
 
     export -f apt-cache
     # we expect it failed.
-    ! screen_pkg "$dpkg_list_string"
+    run screen_pkg "$dpkg_list_string"
+    [ "$status" -eq 1 ]
     unset -f apt-cache
 }
 
 @test "screen out pkgs not in any archive." {
     set -e
     # we expect it failed.
-    ! screen_pkg "ii  a-nonexisted-pkg                                1.187.3                                     all          Firmware for Linux kernel drivers"
+    run screen_pkg "ii  a-nonexisted-pkg                                1.187.3                                     all          Firmware for Linux kernel drivers"
+    [ "$status" -eq 1 ]
     echo in bat: JOB_STATUS=$JOB_STATUS
 }
 
 @test "screen out pkgs only on oem archive." {
     set -e
-    dpkg_list_string="ii  pkg-only-on-oemarchive                                1.187.3                                     all          Firmware for Linux kernel drivers"
+    dpkg_list_string="ii  pkg-only-on-oemarchive                                20.04ubuntu7                                     all          Firmware for Linux kernel drivers"
     aptcache_medison_string="
     pkg-only-on-oem-archive | 20.04ubuntu7 | http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages
     "
@@ -160,6 +159,7 @@ function apt-cache() {
 
     export -f apt-cache
     # we expect it failed.
-    ! screen_pkg "$dpkg_list_string"
+    run screen_pkg "$dpkg_list_string"
+    [ "$status" -eq 1 ]
     unset -f apt-cache
 }

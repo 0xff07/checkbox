@@ -119,7 +119,7 @@ screen_pkg() {
         if pkg_not_public "$pkg_name" "$pkg_ver"; then
             return $pkg_pass
         else
-            return $pkg_pass
+            return $pkg_failed
         fi
     fi
 
@@ -142,14 +142,14 @@ screen_pkg() {
         if pkg_not_public "$pkg_name" "$pkg_ver"; then
             return $pkg_pass
         else
-            return $pkg_pass
+            return $pkg_failed
         fi
     fi
     # For unkown source of package (e.g. from a ppa), then review
     if pkg_not_public "$pkg_name" "$pkg_ver"; then
         return $pkg_pass
     else
-        return $pkg_pass
+        return $pkg_failed
     fi
 }
 
