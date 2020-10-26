@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -e
-pkg_pass="0"
-pkg_failed="1"
+readonly pkg_pass="0"
+readonly pkg_failed="1"
 allowlist_git="https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"
 pf_meta_pkg=""
 pf_factory_meta_pkg=""
@@ -11,7 +11,7 @@ platform=""
 allowlst_folder=""
 JOB_STATUS="pass"
 clean() {
-   rm -rf $allowlst_folder
+   rm -rf "$allowlst_folder"
    [ -z "$1" ] || exit "$1"
    [ "$JOB_STATUS" != "pass" ] && exit 1
    exit 0
@@ -20,7 +20,7 @@ prepare() {
     oem="$(grep -q sutton <(ubuntu-report show | grep DCD) && echo sutton)" ||\
     oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
-    (>&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[1]}" && clean 1)
+    (>&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}" && clean 1)
     case "$oem" in
         "somerville")
             platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
@@ -37,13 +37,13 @@ prepare() {
             done
             ;;
         *)
-            >&2 echo "[ERROR][CODE]we should not be here in ${FUNCNAME[1]} : ${LINENO}" && clean 1
+            >&2 echo "[ERROR][CODE]we should not be here in ${FUNCNAME[0]} : ${LINENO}" && clean 1
             ;;
     esac
-    [ -n "$platform" ] || (>&2 echo "[ERROR][CODE]got an empty platform name for $oem in ${FUNCNAME[1]}" && clean 1)
+    [ -n "$platform" ] || (>&2 echo "[ERROR][CODE]got an empty platform name for $oem in ${FUNCNAME[0]}" && clean 1)
     (sudo apt-get update > /dev/null || (>&2 echo "[ERROR]apt-get update failed, please check it." | exit 1)) && sudo apt-get install -y git > /dev/null
-    pf_meta_pkg="$(dpkg -S /etc/apt/sources.list.d/oem-"${oem}"-*-meta.list | awk '{print $1}' | sed 's/://Ig')" || pf_meta_pkg=""
-    pf_factory_meta_pkg="${pf_meta_pkg/oem-${oem}-/oem-${oem}-factory-}" || pf_factory_meta_pkg=""
+    pf_meta_pkg="$(dpkg -S /etc/apt/sources.list.d/oem-"${oem}"-*-meta.list | awk '{print $1}' | sed 's/://Ig')"
+    pf_factory_meta_pkg="${pf_meta_pkg/oem-${oem}-/oem-${oem}-factory-}"
     echo "[INFO] getting allowlist from $allowlist_git."
     [ -n "$allowlist_git" ] &&\
     allowlst_folder="$PWD"/"$(basename "$allowlist_git")" &&\
@@ -56,14 +56,14 @@ pkg_need_allowing() {
     >&2 echo "[ERROR] Please send a MP to $allowlist_git for manager review $1" && JOB_STATUS="failed"
 }
 pkg_need_update() {
-    [ -n "$1" ] && (>&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1)
+    [ -n "$1" ] && (>&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[0]}" && clean 1)
     >&2 echo "[ERROR] find a update-able pkg: $1 $2" && pkg_need_allowing "$1"
 }
 # return 0 for allowing
 # return 1 for not allowing
 if_allowing() {
     local allowed="NO"
-    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[1]}" && clean 1)
+    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty pkg in ${FUNCNAME[0]}" && clean 1)
 
     # check if the pkg on allow list.
     for F in "$allowlst_folder"/testtools "$allowlst_folder"/common "$allowlst_folder"/"$oem"/common "$allowlst_folder"/"$oem"/"$platform"; do
@@ -78,12 +78,12 @@ if_allowing() {
     fi
 }
 pkg_not_public() {
-    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty pkg in" "${FUNCNAME[1]}" && clean 1)
+    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty pkg in" "${FUNCNAME[0]}" && clean 1)
     # check if the pkg on allow list.
     if_allowing "$1" || (>&2 echo "[ERROR] find a packge not on public archive:" "$1" "$2" && pkg_need_allowing "$1" && return $pkg_failed)
 }
 screen_pkg() {
-    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty input in" "${FUNCNAME[1]}" && clean 1)
+    [ -n "$1" ] || (>&2 echo "[ERROR][CODE]got an empty input in" "${FUNCNAME[0]}" && clean 1)
     line="$1"
     pkg_name="$(echo "${line}" | awk '{print $2}')"
     pkg_ver="$(echo "${line}" | awk '{print $3}')"
@@ -116,7 +116,11 @@ screen_pkg() {
             [ -z "${pkg_can_madison##*archive.ubuntu.com/ubuntu*}" ]; }; then
             return $pkg_pass
         fi
-        pkg_not_public "$pkg_name" "$pkg_ver" || return $pkg_failed
+        if pkg_not_public "$pkg_name" "$pkg_ver"; then
+            return $pkg_pass
+        else
+            return $pkg_pass
+        fi
     fi
 
     # If the installed package is from ubuntu-archive then we're good
@@ -135,10 +139,18 @@ screen_pkg() {
             return $pkg_pass
         fi
         # Otherwise, need to review
-        pkg_not_public "$pkg_name" "$pkg_ver" || return $pkg_failed
+        if pkg_not_public "$pkg_name" "$pkg_ver"; then
+            return $pkg_pass
+        else
+            return $pkg_pass
+        fi
     fi
     # For unkown source of package (e.g. from a ppa), then review
-    pkg_not_public "$pkg_name" "$pkg_ver" || return $pkg_failed
+    if pkg_not_public "$pkg_name" "$pkg_ver"; then
+        return $pkg_pass
+    else
+        return $pkg_pass
+    fi
 }
 
 run_main() {

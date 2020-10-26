@@ -18,6 +18,7 @@ function teardown() {
 }
 
 @test "run_main() reflect the JOB_STATUS" {
+    set -e
     status_failed=1
     status_passed=0
     function screen_pkg(){
@@ -142,6 +143,7 @@ function apt-cache() {
 }
 
 @test "screen out pkgs only on oem archive." {
+    set -e
     dpkg_list_string="ii  pkg-only-on-oemarchive                                1.187.3                                     all          Firmware for Linux kernel drivers"
     aptcache_medison_string="
     pkg-only-on-oem-archive | 20.04ubuntu7 | http://dell.archive.canonical.com focal/somerville-melisa amd64 Packages
