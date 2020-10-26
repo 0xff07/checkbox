@@ -1,0 +1,2 @@
+Tests: help, checkbox-cli-list
+Depends: @, prepare-checkbox-sanity
