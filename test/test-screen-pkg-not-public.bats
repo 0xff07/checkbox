@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bats
 
-# execute this test file by `bats test/test-screen-pkg-not-public.bat`
+# execute this test file by `bats test/test-screen-pkg-not-public.bats`
 BIN_FOLDER="bin"
 
 function if_allowing() {
