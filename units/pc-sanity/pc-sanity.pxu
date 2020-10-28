@@ -15,7 +15,7 @@ include:
     com.canonical.certification::miscellanea/intel-cpu-thermal
     com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
-    com.canonical.certification::miscellanea/thermal
+    com.canonical.certification::miscellanea/proc_thermal
     com.canonical.certification::miscellanea/thermald
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
     com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment

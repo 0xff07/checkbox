@@ -122,7 +122,7 @@ _description:
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/thermal
+id: miscellanea/proc_thermal
 command:
  set -x
  report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
@@ -134,10 +134,13 @@ command:
         lspci -nnk > $report_folder/dmesg.log
         lsmod > $report_folder/lsmod.log
         false;
+        echo "proc_thermal driver not be loaded."
+        echo "It could caused by lake of ID in kernel like LP: #1874008."
  fi
-_summary: check if thermal driver installed.
+_summary: Check if thermal driver be loaded.
 _description:
- check if thermal driver installed.
+ Check if thermal driver be loaded. Which also checked if the CPU id be recognized by kernel.
+ Thermal zone TCPU will not be created without this driver which also impact thermald operation.
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
