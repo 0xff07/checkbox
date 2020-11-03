@@ -92,4 +92,15 @@ for i in "${!turbostat[@]}"; do
     fi
 done
 
-[ "$state" == "pass" ] || exit 1
+if [ "$state" != "pass" ]; then
+    echo "Your system not get Intel CPU PC10 or s0ix as expected, it could impact e-star compliance."
+    echo "If the following test cases not run, that means your CPU architure or kernel driver not support PC10 or s0ix, please open bugs for HWE"
+    echo " - power-management/cpu-low-power-idle"
+    echo " - power-management/system-low-power-idle executed and passed."
+    echo "Otherwise, please get PHM report to check which device blocking PC10 or s0ix and open bugs for HWE to check kernel modules"
+    echo ""
+    echo "reference:"
+    echo " - https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting"
+    echo " - https://01.org/blogs/qwang59/2018/how-achieve-s0ix-states-linux"
+    exit 1
+fi
