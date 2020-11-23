@@ -145,6 +145,7 @@ command:
         false;
         echo "proc_thermal driver not be loaded."
         echo "It could caused by lake of ID in kernel like LP: #1874008."
+        exit 1
  fi
 _summary: Check if thermal driver be loaded.
 _description:
