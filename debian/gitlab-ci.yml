@@ -19,8 +19,7 @@ variables:
     =bG3o
     -----END PGP PUBLIC KEY BLOCK-----
   RELEASE: 'focal'
-  SALSA_CI_AUTOPKGTEST_SETUP_CMDS: |
-    sudo apt-get install -y wget snapd software-properties-common &&  add-apt-repository -y -u -s ppa:checkbox-dev/ppa && export DEBIAN_FRONTEND=noninteractive
+  SALSA_CI_AUTOPKGTEST_SETUP_CMDS: apt-get install -y wget snapd software-properties-common &&  add-apt-repository -y -u -s ppa:checkbox-dev/ppa && export DEBIAN_FRONTEND=noninteractive
 
 piuparts:
   allow_failure: true
