@@ -131,7 +131,9 @@ _description:
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/proc_thermal
-requires: cpuinfo.type == 'GenuineIntel'
+requires:
+  cpuinfo.type == 'GenuineIntel'
+  device.path in ['/devices/platform/INTC1040:00','/devices/platform/INT3400:00']
 command:
  set -x
  report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
