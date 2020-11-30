@@ -9,6 +9,7 @@ Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider
 Package: plainbox-provider-pc-sanity
 Architecture: all
 Depends: plainbox-provider-checkbox (>= 0.27),
+         powertop,
          python3 (>= 3.2),
          python3-checkbox-support (>= 0.27),
          ${misc:Depends},
