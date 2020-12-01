@@ -5,7 +5,7 @@ requires:
 id: miscellanea/check-nvidia
 command:
  set -x
- check-nvidia.sh
+ check-nvidia.sh --out "$PLAINBOX_SESSION_SHARE"
 _summary: check if nvidia dgpu behave as we expected.
 _description:
  Nvidia introduce runtime D3 (runtime pm) from Nvidia driver version 450. This test case is used to check if everything work as expected.
