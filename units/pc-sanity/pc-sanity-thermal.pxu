@@ -9,6 +9,10 @@ command:
      echo "Is CONFIG_INTEL_RAPL configured?"
      echo "List node under /sys/class/powercap"
      ls /sys/class/powercap
+     echo "The info of powercap driver:"
+     echo "https://www.kernel.org/doc/html/latest/power/powercap/powercap.html"
+     echo "The info of Intel thermal_daemon:"
+     echo "https://github.com/intel/thermal_daemon/blob/master/README.txt"
      exit 1
  fi
 _summary: Check if Intel RAPL power capping driver is installed
@@ -24,8 +28,14 @@ command:
  if test -d /sys/class/powercap/intel-rapl-mmio; then
      exit 0
  else
-     echo "Lack of MMIO interface for power capping"
+     echo "Lack of MMIO interface for power capping."
+     echo "It depends on proc_thermal, plesae check if processor thermal device exist"
+     echo "and proc_thermal driver has probed properly."
      lspci -nnk
+     echo "The info of powercap driver:"
+     echo "https://www.kernel.org/doc/html/latest/power/powercap/powercap.html"
+     echo "The info of Intel thermal_daemon:"
+     echo "https://github.com/intel/thermal_daemon/blob/master/README.txt"
      exit 1
  fi
 _summary: Check if Intel RAPL-mmio power capping driver is installed
@@ -44,6 +54,11 @@ command:
      echo "Is CONFIG_X86_INTEL_PSTATE configured?"
      echo "List node under /sys/devices/system/cpu"
      ls /sys/devices/system/cpu
+     echo "The intel_pstate driver is required by thermald."
+     echo "The info of Intel thermal_daemon:"
+     echo "https://github.com/intel/thermal_daemon/blob/master/README.txt"
+     echo "The info of Intel pstate driver:"
+     echo "https://www.kernel.org/doc/html/latest/admin-guide/pm/intel_pstate.html"
      exit 1
  fi
 _summary: Check if Intel P State driver is installed
@@ -61,6 +76,8 @@ command:
      echo "Is CONFIG_INTEL_POWERCLAMP configured?"
      echo "List node type under /sys/class/thermal/cooling_device*"
      grep . /sys/class/thermal/cooling_device*/type
+     echo "The info of Intel powerclamp driver:"
+     echo "https://www.kernel.org/doc/Documentation/thermal/intel_powerclamp.txt"
      exit 1
  fi
 _summary: Check if Intel Power clamp driver is installed
@@ -99,7 +116,14 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-x86-pkg-temp-thermal
 requires: cpuinfo.type == 'GenuineIntel'
 command:
- grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type
+ if [ grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type ]; then
+     exit 0
+ else
+     echo "The system has no x86_pkg_thermal zone."
+     echo "The info of Intel x86_pkg_thermal zone:"
+     echo "https://www.kernel.org/doc/html/latest/driver-api/thermal/x86_pkg_temperature_thermal.html"
+     exit 1
+ fi
 _summary: Check if X86 package temperature thermal driver is installed
 _description:
  Check if X86 package temperature thermal driver is installed
