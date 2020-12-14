@@ -109,6 +109,7 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/valid-thermal-zone-trip-points
 requires: cpuinfo.type == 'GenuineIntel'
 command:
+ fail=0
  for zone in /sys/class/thermal/thermal_zone*
  do
      tp_type=$(cat $zone/type)
@@ -118,11 +119,18 @@ command:
      for tp_temp in $(cat $zone/trip_point_*_temp)
      do
          if [ $tp_temp -lt 0 ]; then
-             echo "$zone contain invalid trip point"
-             exit 1
+             echo "$tp_type contains invalid trip point"
+             tail $zone/trip_point_*_temp
+             echo "Please consult ODM to see if it is expected."
+             fail=1
+             break
          fi
      done
  done
+ if [ $fail -eq 1 ]; then
+         echo "For more detail, please refer to https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os/overview"
+         exit 1
+ fi
 _summary: Check if all trip points are valid
 _description:
  Check if all trip points are valid, but ignore iwlwifi registered
