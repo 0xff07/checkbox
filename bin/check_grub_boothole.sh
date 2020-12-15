@@ -21,8 +21,14 @@ case "$(lsb_release -cs)" in
             (5.6.0-*-oem)
                 TARGET_KERNEL=5.6.0-1011-oem
                 ;;
+            (5.8.0-*-generic)
+                TARGET_KERNEL=5.8.0-23-generic
+                ;;
+            (5.10.0-*-oem)
+                TARGET_KERNEL=5.10.0-1002-oem
+                ;;
             (*)
-                echo "Not supported yet. Please report the bug."
+                echo "Linux kernel '$(uname -r)' is not in the check list yet. Please report the bug."
                 exit 1
                 ;;
         esac
@@ -53,7 +59,7 @@ case "$(lsb_release -cs)" in
                 TARGET_KERNEL=5.4.0-37-generic
                 ;;
             (*)
-                echo "Not supported yet. Please report the bug."
+                echo "Linux kernel '$(uname -r)' is not in the check list yet. Please report the bug."
                 exit 1
                 ;;
         esac
@@ -88,13 +94,13 @@ case "$(lsb_release -cs)" in
                 TARGET_KERNEL=4.15.0-101-generic
                 ;;
             (*)
-                echo "Not supported yet. Please report the bug."
+                echo "Linux kernel '$(uname -r)' is not in the check list yet. Please report the bug."
                 exit 1
                 ;;
         esac
         ;;
     (*)
-        echo "Not supported yet. Please report the bug."
+        echo "'$(lsb_release -ds)' is not in the check list yet. Please report the bug."
         exit 1
         ;;
 esac
