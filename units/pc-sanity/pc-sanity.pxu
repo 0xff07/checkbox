@@ -5,6 +5,7 @@ _description:
     This test plan is for smoke test as sanity before release image.
 include:
     com.canonical.certification::somerville-installation
+    com.canonical.certification::misc/generic/grub_boothole
     com.canonical.certification::miscellanea/check-nvidia
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/turbostate-long-idle-c10
