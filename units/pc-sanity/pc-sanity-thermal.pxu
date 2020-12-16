@@ -116,7 +116,7 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-x86-pkg-temp-thermal
 requires: cpuinfo.type == 'GenuineIntel'
 command:
- if [ grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type ]; then
+ if grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type; then
      exit 0
  else
      echo "The system has no x86_pkg_thermal zone."
