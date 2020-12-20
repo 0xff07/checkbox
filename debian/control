@@ -12,6 +12,7 @@ Depends: plainbox-provider-checkbox (>= 0.27),
          powertop,
          python3 (>= 3.2),
          python3-checkbox-support (>= 0.27),
+         xautomation,
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: oem-scripts
