@@ -1,4 +1,13 @@
 plugin: shell
+id: misc/generic/grub_boothole
+user: root
+command:
+ check_grub_boothole.sh
+_description:
+  Check if kernel and grub are new enough to fix the boothole issue.
+  https://docs.google.com/document/d/1EheQcQ5fzdwW_JOXz5LChqObu6di4GztkxRtVxtUYGs/edit#heading=h.ek2fnosafgow
+
+plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/copy_submission_file
 requires: package.name == 'dkms'
