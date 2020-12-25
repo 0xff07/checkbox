@@ -1,0 +1,76 @@
+#!/bin/bash
+# For somerville xenial-osp1 and after, there are two meta packages should be installed
+# 1. Platform meta pacakge: PLATFORM_NAME-meta, e.g. turis-vegas-mlk-glk-meta
+# 2. BIOS ID meta package: dell-BIOS_ID-RELEASE-meta or dell-BIOS_ID-meta.
+#    e.g. dell-086b-bionic-meta
+# From somerville bionic-osp1 and after, the BIOS ID package is deprecated and replaced
+# by modaliases in platform meta package.
+# 1. Platform meta pacakge: oem-PLATFORM_NAME-meta, e.g. oem-beaver-osp1-worm-meta
+# 2. BIOS ID modaliases in platform meta package:
+#    e.g. Modaliases: hwe(pci:*sv00001028sd0000096E*, pci:*sv00001028sd0000096F*)
+
+echo "Beginning Platform Metapackage Test" 1>&2
+
+failed()
+{
+    [ -n "$1" ] && echo "$1"
+    echo "$0 failed!"
+    exit 1
+}
+
+passed()
+{
+    [ -n "$1" ] && echo "$1"
+    echo "$0 passed!"
+    exit 0
+}
+
+platform_tag=$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')
+[ -n "${platform_tag}" ] || failed "no platform tag in ubuntu-report"
+
+BIOSID=$(cat /sys/devices/virtual/dmi/id/product_sku)
+codename=$(lsb_release -cs)
+
+case "$codename" in
+    ('xenial')
+        for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
+            if [[ "$meta" =~ ^dell-$BIOSID(-${codename})?-meta$ ]];then
+                pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
+                passed "Found platform meta packages: $pmeta, $meta"
+            fi
+        done
+        ;;
+    ('bionic')
+        for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
+            if [[ "$meta" =~ ^dell-$BIOSID(-${codename})?-meta$ ]];then
+                pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
+                passed "Found platform meta packages: $pmeta, $meta"
+            fi
+        done
+        dpkg -l "${platform_tag}-meta" > /dev/null 2>&1 && passed "Found platform meta package: ${platform_tag}-meta"
+        pmeta="oem-${platform_tag}-meta"
+        dpkg -l "$pmeta" > /dev/null 2>&1 && apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" && passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
+        for pmeta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
+            if apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
+                passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
+            fi
+        done
+        ;;
+    ('focal')
+        for meta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
+            if apt-cache show "$meta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
+                if dpkg-query -W -f='${Status}\n' "$meta" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+                    factory="${meta/oem-somerville/oem-somerville-factory}"
+                    if dpkg-query -W -f='${Status}\n' "$factory" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+                        passed "Found the platform meta package '$meta' containing BIOS ID '$BIOSID' and the platform factory meta package '$factory'"
+                    fi
+                fi
+            fi
+        done
+        ;;
+    (*)
+        failed "$codename is not supported yet."
+        ;;
+esac
+
+failed "Platform Tag: $platform_tag, BIOS ID: $BIOSID"

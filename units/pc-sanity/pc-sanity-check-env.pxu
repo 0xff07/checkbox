@@ -1,3 +1,10 @@
+id: somerville/platform-meta-test
+category_id: somerville
+plugin: shell
+command:
+ platform_meta_test
+_description: Check if the platform metapackage is installed.
+
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/gate_rste_raid
