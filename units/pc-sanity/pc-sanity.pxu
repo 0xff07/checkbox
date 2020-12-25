@@ -7,6 +7,7 @@ include:
     com.canonical.certification::somerville-installation
     com.canonical.certification::somerville/platform-meta-test
     com.canonical.certification::misc/generic/grub_boothole
+    com.canonical.certification::miscellanea/cvescan
     com.canonical.certification::miscellanea/check-nvidia
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/turbostate-long-idle-c10
