@@ -78,6 +78,9 @@ check_nvidia_sleep() {
     if [ -n "$result" ]; then
        show_error "$result"
        show_error "nvidia devices not sleep deep to 0%. Check $OUTPUT_FOLDER/$filename for detail."
+       if uname -r | grep -q "5.10"; then
+        echo "[INFO] There's a know issue LP: #1904762 that Nvidia driver not sleep with kernel 5.10"
+       fi
        return $function_failed
     fi
 }
