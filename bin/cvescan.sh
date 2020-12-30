@@ -15,10 +15,10 @@ prepare() {
     for pkg in python3-apt python3-pip git jq; do
         [ "$(dpkg-query -W -f='${Status}' "$pkg")" = "install ok installed" ] || (sudo apt-get update && DEBIAN_FRONTEND=noninteractive sudo apt install -y "$pkg")
     done
-    git clone https://github.com/canonical/sec-cvescan
+    git -C "$OUT" clone https://github.com/canonical/sec-cvescan
     export PATH=$HOME/.local/bin/:$PATH
-    pip3 install --user sec-cvescan/ > /dev/null
-    rm -rf sec-cvescan
+    pip3 install --user "$OUT"/sec-cvescan/ > /dev/null
+    rm -rf "$OUT"/sec-cvescan
 }
 main() {
     while [ $# -gt 0 ]
