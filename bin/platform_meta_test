@@ -25,52 +25,119 @@ passed()
     exit 0
 }
 
-platform_tag=$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')
-[ -n "${platform_tag}" ] || failed "no platform tag in ubuntu-report"
 
-BIOSID=$(cat /sys/devices/virtual/dmi/id/product_sku)
-codename=$(lsb_release -cs)
+check_stella_cmit_meta() {
+    echo "not support stella.cmit yet."
+    exit 0;
+}
 
-case "$codename" in
-    ('xenial')
-        for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
-            if [[ "$meta" =~ ^dell-$BIOSID(-${codename})?-meta$ ]];then
-                pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
-                passed "Found platform meta packages: $pmeta, $meta"
-            fi
-        done
-        ;;
-    ('bionic')
-        for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
-            if [[ "$meta" =~ ^dell-$BIOSID(-${codename})?-meta$ ]];then
-                pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
-                passed "Found platform meta packages: $pmeta, $meta"
-            fi
-        done
-        dpkg -l "${platform_tag}-meta" > /dev/null 2>&1 && passed "Found platform meta package: ${platform_tag}-meta"
-        pmeta="oem-${platform_tag}-meta"
-        dpkg -l "$pmeta" > /dev/null 2>&1 && apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" && passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
-        for pmeta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
-            if apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
-                passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
-            fi
-        done
-        ;;
-    ('focal')
-        for meta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
-            if apt-cache show "$meta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
-                if dpkg-query -W -f='${Status}\n' "$meta" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
-                    factory="${meta/oem-somerville/oem-somerville-factory}"
-                    if dpkg-query -W -f='${Status}\n' "$factory" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
-                        passed "Found the platform meta package '$meta' containing BIOS ID '$BIOSID' and the platform factory meta package '$factory'"
+check_sutton_meta() {
+    echo "not support sutton yet."
+    exit 0;
+}
+
+check_somerville_meta() {
+    case "$ubuntu_codename" in
+        ('xenial')
+            for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
+                if [[ "$meta" =~ ^dell-$BIOSID(-${ubuntu_codename})?-meta$ ]];then
+                    pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
+                    passed "Found platform meta packages: $pmeta, $meta"
+                fi
+            done
+            ;;
+        ('bionic')
+            for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
+                if [[ "$meta" =~ ^dell-$BIOSID(-${ubuntu_codename})?-meta$ ]];then
+                    pmeta=$(apt-cache depends "$meta" | grep Depends | awk '{print ($2)}' | grep -o ".*-meta")
+                    passed "Found platform meta packages: $pmeta, $meta"
+                fi
+            done
+            dpkg -l "${platform_tag}-meta" > /dev/null 2>&1 && passed "Found platform meta package: ${platform_tag}-meta"
+            pmeta="oem-${platform_tag}-meta"
+            dpkg -l "$pmeta" > /dev/null 2>&1 && apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" && passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
+            for pmeta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
+                if apt-cache show "$pmeta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
+                    passed "Found platform meta package '$pmeta' containing BIOS ID '$BIOSID'"
+                fi
+            done
+            ;;
+        ('focal')
+            for meta in $(ubuntu-drivers list | grep "^oem" | grep "meta$"); do
+                if apt-cache show "$meta" | grep ^Modaliases | grep -i "sv00001028sd0000$BIOSID" > /dev/null 2>&1; then
+                    if dpkg-query -W -f='${Status}\n' "$meta" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+                        factory="${meta/oem-somerville/oem-somerville-factory}"
+                        if dpkg-query -W -f='${Status}\n' "$factory" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+                            passed "Found the platform meta package '$meta' containing BIOS ID '$BIOSID' and the platform factory meta package '$factory'"
+                        fi
                     fi
                 fi
-            fi
-        done
-        ;;
-    (*)
-        failed "$codename is not supported yet."
-        ;;
-esac
+            done
+            ;;
+        (*)
+            failed "$ubuntu_codename is not supported yet."
+            ;;
+    esac
 
-failed "Platform Tag: $platform_tag, BIOS ID: $BIOSID"
+    failed "Platform Tag: $platform_tag, BIOS ID: $BIOSID"
+}
+
+usage() {
+cat << EOF
+usage: $0 options
+
+    -h|--help print this message
+    --oem-codename  somervilles (stella.cmit or sutton not yet supported)
+    --platform-codename platform-codename
+EOF
+exit 1
+}
+
+prepare() {
+    BIOSID=$(cat /sys/devices/virtual/dmi/id/product_sku)
+    ubuntu_codename=$(lsb_release -cs)
+}
+
+main() {
+    while [ $# -gt 0 ]
+    do
+        case "$1" in
+            -h | --help)
+                usage 0
+                exit 0
+                ;;
+            --oem-codename)
+                shift
+                [ -n "$1" ] || { usage; exit 1; }
+                oem="$1";
+                ;;
+            --platform-codename)
+                shift
+                [ -n "$1" ] || { usage; exit 1; }
+                platform_tag="$1";
+                ;;
+            *)
+            usage
+           esac
+           shift
+    done
+    prepare
+    case "$oem" in
+        somerville)
+            check_somerville_meta
+            ;;
+        stella.cmit)
+            check_stella_cmit_meta
+            ;;
+        sutton)
+            check_sutton_meta
+            ;;
+        *)
+            usage
+    esac
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    main "$@"
+fi
+
