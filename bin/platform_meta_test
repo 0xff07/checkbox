@@ -37,6 +37,7 @@ check_sutton_meta() {
 }
 
 check_somerville_meta() {
+    prepare_somerville
     case "$ubuntu_codename" in
         ('xenial')
             for meta in $(dpkg -l | grep ".*-meta" | awk '{print ($2)}'); do
@@ -93,7 +94,7 @@ EOF
 exit 1
 }
 
-prepare() {
+prepare_somerville() {
     BIOSID=$(cat /sys/devices/virtual/dmi/id/product_sku)
     ubuntu_codename=$(lsb_release -cs)
 }
@@ -121,7 +122,6 @@ main() {
            esac
            shift
     done
-    prepare
     case "$oem" in
         somerville)
             check_somerville_meta
