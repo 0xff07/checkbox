@@ -56,4 +56,3 @@ include:
     com.canonical.certification::graphics/1_valid_opengl_renderer_.*
 bootstrap_include:
     com.canonical.certification::graphics_card
-    com.canonical.certification::nvidia_drv
