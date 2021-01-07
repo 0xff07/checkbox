@@ -1,7 +1,7 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/screen-pkg-not-public
-command: screen-pkg-not-public.sh
+command: screen-pkg-not-public.sh --out "$PLAINBOX_SESSION_SHARE"
 _summary: check if pkgs not on public archive
 _description:
  check if pkgs not on public archive

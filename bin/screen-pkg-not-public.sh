@@ -10,6 +10,17 @@ oem=""
 platform=""
 allowlst_folder=""
 JOB_STATUS="pass"
+out_folder="$PWD";
+
+usage() {
+cat << EOF
+usage: $0 options
+
+    -h|--help   Print this message
+    --out       Define the folder for generated data. The default is \$PWD
+EOF
+exit 1
+}
 clean() {
    rm -rf "$allowlst_folder"
    [ -z "$1" ] || exit "$1"
@@ -46,9 +57,9 @@ prepare() {
     pf_factory_meta_pkg="${pf_meta_pkg/oem-${oem}-/oem-${oem}-factory-}"
     echo "[INFO] getting allowlist from $allowlist_git."
     [ -n "$allowlist_git" ] &&\
-    allowlst_folder="$PWD"/"$(basename "$allowlist_git")" &&\
+    allowlst_folder="$out_folder"/"$(basename "$allowlist_git")" &&\
     rm -rf "$allowlst_folder" &&\
-    (git clone --depth=1 "$allowlist_git" || (>&2 echo "[ERROR]git clone ""$allowlist_git"" failed, please check it." | exit 1))
+    (git -C "$out_folder" clone --depth=1 "$allowlist_git" || (>&2 echo "[ERROR]git clone ""$allowlist_git"" failed, please check it." | exit 1))
     echo "[INFO] git hash of current allowlist: $(git -C "$allowlst_folder" rev-parse --short HEAD)"
 }
 pkg_need_allowing() {
@@ -154,6 +165,23 @@ screen_pkg() {
 }
 
 run_main() {
+    while [ $# -gt 0 ]
+    do
+        case "$1" in
+            -h | --help)
+                usage 0
+                exit 0
+                ;;
+            --out)
+                shift
+                [ -d "$1" ] || usage
+                out_folder="$1";
+                ;;
+            *)
+            usage
+           esac
+           shift
+    done
     prepare
     >&2 echo "[INFO] staring screen all installed packages."
     while IFS= read -r line; do
@@ -164,5 +192,5 @@ run_main() {
     clean
 }
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  run_main
+  run_main "$@"
 fi
