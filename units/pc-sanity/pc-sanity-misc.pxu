@@ -84,3 +84,12 @@ plugin: shell
 command:
  grep "(SUCCESS) Clean-Up .. Done" /var/log/installer/chroot.sh.log
 _description: Check the result of the installation, from oem-qa-checkbox 6596762f
+
+plugin: attachment
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/dpkg-l
+estimated_duration: 1.0
+command: dpkg -l
+_description:
+ attache log from dpkg -l
+
