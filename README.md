@@ -16,3 +16,8 @@ $ `./autopkgtest.sh`
 
 ### options 2. run it by oem-scripts
 $ run-autopkgtest lxc focal -C
+
+## Get test case ID that need improvement.
+- yq from `wget https://github.com/mikefarah/yq/releases/download/v4.2.1/yq_linux_arm64`
+ - $ bin/yq e ".for-all.[]| path| .[-1]" database/jobs-need-improvement.yaml # to get test IDs for all platform.
+ - $ bin/yq e ".for-desktop-only.[]| path| .[-1]" database/jobs-need-improvement.yaml # to get test IDs for all platform.
