@@ -169,8 +169,7 @@ run_main() {
     do
         case "$1" in
             -h | --help)
-                usage 0
-                exit 0
+                usage
                 ;;
             --out)
                 shift
