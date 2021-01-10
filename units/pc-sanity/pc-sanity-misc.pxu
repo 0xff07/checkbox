@@ -93,3 +93,10 @@ command: dpkg -l
 _description:
  attache log from dpkg -l
 
+plugin: attachment
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/side-load-changes
+estimated_duration: 1.0
+command: cat /var/tmp/checkbox-providers/*/side-load-changes.json || true
+_description:
+ attach what changed from sideloading.
