@@ -93,3 +93,10 @@ command: dpkg -l
 _description:
  attache log from dpkg -l
 
+plugin: attachment
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/bootstrap-pc-sanity-smoke-test
+estimated_duration: 1.0
+command: checkbox-cli list-bootstrapped com.canonical.certification::pc-sanity-smoke-test || true
+_description:
+ Attache the order of executed order of test cases.

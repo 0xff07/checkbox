@@ -5,6 +5,7 @@ _description:
     This test plan is for smoke test as sanity before release image.
 include:
     com.canonical.certification::miscellanea/dpkg-l
+    com.canonical.certification::miscellanea/bootstrap-pc-sanity-smoke-test
     com.canonical.certification::somerville-installation
     com.canonical.certification::somerville/platform-meta-test
     com.canonical.certification::misc/generic/grub_boothole
