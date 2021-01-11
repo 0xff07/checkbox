@@ -100,3 +100,11 @@ estimated_duration: 1.0
 command: checkbox-cli list-bootstrapped com.canonical.certification::pc-sanity-smoke-test || true
 _description:
  Attache the order of executed order of test cases.
+
+plugin: attachment
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/side-load-changes
+estimated_duration: 1.0
+command: cat /var/tmp/checkbox-providers/*/side-load-changes.json || true
+_description:
+ attach what changed from sideloading.
