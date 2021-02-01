@@ -14,6 +14,8 @@ for-all:
         public-bug: 1908504
     suspend/bluetooth_obex_send_before_suspend:
         public-bug: 1909208
+    disk/hdd-parking:
+        public-bug: 1910516
 for-desktop-only:
     graphics/{index}_valid_opengl_renderer_{product_slug}:
         public-bug: 1905355
