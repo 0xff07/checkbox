@@ -1,6 +1,7 @@
 plugin: shell
 id: somerville/platform-meta-test
 category_id: com.canonical.plainbox::miscellanea
+requires: lsb.release >= "20.04"
 command:
  platform_meta_test
 _description: Check if the platform metapackage is installed.
