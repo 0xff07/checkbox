@@ -51,10 +51,10 @@ get_cvescan_json() {
 
 parse_cvescan_json() {
     [ -n "$1" ] || exit 1
-    command -v jq || exit 1
+    command -v jq > /dev/null || exit 1
     if [ "$(jq -r '.summary.num_cves' < "$1")" != "0" ]; then
-        echo "You have some packages that need an update for CVE."
-        echo "Please check $1 for details"
+        echo "[ERROR] You have some packages that need an update for CVE."
+        cat "$1"
         exit 1
     fi
 }
