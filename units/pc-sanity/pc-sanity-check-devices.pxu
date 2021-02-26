@@ -33,3 +33,34 @@ _summary: PCH revision ID check
 _description:
  The specific PCH revision ID has known issue, add the test case
  for filtering out the invalid hardware.
+
+unit: template
+template-resource: device
+template-filter:
+ device.category == 'TOUCHPAD'
+ device.vendor_id == '1160'
+ device.product_id == '4618'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/touchpad-firmware-version_{product_slug}
+user: root
+requires:
+ package.name == 'i2c-tools'
+ dmi.sku in ['0A69','0A6A','09C3','09C4']
+command:
+ out=$(get-tp-fw-ver.sh)
+ major=$(echo "$out" | cut -d "," -f1 | cut -d " " -f2)
+ minor=$(echo "$out" | cut -d "," -f2 | cut -d " " -f3)
+ version=$(echo "$out" | cut -d "," -f3 | cut -d " " -f3)
+ # shellcheck disable=SC2050
+ if [ "{vendor_id}" = "1160" ] && [ "{product_id}" = "4618" ]; then
+     if [[ $major -lt 0x05 ]] || [[ $minor -lt 0x34 ]]; then
+         echo "The touchpad firmware version is $version which is not correct."
+         echo "please refer to the lp:1903951 for getting correct firmware."
+         exit 1
+     fi
+ fi
+_summary: Touchpad firmware version checking
+_description:
+ The test case is for gating invalid touchpad firmware.
