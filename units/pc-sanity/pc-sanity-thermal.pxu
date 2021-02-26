@@ -141,7 +141,7 @@ command:
          continue
      elif [ "${tp_type:0:15}" = "INT3400 Thermal" ]; then
          continue
-     if
+     fi
      for tp_temp in $(cat $zone/trip_point_*_temp)
      do
          if [ $tp_temp -lt 0 ]; then
