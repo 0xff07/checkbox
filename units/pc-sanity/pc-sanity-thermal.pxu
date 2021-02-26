@@ -139,7 +139,9 @@ command:
      tp_type=$(cat $zone/type)
      if [ "${tp_type:0:7}" = "iwlwifi" ]; then
          continue
-     fi
+     elif [ "${tp_type:0:15}" = "INT3400 Thermal" ]; then
+         continue
+     if
      for tp_temp in $(cat $zone/trip_point_*_temp)
      do
          if [ $tp_temp -lt 0 ]; then
