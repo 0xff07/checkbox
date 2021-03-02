@@ -12,6 +12,7 @@ id: miscellanea/gate_rste_raid
 command:
  set -x
  # copy from script https://launchpadlibrarian.net/468773053/hw-detect_1.117ubuntu8.debdiff
+ # shellcheck disable=SC1001
  for ahci_device in /sys/module/ahci/drivers/pci\:ahci/*/remapped_nvme
  do
     if [ -f "$ahci_device" ]; then
@@ -31,21 +32,20 @@ _description:
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_oem_recovery_version
-requires: package.name == 'dell-recovery' or package.name == 'ubuntu-recovery'
+requires:
+ package.name == 'dell-recovery' or package.name == 'ubuntu-recovery'
+ package.name == 'dpkg'
 command:
- set -x
- pkg_name=$(dpkg -l | grep " dell-recovery ")
- if [ $? -eq 0 ]; then
-   dpkg -l | grep dell-recovery | grep ^ii | awk '{print $3}' | grep -q somerville
+ if dpkg-query -W -f='${Version}\n' dell-recovery | grep -q somerville; then
+     exit 0
+ elif dpkg-query -W -f='${Version}\n' ubuntu-recovery | grep -q ouagadougou; then
+     exit 0
  else
-   pkg_name=$(dpkg -l | grep " ubuntu-recovery ")
-   if [ $? -eq 0 ]; then
-     dpkg -l | grep ubuntu-recovery | grep ^ii | awk '{print $3}' | grep -q ouagadougou
-   else
+     echo "The recovery package version string is wrong, expect somerville for dell-recovery,"
+     echo "and ouagadougou for ubuntu-recovery."
      exit 1
-   fi
  fi
-_summary: to confirm the dell-recoery is what we expected.
+_summary: Confirm the recovery version string is as expected.
 _description:
  based on the meeting conclusion of 4/22, we need somerville version before Mario agree Canonical take the duty of dell-recovery sru.
  Let it support ubuntu-recovery and dell-recovery.
