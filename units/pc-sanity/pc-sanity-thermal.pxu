@@ -136,17 +136,19 @@ command:
  fail=0
  for zone in /sys/class/thermal/thermal_zone*
  do
-     tp_type=$(cat $zone/type)
+     tp_type=$(cat "$zone"/type)
      if [ "${tp_type:0:7}" = "iwlwifi" ]; then
          continue
      elif [ "${tp_type:0:15}" = "INT3400 Thermal" ]; then
          continue
      fi
-     for tp_temp in $(cat $zone/trip_point_*_temp)
+     # shellcheck disable=SC2013
+     for tp_temp in $(cat "$zone"/trip_point_*_temp)
      do
+         # shellcheck disable=SC2086
          if [ $tp_temp -lt 0 ]; then
              echo "$tp_type contains invalid trip point"
-             tail $zone/trip_point_*_temp
+             tail "$zone"/trip_point_*_temp
              echo "Please consult ODM to see if it is expected."
              fail=1
              break
@@ -175,11 +177,11 @@ command:
  if lspci -nnk  | grep driver | grep proc_thermal;then
         true;
  else
-        dmesg > $report_folder/dmesg.log
-        lspci -nnk > $report_folder/dmesg.log
-        lsmod > $report_folder/lsmod.log
+        journalctl -k > "$report_folder"/dmesg.log
+        lspci -nnk > "$report_folder"/dmesg.log
+        lsmod > "$report_folder"/lsmod.log
         false;
-        echo "proc_thermal driver not be loaded."
+        echo "proc_thermal driver is not loaded."
         echo "It could caused by lake of ID in kernel like LP: #1874008."
         exit 1
  fi
@@ -196,9 +198,9 @@ command:
  RETVAL=$?
  if [ $RETVAL -ne 0 ];
  then
-     journalctl -b -u thermald > $PLAINBOX_SESSION_SHARE/journalctl.log
+     journalctl -b -u thermald > "$PLAINBOX_SESSION_SHARE"/journalctl.log
      echo "The log for thermald: $PLAINBOX_SESSION_SHARE/journalctl.log"
-     grep -q "Unsupported cpu model" < $PLAINBOX_SESSION_SHARE/journalctl.log && \
+     grep -q "Unsupported cpu model" < "$PLAINBOX_SESSION_SHARE"/journalctl.log && \
      echo "Debugging Tips:"
      echo "Please check the upstream code(https://github.com/intel/thermal_daemon/blob/master/src/thd_engine.cpp) for the target id in id_table[] " && \
      echo "If the ID not there, then open a upstream bug like https://github.com/intel/thermal_daemon/issues/275 "
