@@ -7,6 +7,7 @@ requires:
 user: root
 command:
   set -x
+  # shellcheck disable=SC2230
   [ -n "$(which apt-file)" ] || sudo apt-get install -y apt-file && sudo apt-get update
   sudo apt-get install -y "$(apt-file search tlp-stat | head -n1 |cut -d ':' -f1)"
   systemctl disable tlp
