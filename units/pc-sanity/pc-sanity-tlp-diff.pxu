@@ -8,9 +8,9 @@ user: root
 command:
   set -x
   [ -n "$(which apt-file)" ] || sudo apt-get install -y apt-file && sudo apt-get update
-  sudo apt-get install -y $(apt-file search tlp-stat | head -n1 |cut -d ':' -f1)
+  sudo apt-get install -y "$(apt-file search tlp-stat | head -n1 |cut -d ':' -f1)"
   systemctl disable tlp
-  pm_test --silent --checkbox-respawn-cmd $PLAINBOX_SESSION_SHARE/__respawn_checkbox reboot --log-level=debug --log-dir=$PLAINBOX_SESSION_SHARE
+  pm_test.py --silent --checkbox-respawn-cmd "$PLAINBOX_SESSION_SHARE"/__respawn_checkbox reboot --log-level=debug --log-dir="$PLAINBOX_SESSION_SHARE"
 flags: noreturn
 _description:
   Prepare environment for tlp diff
@@ -22,11 +22,11 @@ depends: miscellanea/tlp_diff_prepare
 user: root
 command:
   set -x
-  tlp-stat > ${PLAINBOX_SESSION_SHARE}/tlp_off.log
+  tlp-stat > "${PLAINBOX_SESSION_SHARE}"/tlp_off.log
   systemctl enable tlp
   systemctl start tlp
-  tlp-stat > ${PLAINBOX_SESSION_SHARE}/tlp_on.log
-  diff -u ${PLAINBOX_SESSION_SHARE}/tlp_off.log ${PLAINBOX_SESSION_SHARE}/tlp_on.log | tee
+  tlp-stat > "${PLAINBOX_SESSION_SHARE}"/tlp_on.log
+  diff -u "${PLAINBOX_SESSION_SHARE}"/tlp_off.log "${PLAINBOX_SESSION_SHARE}"/tlp_on.log | tee
 _description:
   Log tlp-stat for both tlp on/off and generate differences
 
