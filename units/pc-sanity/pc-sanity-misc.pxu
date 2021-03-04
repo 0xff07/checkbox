@@ -18,7 +18,7 @@ command:
  mkdir -p "$report_folder"
  cp "$checkboxk_ng_folder"/* "$report_folder"
  rm "$checkboxk_ng_folder"/*
- mv "$(find $report_folder -type f | grep tar)" /tmp/c3-local-submission.tar.xz
+ mv "$(find "$report_folder" -type f | grep tar)" /tmp/c3-local-submission.tar.xz
 _summary: copy reports to folder
 _description:
  copy the file for c3 submission.
@@ -50,8 +50,8 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/restore-idle-delay
 command:
  set -x
- cat "$HOME/old-idle-delay" | cut -d ' ' -f2 | xargs gsettings set org.gnome.desktop.session idle-delay
- [ "$(gsettings get org.gnome.desktop.session idle-delay | cut -d ' ' -f2)" == "$(cat "$HOME/old-idle-delay" | cut -d ' ' -f2)" ]
+ awk -F' ' '{ print $2 }' "$HOME"/old-idle-delay | xargs gsettings set org.gnome.desktop.session idle-delay
+ [ "$(gsettings get org.gnome.desktop.session idle-delay | cut -d ' ' -f2)" == "$(awk -F' ' '{ print $2 }' "$HOME"/old-idle-delay)" ]
 _summary: restore saved idle delay
 _description:
  restore saved idle delay
