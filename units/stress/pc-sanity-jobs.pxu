@@ -18,7 +18,6 @@ _description:
 _siblings: [
     { "id": "power-management/suspend_3_cycles_with_coldboots",
       "command": "pm_test.py poweroff --checkbox-respawn-cmd $PLAINBOX_SESSION_SHARE/__respawn_checkbox --fwts --log-level=debug --log-dir=$PLAINBOX_SESSION_SHARE --suspends-before-reboot=3 -r 3 --silent --check-hardware-list",
- [ -d "/home/u" ] && checkboxk_ng_folder="/home/u/.local/share/checkbox-ng"
       "_description": "This is an automated stress test that will run a sequence of '3 suspend/resume cycles and one poweroff' 3 times.",
       "_summary": "3 suspend/resume cycles and 1 poweroff, 3 times (automated stress test)"
     }
