@@ -1,2 +1,2 @@
-Tests: help, checkbox-cli-list
+Tests: help, checkbox-cli-list, bootstrap-pc-sanity
 Depends: @, prepare-checkbox-sanity
