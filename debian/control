@@ -2,8 +2,8 @@ Source: plainbox-provider-pc-sanity
 Section: utils
 Priority: optional
 Maintainer: Commercial Engineering <commercial-engineering@canonical.com>
-Standards-Version: 3.9.7
-Build-Depends: debhelper (>= 9), dh-modaliases, intltool, python3-checkbox-ng, plainbox-provider-checkbox, flake8, bats, shellcheck, python3
+Standards-Version: 4.5.0
+Build-Depends: debhelper-compat (= 12), dh-modaliases, intltool, python3-checkbox-ng, plainbox-provider-checkbox, flake8, bats, shellcheck, python3
 Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider-pc-sanity
 
 Package: plainbox-provider-pc-sanity
