@@ -35,6 +35,9 @@ include:
     com.canonical.certification::miscellanea/gate_rste_raid
     com.canonical.certification::miscellanea/screen-pkg-not-public
     com.canonical.certification::miscellanea/edid-continuous-frequency
+exclude:
+    com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
+    com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
 nested_part:
     com.canonical.certification::client-cert-auto
 bootstrap_include:
