@@ -24,3 +24,5 @@ variables:
 piuparts:
   allow_failure: true
 
+reprotest:
+  allow_failure: true
