@@ -3,6 +3,7 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/dump_libsmbios_tokens
 command:
  set -x
+ # shellcheck disable=SC2230
  [ -n "$(which apt-file)" ] || sudo apt-get install -y apt-file && sudo apt-get update
  sudo apt-get install -y "$(apt-file search smbios-token-ctl | head -n1 |cut -d ':' -f1)"
  sudo smbios-token-ctl -d 2>&1 | tee "${PLAINBOX_SESSION_SHARE}"/libsmbios_tokens
