@@ -13,8 +13,12 @@ include:
     com.canonical.certification::miscellanea/cvescan
     com.canonical.certification::miscellanea/check-nvidia
     com.canonical.certification::miscellanea/debsums
-    com.canonical.certification::miscellanea/turbostate-long-idle-c10
-    com.canonical.certification::miscellanea/turbostate-s2i-power-residency
+    com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
+    com.canonical.certification::power-management/check-turbostat-long-idle-s0ix-residency
+    com.canonical.certification::power-management/check-turbostat-long-idle-gfxrc6-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-cpu-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-s0ix-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-gfxrc6-residency
     com.canonical.certification::miscellanea/intel-rapl
     com.canonical.certification::miscellanea/intel-rapl-mmio
     com.canonical.certification::miscellanea/intel-p-state
@@ -36,15 +40,6 @@ nested_part:
 bootstrap_include:
     device
     graphics_card
-
-id: sleep-state-auto
-_name: sleep-state-auto (Ubuntu Desktop)
-unit: test plan
-_description:
-    This test plan collected all auto test related to sleep state.
-include:
-    com.canonical.certification::miscellanea/turbostate-long-idle-c10
-    com.canonical.certification::miscellanea/turbostate-s2i-power-residency
 
 id: graphics-dgpu-auto-switch-testing
 unit: test plan
