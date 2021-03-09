@@ -1,0 +1,2 @@
+#!/bin/sh
+checkbox-cli list-bootstrapped com.canonical.certification::pc-sanity-smoke-test
