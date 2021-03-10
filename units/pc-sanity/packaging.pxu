@@ -1,4 +1,0 @@
-# The pc-sanity-smoke-test job requires plainbox-provider-certification-client package
-unit: packaging meta-data
-os-id: debian
-Depends: plainbox-provider-certification-client
