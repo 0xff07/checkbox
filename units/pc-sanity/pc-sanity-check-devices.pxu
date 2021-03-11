@@ -12,3 +12,24 @@ _summary: check if i2c device exists
 _description:
  check if i2c device exists
 
+unit: template
+template-resource: device
+template-filter:
+ device.path == '/devices/pci0000:00/0000:00:1f.0' and device.vendor_id == '32902'
+ device.product_id >= '17280' and device.product_id <= '17311'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/tgp-rid-check_{product_id}
+command:
+ rid_hex=$(lspci -xs 00:1f.0 | grep "00: " | cut -d " " -f10)
+ rid="0x$rid_hex"
+ if [[ $rid -eq 0x10 ]]; then
+     echo "The PCH has known issue, the detail is in lp:1909053."
+     echo "Please request another hardware to proceed the test."
+     exit 1
+ fi
+_summary: PCH revision ID check
+_description:
+ The specific PCH revision ID has known issue, add the test case
+ for filtering out the invalid hardware.
