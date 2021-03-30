@@ -4,8 +4,6 @@ for-all:
         public-bug: 1904697
     suspend/audio_before_suspend:
         public-bug: 1904707
-    miscellanea/fan_stress_reaction:
-        public-bug: 1903653
     suspend/network_resume_time_auto:
         public-bug: 1906390
     miscellanea/device_check:
