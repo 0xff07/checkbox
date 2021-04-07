@@ -46,7 +46,7 @@ main() {
 get_cvescan_json() {
     [ -n "$1" ] || exit 1
     command -v cvescan || exit 1
-    cvescan --json > "$1"
+    cvescan --json > "$1" 2>&1
 }
 
 parse_cvescan_json() {
