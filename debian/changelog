@@ -1,4 +1,4 @@
-plainbox-provider-pc-sanity (1.0.1) UNRELEASED; urgency=medium
+plainbox-provider-pc-sanity (1.0.1ubuntu1) UNRELEASED; urgency=medium
 
   [ Alex Tu ]
   * fix build error.
@@ -8,7 +8,11 @@ plainbox-provider-pc-sanity (1.0.1) UNRELEASED; urgency=medium
   * bin/autopkgtest-plainbox-provider-pc-sanity-auto,
     debian/control: Add a script for run-autopkgtest of oem-scripts.
 
- -- Shih-Yuan Lee (FourDollars) <sylee@canonical.com>  Tue, 27 Oct 2020 12:14:08 +0800
+  [ Cyrus Lien ]
+  * bin/cvescan.sh: keep quiet while downloading Ubuntu vulnerability
+    database.
+
+ -- Cyrus Lien <cyrus.lien@canonical.com>  Tue, 30 Mar 2021 16:55:26 +0800
 
 plainbox-provider-pc-sanity (1.0.0) focal; urgency=medium
 
