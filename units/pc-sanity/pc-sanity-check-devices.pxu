@@ -12,6 +12,25 @@ _summary: check if i2c device exists
 _description:
  check if i2c device exists
 
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel_pmc_core
+requires:
+ sleep.mem_sleep == 's2idle'
+ cpuinfo.type == 'GenuineIntel'
+user: root
+command:
+ if [ ! -d /sys/kernel/debug/pmc_core ]; then
+     echo "The system has no /sys/kernel/debug/pmc_core."
+     echo "It is required for doing low power idle analysis."
+     echo "For more detail, please refer to https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting"
+     exit 1
+ fi
+_summary: Check if intel_pmc_core driver is probed
+_description:
+ For system support low power idle, intel_pmc_core
+ driver is required for all Intel platforms.
+
 unit: template
 template-resource: device
 template-filter:
