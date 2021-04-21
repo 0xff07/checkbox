@@ -58,3 +58,20 @@ include:
     com.canonical.certification::graphics/1_valid_opengl_renderer_.*
 bootstrap_include:
     com.canonical.certification::graphics_card
+
+id: pc-sanity-software-test
+_name: pc-sanity-software-test (Ubuntu Desktop)
+unit: test plan
+_description:
+    This test plan is for smoke test for software only, it will not covery any hardware related tests.
+include:
+    com.canonical.certification::miscellanea/dpkg-l
+    com.canonical.certification::miscellanea/bootstrap-pc-sanity-smoke-test
+    com.canonical.certification::miscellanea/side-load-changes
+    com.canonical.certification::somerville-installation
+    com.canonical.certification::somerville/platform-meta-test
+    com.canonical.certification::misc/generic/grub_boothole
+    com.canonical.certification::miscellanea/cvescan
+    com.canonical.certification::miscellanea/debsums
+    com.canonical.certification::miscellanea/check_oem_recovery_version
+    com.canonical.certification::miscellanea/screen-pkg-not-public
