@@ -1,4 +1,4 @@
-plainbox-provider-pc-sanity (1.0.1ubuntu1) UNRELEASED; urgency=medium
+plainbox-provider-pc-sanity (1.0.1ubuntu1) focal; urgency=medium
 
   [ Alex Tu ]
   * fix build error.
@@ -11,6 +11,9 @@ plainbox-provider-pc-sanity (1.0.1ubuntu1) UNRELEASED; urgency=medium
   [ Cyrus Lien ]
   * bin/cvescan.sh: keep quiet while downloading Ubuntu vulnerability
     database.
+
+  [ Alex Tu ]
+  * bump version
 
  -- Cyrus Lien <cyrus.lien@canonical.com>  Tue, 30 Mar 2021 16:55:26 +0800
 
