@@ -46,7 +46,7 @@ main() {
 get_cvescan_json() {
     [ -n "$1" ] || exit 1
     command -v cvescan || exit 1
-    cvescan --json > "$1" 2>&1
+    cvescan --json 1>"$1" 2>"$OUT/cvescan.stderr" || true
 }
 
 parse_cvescan_json() {
@@ -62,4 +62,3 @@ parse_cvescan_json() {
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
     main "$@"
 fi
-
