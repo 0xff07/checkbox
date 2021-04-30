@@ -86,8 +86,9 @@ def check_display_range_limits_descriptor(data_block_of_DRLD, horizontal_address
         else:
             print("CVT not support")
     else:
-        print("0xFD tag not found")
-    return False
+        print("0xFD is an optional field in EDID 1.4")
+        print("https://glenwing.github.io/docs/VESA-EEDID-A2.pdf page 38")
+    return True
 
 
 def main():
