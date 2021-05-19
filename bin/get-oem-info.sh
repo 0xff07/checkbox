@@ -10,6 +10,7 @@ usage: $0 options
     -h|--help print this message
     --oem-codename
     --platform-codename
+    --get-platform-id
 EOF
 exit 1
 }
@@ -40,6 +41,23 @@ prepare() {
     esac
 }
 
+get_platform_id() {
+    vendor="$(cat < /sys/class/dmi/id/sys_vendor)"
+
+    case "${vendor}" in
+        'Dell Inc.'|'HP')
+            platform_id="$(lspci -nnv -d ::0x0c05 | grep "Subsystem" | awk -F"[][]" '{print $2}' | cut -d ':' -f2)"
+            ;;
+       'LENOVO')
+            platform_id="$(cat < /sys/class/dmi/id/bios_version | cut -c 1-3)"
+            ;;
+        *)
+            platform_id="Unknown vendor"
+            ;;
+    esac
+
+    echo "${platform_id}"
+}
 
 main() {
     while [ $# -gt 0 ]
@@ -56,6 +74,9 @@ main() {
             --platform-codename)
                 [ -n "$platform" ] || prepare
                 echo "$platform"
+                ;;
+            --get-platform-id)
+                get_platform_id
                 ;;
             *)
             usage
