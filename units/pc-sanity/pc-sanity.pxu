@@ -47,6 +47,62 @@ bootstrap_include:
     device
     graphics_card
 
+id: pc-sanity-smoke-test-no-dgpu-switching
+_name: pc-sanity-smoke-test (Ubuntu Desktop)
+unit: test plan
+_description:
+    This test plan is for smoke test as sanity before release image.
+include:
+    com.canonical.certification::miscellanea/dpkg-l
+    com.canonical.certification::miscellanea/bootstrap-pc-sanity-smoke-test
+    com.canonical.certification::miscellanea/side-load-changes
+    com.canonical.certification::somerville-installation
+    com.canonical.certification::somerville/platform-meta-test
+    com.canonical.certification::misc/generic/grub_boothole
+    com.canonical.certification::miscellanea/cvescan
+    com.canonical.certification::miscellanea/check-nvidia
+    com.canonical.certification::miscellanea/debsums
+    com.canonical.certification::miscellanea/install_kernel_tools_testing
+    com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
+    com.canonical.certification::power-management/check-turbostat-long-idle-s0ix-residency
+    com.canonical.certification::power-management/check-turbostat-long-idle-gfxrc6-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-cpu-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-s0ix-residency
+    com.canonical.certification::power-management/check-turbostat-s2i-gfxrc6-residency
+    com.canonical.certification::miscellanea/intel-rapl
+    com.canonical.certification::miscellanea/intel-rapl-mmio
+    com.canonical.certification::miscellanea/intel-p-state
+    com.canonical.certification::miscellanea/intel-powerclamp
+    com.canonical.certification::miscellanea/intel-cpu-thermal
+    com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
+    com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
+    com.canonical.certification::miscellanea/proc_thermal
+    com.canonical.certification::miscellanea/thermald
+    com.canonical.certification::miscellanea/dump_libsmbios_tokens
+    com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment
+    com.canonical.certification::miscellanea/check_i2c_hid
+    com.canonical.certification::miscellanea/tgp-rid-check_.*
+    com.canonical.certification::miscellanea/touchpad-firmware-version_.*
+    com.canonical.certification::miscellanea/check_oem_recovery_version
+    com.canonical.certification::miscellanea/gate_rste_raid
+    com.canonical.certification::miscellanea/screen-pkg-not-public
+    com.canonical.certification::miscellanea/edid-continuous-frequency
+exclude:
+    com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
+    com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
+    com.canonical.certification::graphics/1_auto_switch_card_.*
+    com.canonical.certification::after-suspend-graphics/1_auto_switch_card_.*
+    com.canonical.certification::suspend/1_.*
+    com.canonical.certification::suspend/2_.*
+    com.canonical.certification::graphics/2_.*
+nested_part:
+    com.canonical.certification::client-cert-auto
+bootstrap_include:
+    device
+    graphics_card
+description:
+    A plan following SRU plan to exclude dGPU switching temporary.
+
 id: graphics-dgpu-auto-switch-testing
 unit: test plan
 _name: A test plan to confirm dgpu auto switch works well.
