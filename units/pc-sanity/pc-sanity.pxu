@@ -76,3 +76,5 @@ include:
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/check_oem_recovery_version
     com.canonical.certification::miscellanea/screen-pkg-not-public
+nested_part:
+    com.canonical.certification::stress-10-reboot-automated
