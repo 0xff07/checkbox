@@ -193,6 +193,7 @@ _description:
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermald
+requires: cpuinfo.type == 'GenuineIntel'
 command:
  systemctl is-active --quiet thermald
  RETVAL=$?
