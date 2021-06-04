@@ -43,6 +43,7 @@ exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
 nested_part:
     com.canonical.certification::client-cert-auto
+    com.canonical.certification::power-management-cpu-cstate-cert-automated
 bootstrap_include:
     device
     graphics_card
