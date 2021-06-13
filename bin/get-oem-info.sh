@@ -22,7 +22,14 @@ prepare() {
     { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }
     case "$oem" in
         "somerville")
-            platform="$(ubuntu-report show | grep DCD | awk -F'+' '{print $2}')"
+            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem*-meta"); do
+                _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
+                if [ "$_code_name" == "factory" ] ||
+                    [ "$_code_name" == "meta" ]; then
+                    continue
+                fi
+                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+            done
             ;;
         "sutton"|"stella")
             for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
