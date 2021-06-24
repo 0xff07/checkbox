@@ -16,7 +16,21 @@ exit 1
 }
 
 prepare() {
-    oem="$(grep -q sutton <(ubuntu-report show | grep DCD) && echo sutton)" ||\
+    # For sutton we could get oem info from buildstamp, it's quicker and use less resource. 
+    # Examples:
+    # pc-sutton-bachman-focal-amd64-X00-20201022-403
+    # sutton-simon-focal-amd64-20210526-227
+    # It will return sutton.bachman, sutton.simon or sutton.newell for $oem
+    if [ -f /etc/buildstamp ]; then
+        oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton-[^-]\+')
+        if [ -n "${oem}" ]; then
+            oem=${oem/-/.}
+            # we couldn't get correct platform when the meta packages are not installed,
+            # or user install other meta packages.
+            # currently we don't need get the platform
+            return
+        fi
+    fi
     oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
     oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
     { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }

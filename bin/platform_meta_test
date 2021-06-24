@@ -8,7 +8,6 @@
 # 1. Platform meta pacakge: oem-PLATFORM_NAME-meta, e.g. oem-beaver-osp1-worm-meta
 # 2. BIOS ID modaliases in platform meta package:
 #    e.g. Modaliases: hwe(pci:*sv00001028sd0000096E*, pci:*sv00001028sd0000096F*)
-
 echo "Beginning Platform Metapackage Test" 1>&2
 
 failed()
@@ -31,9 +30,58 @@ check_stella_cmit_meta() {
     exit 0;
 }
 
+# Check meta package if installed correctly in sutton project
+# https://trello.com/c/1E9nefUN/958-test-case-fix-the-meta-checking-for-sutton-pc-sanity
 check_sutton_meta() {
-    echo "not support sutton yet."
-    exit 0;
+    prepare_sutton
+    # For sutton project(simon/newell/bachman), it must include 5 meta packages.
+    # oem-ouagadougou-meta
+    # oem-sutton.bachman-factory-meta
+    # oem-sutton.bachman-meta
+    # oem-sutton.bachman-baara-meta
+    # oem-sutton.bachman-factory-baara-meta
+    # And with 'oem-sutton.bachman*-meta' it could match 4 meta packages.
+    # And with 'oem-sutton.bachman-*-meta' it could match 3 meta packages.
+    meta_num=$(dpkg-query -W -f='${Package}\n'  "oem-$oem*-meta" | wc -l)
+    if [ ${meta_num} -gt 4 ]; then
+        failed "Too many OEM meta packages!!!"
+    elif [ ${meta_num} -eq 0 ]; then
+        failed "No OEM meta packages!!!"
+    elif [ ${meta_num} -lt 4 ]; then
+        failed "Missing platform meta packages!!!"
+    fi
+
+    # Get the platform from installed meta package
+    for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem-*-meta"); do
+        platform_name=$(echo "${pkg}" | cut -d'-' -f3)
+        if [ "$platform_name" = "factory" ]; then
+            # Ignore factory's meta
+            continue
+        fi
+        if [ -n "${platform_name}" ]; then
+            platform_tag=${platform_name}
+            break
+        else
+            failed "Missing platform meta packages!!!"
+        fi
+    done
+
+    # Check if meta package is installed and matches BIOS
+    meta="oem-$oem-$platform_tag-meta"
+    if apt-cache show "$meta" | grep ^Modaliases | grep -i "bvr$BIOSID" > /dev/null 2>&1; then
+        if dpkg-query -W -f='${Status}\n' "$meta" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+            factory="oem-$oem-factory-$platform_tag-meta"
+            if dpkg-query -W -f='${Status}\n' "$factory" 2>&1 | grep "install ok installed" >/dev/null 2>&1; then
+                passed "Found the platform meta package '$meta' containing BIOS ID '$BIOSID' and the platform factory meta package '$factory'"
+            else
+                failed "Factory meta package '$factory' is not installed!!!"
+            fi
+        else
+            failed "Meta package '$meta' is not installed!!!"
+        fi
+    else
+        failed "Meta package '$meta' doesnt match BIOS ID '$BIOSID'!!!"
+    fi
 }
 
 check_somerville_meta() {
@@ -88,7 +136,7 @@ cat << EOF
 usage: $0 options
 
     -h|--help print this message
-    --oem-codename  somervilles (stella.cmit or sutton not yet supported)
+    --oem-codename  somervilles (stella.cmit, sutton.newell, sutton.simon, sutton.bachman)
     --platform-codename platform-codename
 EOF
 exit 1
@@ -97,6 +145,11 @@ exit 1
 prepare_somerville() {
     BIOSID=$(cat /sys/devices/virtual/dmi/id/product_sku)
     ubuntu_codename=$(lsb_release -cs)
+}
+
+prepare_sutton() {
+    BIOS=$(cat /sys/devices/virtual/dmi/id/bios_version)
+    BIOSID=${BIOS:0:3}
 }
 
 main() {
@@ -129,7 +182,7 @@ main() {
         stella.cmit)
             check_stella_cmit_meta
             ;;
-        sutton)
+        "sutton.newell" | "sutton.simon" | "sutton.bachman")
             check_sutton_meta
             ;;
         *)
