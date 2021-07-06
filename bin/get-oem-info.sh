@@ -23,18 +23,18 @@ prepare() {
     # It will return sutton.bachman, sutton.simon or sutton.newell for $oem
     if [ -f /etc/buildstamp ]; then
         oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton-[^-]\+')
-        if [ -n "${oem}" ]; then
-            oem=${oem/-/.}
-            # we couldn't get correct platform when the meta packages are not installed,
-            # or user install other meta packages.
-            # currently we don't need get the platform
-            return
-        fi
     fi
-    oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
-    oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
-    { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }
-    case "$oem" in
+    if [ -n "${oem}" ]; then
+        oem=${oem/-/.}
+        # we couldn't get correct platform when the meta packages are not installed,
+        # or user install other meta packages.
+    else
+        oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
+        oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
+        { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }
+    fi
+    # Remove the group name
+    case "${oem%%.*}" in
         "somerville")
             for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem*-meta"); do
                 _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
@@ -45,7 +45,7 @@ prepare() {
                 platform="$(echo "$pkg" | cut -d'-' -f3 )"
             done
             ;;
-        "sutton"|"stella")
+        "stella")
             for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
                 _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
                 if [ "$_code_name" == "factory" ] ||
@@ -53,6 +53,16 @@ prepare() {
                     continue
                 fi
                 oem="$(echo "$pkg" | cut -d'-' -f2 )"
+                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+            done
+            ;;
+        "sutton")
+            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem-*-meta"); do
+                _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
+                if [ "$_code_name" == "factory" ] ||
+                    [ "$_code_name" == "meta" ]; then
+                    continue
+                fi
                 platform="$(echo "$pkg" | cut -d'-' -f3 )"
             done
             ;;
