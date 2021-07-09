@@ -27,6 +27,9 @@ case "$(lsb_release -cs)" in
             (5.10.0-*-oem)
                 TARGET_KERNEL=5.10.0-1002-oem
                 ;;
+            (5.11.0-*-generic)
+                TARGET_KERNEL=5.11.0-23-generic
+                ;;
             (5.13.0-*-oem)
                 TARGET_KERNEL=5.13.0-1003-oem
                 ;;
@@ -108,7 +111,8 @@ case "$(lsb_release -cs)" in
         ;;
 esac
 
-CURRENT=$(dpkg-query -W -f='${Version}\n' grub-efi-amd64)
+CURRENT=$(dpkg-query -W -f='${Version}\n' grub-efi-amd64-bin)
+RECOVERY_PART="yes"
 
 if [ -z "$CURRENT" ]; then
     echo "Can not find grub-efi-amd64 version."
@@ -132,7 +136,8 @@ elif dpkg-query -W -f='${Status}\n' ubuntu-recovery 2>&1 | grep "install ok inst
     TARGET=$(python3 -c "import ubunturecovery.recovery_common as magic; target=magic.find_partition('PQSERVICE'); print(target.decode('utf8')) if type(target) is bytes else print(target)")
 else
     echo "There is no dell-recovery or ubuntu-recovery partition in this system."
-    exit 0
+    echo "Skip to check recovery partition."
+    RECOVERY_PART="no"
 fi
 
 DISK=$(mktemp -d)
@@ -144,13 +149,15 @@ clean_up ()
     rmdir "$DISK"
 }
 
-trap clean_up EXIT
-mount "$TARGET" "$DISK"
-cd "$DISK" || exit
+if [ "$RECOVERY_PART" = "yes" ]; then
+    trap clean_up EXIT
+    mount "$TARGET" "$DISK"
+    cd "$DISK" || exit
+fi
 
-for efi in efi.factory/boot/grubx64.efi efi/boot/grubx64.efi; do
+for efi in /boot/efi/EFI/ubuntu/grubx64.efi efi.factory/boot/grubx64.efi efi/boot/grubx64.efi; do
     if [ -f "$efi" ]; then
-        VERSION=$(strings "$efi" | grep "${TARGET_GRUB:0:12}")
+        VERSION=$(strings "$efi" | grep "^${TARGET_GRUB:0:12}")
         if dpkg --compare-versions "$VERSION" lt "$TARGET_GRUB"; then
             echo "The version of grubx64.efi in the recovery partition needs to be $TARGET_GRUB at least, but it is $VERSION now."
             exit 1
