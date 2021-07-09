@@ -39,6 +39,7 @@ include:
     com.canonical.certification::miscellanea/screen-pkg-not-public
     com.canonical.certification::miscellanea/edid-continuous-frequency
     com.canonical.certification::miscellanea/bluetooth-on-off-rfkill_.*
+    com.canonical.certification::miscellanea/csme-detection-tool
 exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
