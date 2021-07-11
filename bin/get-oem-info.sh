@@ -22,7 +22,7 @@ prepare() {
     # sutton-simon-focal-amd64-20210526-227
     # It will return sutton.bachman, sutton.simon or sutton.newell for $oem
     if [ -f /etc/buildstamp ]; then
-        oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton-[^-]\+')
+        oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton-[^-]\+' || true)
     fi
     if [ -n "${oem}" ]; then
         oem=${oem/-/.}
