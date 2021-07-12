@@ -40,6 +40,7 @@ include:
     com.canonical.certification::miscellanea/edid-continuous-frequency
     com.canonical.certification::miscellanea/bluetooth-on-off-rfkill_.*
     com.canonical.certification::miscellanea/csme-detection-tool
+    com.canonical.certification::miscellanea/bluetooth-scan
 exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
@@ -51,7 +52,7 @@ bootstrap_include:
     graphics_card
 
 id: pc-sanity-smoke-test-no-dgpu-switching
-_name: pc-sanity-smoke-test (Ubuntu Desktop)
+_name: pc-sanity-smoke-test (Ubuntu Desktop) (NO DGPU Switching)
 unit: test plan
 _description:
     This test plan is for smoke test as sanity before release image.
@@ -90,6 +91,9 @@ include:
     com.canonical.certification::miscellanea/gate_rste_raid
     com.canonical.certification::miscellanea/screen-pkg-not-public
     com.canonical.certification::miscellanea/edid-continuous-frequency
+    com.canonical.certification::miscellanea/bluetooth-on-off-rfkill_.*
+    com.canonical.certification::miscellanea/csme-detection-tool
+    com.canonical.certification::miscellanea/bluetooth-scan
 exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto

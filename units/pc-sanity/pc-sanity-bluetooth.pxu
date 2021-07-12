@@ -23,3 +23,24 @@ command:
 _summary: check if Bluetooth does not power on if turn off then on by gnome-control-center
 _description:
   check if Bluetooth does not work after gnome-control-center on/off.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/bluetooth-scan
+requires:
+ package.name == 'bluez'
+command:
+ if ! bluetoothctl --timeout 10 scan on; then
+   echo "bluetoothctl returns error: cannot scan bluetooth devices."
+   exit 1
+ fi
+ if ! ret=$(bluetoothctl devices); then
+   echo "bluetoothctl returns error."
+   exit 1
+ elif [ -z "$ret" ]; then
+   echo "No nearby bluetooth device found."
+   exit 1
+ fi
+_summary: test scanning Bluetooth devices
+_description:
+ this test checks the scanning of Bluetooth devices around the test subject.
