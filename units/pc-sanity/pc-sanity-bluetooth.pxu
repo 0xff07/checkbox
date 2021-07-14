@@ -28,6 +28,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/bluetooth-scan
 requires:
+ device.category == 'BLUETOOTH'
  package.name == 'bluez'
 command:
  if ! bluetoothctl --timeout 10 scan on; then
