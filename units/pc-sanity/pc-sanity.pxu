@@ -45,6 +45,7 @@ include:
 exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
+    com.canonical.certification::bluetooth4/beacon_eddystone.*
 nested_part:
     com.canonical.certification::client-cert-auto
     com.canonical.certification::power-management-cpu-cstate-cert-automated
@@ -96,6 +97,7 @@ include:
     com.canonical.certification::miscellanea/csme-detection-tool
     com.canonical.certification::miscellanea/bluetooth-scan
 exclude:
+    com.canonical.certification::bluetooth4/beacon_eddystone.*
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
     com.canonical.certification::graphics/1_auto_switch_card_.*
