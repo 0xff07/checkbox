@@ -111,15 +111,11 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/bootstrap-pc-sanity-smoke-test
 estimated_duration: 1.0
 command:
- sideload=/var/tmp/checkbox-providers
- if [ -d $sideload ];then
-   for folder in "$sideload"/*
-   do
-     cd "$folder" || continue
-     git remote get-url --all origin
-     git rev-parse HEAD
-   done
- fi
+ while read -r folder
+ do
+    git -C "$folder" remote get-url --all origin
+    git -C "$folder" rev-parse HEAD
+ done < <(find /var/tmp/checkbox-providers -mindepth 1 -maxdepth 1 -type d)
  checkbox-cli list-bootstrapped com.canonical.certification::pc-sanity-smoke-test || true
 _description:
  Attache the order of executed order of test cases.
