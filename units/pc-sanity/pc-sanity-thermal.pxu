@@ -136,33 +136,39 @@ command:
  fail=0
  for zone in /sys/class/thermal/thermal_zone*
  do
+     pass=0
      tp_type=$(cat "$zone"/type)
      if [ "${tp_type:0:7}" = "iwlwifi" ]; then
          continue
      elif [ "${tp_type:0:15}" = "INT3400 Thermal" ]; then
+         continue
+     elif [ "${tp_type:0:12}" = "x86_pkg_temp" ]; then
          continue
      fi
      # shellcheck disable=SC2013
      for tp_temp in $(cat "$zone"/trip_point_*_temp)
      do
          # shellcheck disable=SC2086
-         if [ $tp_temp -lt 0 ]; then
-             echo "$tp_type contains invalid trip point"
-             tail "$zone"/trip_point_*_temp
-             echo "Please consult ODM to see if it is expected."
-             fail=1
+         if [ $tp_temp -gt 0 ]; then
+             pass=1
              break
          fi
      done
+     if [ $pass -eq 0 ]; then
+         echo "$tp_type contains no valid trip point"
+         tail "$zone"/trip_point_*_temp
+         echo "Please consult ODM to see if it is expected."
+         fail=1
+     fi
  done
  if [ $fail -eq 1 ]; then
          echo "For more detail, please refer to https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os/overview"
          exit 1
  fi
-_summary: Check if all trip points are valid
+_summary: Check if thermal zone contains valid trip point
 _description:
- Check if all trip points are valid, but ignore iwlwifi registered
- trip points.
+ Check if the system contains valid trip points, iwlwifi/INT3400 Thermal/x86_pkg_temp are
+ ignored.
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
