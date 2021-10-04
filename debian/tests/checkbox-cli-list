@@ -1,2 +1,2 @@
 #!/bin/sh
-checkbox-cli list | grep pc-sanity-smoke-test
+checkbox-cli list 2>&1 | grep pc-sanity-smoke-test

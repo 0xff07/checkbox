@@ -47,6 +47,7 @@ exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
     com.canonical.certification::bluetooth4/beacon_eddystone.*
+    com.canonical.certification::after-suspend-bluetooth4/beacon_.*
 nested_part:
     com.canonical.certification::client-cert-auto
     com.canonical.certification::power-management-cpu-cstate-cert-automated
@@ -101,6 +102,7 @@ include:
     com.canonical.certification::miscellanea/mesa-libdrm-gating_.*
     com.canonical.certification::miscellanea/pressure-capability-detect_.*
 exclude:
+    com.canonical.certification::after-suspend-bluetooth4/beacon_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
