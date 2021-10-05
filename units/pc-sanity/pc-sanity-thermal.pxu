@@ -199,7 +199,9 @@ _description:
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermald
-requires: cpuinfo.type == 'GenuineIntel'
+requires:
+ cpuinfo.type == 'GenuineIntel'
+ cpuinfo.model_number != '6' or cpuinfo.model_version not in ['85']
 command:
  systemctl is-active --quiet thermald
  RETVAL=$?
@@ -213,6 +215,7 @@ command:
      echo "Debugging Tips:"
      echo "Please check the upstream code(https://github.com/intel/thermal_daemon/blob/master/src/thd_engine.cpp) for the target id in id_table[] " && \
      echo "If the ID not there, then open a upstream bug like https://github.com/intel/thermal_daemon/issues/275 "
+     echo "If CPU will not supported by thermald, add model information from lscpu to test job blacklist"
      exit $RETVAL
  fi
 _summary: Check if thermald is active
