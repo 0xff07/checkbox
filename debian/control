@@ -18,15 +18,17 @@ Vcs-Browser: https://code.launchpad.net/~ville-team/ville/+git/plainbox-provider
 Package: plainbox-provider-pc-sanity
 Architecture: all
 Depends: git,
+         iputils-ping,
          jq,
+         msr-tools,
          plainbox-provider-certification-client,
          plainbox-provider-checkbox (>= 0.27),
          powertop,
-         msr-tools,
          python3 (>= 3.2),
          python3-apt,
          python3-checkbox-support (>= 0.27),
          python3-pip,
+         sudo,
          xautomation,
          ${misc:Depends},
          ${shlibs:Depends}
