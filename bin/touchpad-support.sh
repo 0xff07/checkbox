@@ -21,7 +21,6 @@ touchpad_pressure_support()
     do
         if [ -z "$line" ]; then
             touchpad=0
-            designware=0
         fi
 
         if echo "$line" | grep -q "Touchpad"; then
@@ -29,11 +28,7 @@ touchpad_pressure_support()
             touchpad=1
         fi
 
-        if echo "$line" | grep -q "designware"; then
-            designware=1
-        fi
-
-        if [ $touchpad -eq 1 ] && [ $designware -eq 1 ]; then
+        if [ $touchpad -eq 1 ]; then
             if [ "${line:3:3}" = "ABS" ]; then
                 abs_caps="${line:7:15}"
                 abs_caps_hex=$((16#"$abs_caps"))
