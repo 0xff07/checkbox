@@ -144,6 +144,8 @@ command:
          continue
      elif [ "${tp_type:0:12}" = "x86_pkg_temp" ]; then
          continue
+     elif [ "${tp_type:0:8}" = "TCPU_PCI" ]; then
+         continue
      fi
      # shellcheck disable=SC2013
      for tp_temp in $(cat "$zone"/trip_point_*_temp)
