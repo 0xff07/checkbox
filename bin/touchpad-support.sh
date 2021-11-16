@@ -46,6 +46,9 @@ touchpad_pressure_support()
             fi
         fi
     done <"/proc/bus/input/devices"
+
+    echo "Touchpad not found."
+    exit 1
 }
 
 OPTS="$(getopt -o ph --long pressure,help -n 'touchpad-support.sh' -- "$@")"
@@ -54,7 +57,7 @@ while :; do
     case "$1" in
         ('-p'|'--pressure')
             touchpad_pressure_support
-            ;;
+            exit ;;
         ('-h'|'--help')
             print_help
             exit ;;
