@@ -12,6 +12,45 @@ _summary: check if i2c device exists
 _description:
  check if i2c device exists
 
+unit: template
+template-resource: cpuinfo
+template-filter:
+ cpuinfo.type == 'GenuineIntel'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_{type}_unchecked_msr_access_error
+command: check-error-string.sh "unchecked MSR access error"
+_summary: Check if kernel log contains unchecked MSR access error
+_description:
+ Check if the system experience unchecked MSR access error.
+
+unit: template
+template-resource: device
+template-filter:
+ device.driver == 'iwlwifi'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_{driver}_start_rt_ucode_failed
+command: check-error-string.sh "Failed to start RT ucode"
+_summary: Check if kernel log contains iwlwifi failed to start RT ucode
+_description:
+ Check if the system experience iwlwifi failed to start RT ucode.
+
+unit: template
+template-resource: device
+template-filter:
+ device.driver == 'mt7921e'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_{driver}_start_wm_firmware_failed
+command: check-error-string.sh "Failed to start WM firmware"
+_summary: Check if kernel log contains mt7921e failed to start WM firmware
+_description:
+ Check if the system experience mt7921e failed to start WM firmware.
+
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel_pmc_core
