@@ -145,6 +145,9 @@ unit: test plan
 _description:
     This test plan is for smoke test for software only, it will not covery any hardware related tests.
 include:
+    com.canonical.certification::info/buildstamp
+    com.canonical.certification::raw_devices_dmi_json
+    com.canonical.certification::dmi_attachment
     com.canonical.certification::miscellanea/dpkg-l
     com.canonical.certification::miscellanea/bootstrap-pc-sanity-smoke-test
     com.canonical.certification::miscellanea/side-load-changes
