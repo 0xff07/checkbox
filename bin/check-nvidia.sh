@@ -94,10 +94,16 @@ check_environment() {
 }
 check_renderer() {
     local renderer
+    local _chassis_type
+    _chassis_type="$(cat /sys/class/dmi/id/chassis_type)"
     case $1 in
         on-demand-default )
             renderer="$(__NV_PRIME_RENDER_OFFLOAD=0 __GLX_VENDOR_LIBRARY_NAME="" glxinfo | grep "OpenGL renderer string")"
-            [ -z "${renderer##*Intel*}" ] || show_error "The default renderer is NOT Intel in on-demand." exit1
+            if [ "$_chassis_type" == "9" ] ||
+                [ "$_chassis_type" == "10" ] ||
+                [ "$_chassis_type" == "13" ]; then
+                [ -z "${renderer##*Intel*}" ] || show_error "The default renderer is NOT Intel in on-demand." exit1
+            fi
             ;;
         on-demand-nvidia )
             renderer="$(__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia glxinfo | grep "OpenGL renderer string")"
@@ -120,7 +126,13 @@ check_renderer() {
     esac
 }
 check_ondemand_mode() {
-    check_nvidia_sleep ondemand_
+    local _chassis_type
+    _chassis_type="$(cat /sys/class/dmi/id/chassis_type)"
+    if [ "$_chassis_type" == "9" ] ||
+        [ "$_chassis_type" == "10" ] ||
+        [ "$_chassis_type" == "13" ]; then
+        check_nvidia_sleep ondemand_
+    fi
     check_renderer on-demand-default
     check_renderer on-demand-nvidia
 }
