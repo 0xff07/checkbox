@@ -12,6 +12,7 @@ include:
     com.canonical.certification::misc/generic/grub_boothole
     com.canonical.certification::miscellanea/cvescan
     com.canonical.certification::miscellanea/check-nvidia
+    com.canonical.certification::miscellanea/check-gpu-driver
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/install_kernel_tools_testing
     com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
@@ -73,6 +74,7 @@ include:
     com.canonical.certification::misc/generic/grub_boothole
     com.canonical.certification::miscellanea/cvescan
     com.canonical.certification::miscellanea/check-nvidia
+    com.canonical.certification::miscellanea/check-gpu-driver
     com.canonical.certification::miscellanea/debsums
     com.canonical.certification::miscellanea/install_kernel_tools_testing
     com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
