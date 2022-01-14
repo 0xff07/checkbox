@@ -19,16 +19,12 @@ prepare() {
     # For sutton we could get oem info from buildstamp, it's quicker and use less resource. 
     # Examples:
     # pc-sutton-bachman-focal-amd64-X00-20201022-403
-    # sutton-simon-focal-amd64-20210526-227
-    # It will return sutton.bachman, sutton.simon or sutton.newell for $oem
+    # sutton-focal-amd64-X02-20211221-33
+    # It will return sutton for $oem
     if [ -f /etc/buildstamp ]; then
-        oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton-[^-]\+' || true)
+        oem=$(tail -n1 /etc/buildstamp | grep -o 'sutton' || true)
     fi
-    if [ -n "${oem}" ]; then
-        oem=${oem/-/.}
-        # we couldn't get correct platform when the meta packages are not installed,
-        # or user install other meta packages.
-    else
+    if [ -z "${oem}" ]; then
         oem="$(grep -q stella <(ubuntu-report show | grep DCD) && echo stella)" ||\
         oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
         { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }
@@ -57,7 +53,7 @@ prepare() {
             done
             ;;
         "sutton")
-            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem-*-meta"); do
+            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
                 _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
                 if [ "$_code_name" == "factory" ] ||
                     [ "$_code_name" == "meta" ]; then
