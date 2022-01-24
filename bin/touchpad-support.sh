@@ -16,22 +16,18 @@ ENDLINE
 
 touchpad_pressure_support()
 {
-    touchpad=0
     while read -r line;
     do
-        if [ -z "$line" ]; then
-            touchpad=0
-        fi
-
-        if echo "$line" | grep -q "Touchpad"; then
+        if [ "${line:3:4}" = "Name" ]; then
             name="${line:9:-1}"
-            touchpad=1
         fi
-
-        if [ $touchpad -eq 1 ]; then
-            if [ "${line:3:3}" = "ABS" ]; then
-                abs_caps="${line:7:15}"
-                abs_caps_hex=$((16#"$abs_caps"))
+        if [ "${line:3:3}" = "ABS" ]; then
+            abs_caps="${line:7:15}"
+            abs_caps_hex=$((16#"$abs_caps"))
+            mt_position_x_bit=$((abs_caps_hex >> 53))
+            mt_position_y_bit=$((abs_caps_hex >> 54))
+            mt_support=$((mt_position_x_bit & mt_position_y_bit & 1))
+            if [ $mt_support -eq 1 ]; then
                 pressure_bit=$((abs_caps_hex >> 24))
                 mt_pressure_bit=$((abs_caps_hex >> 58))
                 support=$((pressure_bit & mt_pressure_bit & 1))
