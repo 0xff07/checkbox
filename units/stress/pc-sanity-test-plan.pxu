@@ -10,16 +10,6 @@ include:
     power-management/suspend-3-cycles-time-check-with-reboots
     miscellanea/restore-idle-delay
 
-id: stress-10-reboot-poweroff-automated
-unit: test plan
-_name: Power Management reboot and power off stress tests (automated)
-_description: Power Management reboot and power off stress tests (automated)
-include:
-    stress/reboot_10        certification-status=blocker
-    stress/reboot_10_log
-    stress/poweroff_10      certification-status=blocker
-    stress/poweroff_10_log
-
 id: stress-10-reboot-automated
 unit: test plan
 _name: Power Management reboot and power off stress tests (automated)
