@@ -134,6 +134,7 @@ _name: A test plan to confirm dgpu auto switch works well.
 _description: Be as a unit test. To confirm there's no regression on dgpu automatic switching.
 include:
     com.canonical.certification::miscellanea/check-nvidia
+    com.canonical.certification::miscellanea/check-gpu-driver
     com.canonical.certification::graphics/2_auto_switch_card_.*
     com.canonical.certification::graphics/2_valid_opengl_renderer_.*
     com.canonical.certification::graphics/1_auto_switch_card_.*
