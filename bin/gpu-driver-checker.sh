@@ -7,10 +7,13 @@ result=0
 # Available driver check in each GPU
 for gpu in $(lspci -n -d ::0x0300| awk '{print $1}') \
            $(lspci -n -d ::0x0302| awk '{print $1}'); do
+    if [[ ${gpu} != "0000"* ]]; then
+        gpu="0000:${gpu}"
+    fi
     vendor=$(cat /sys/bus/pci/devices/"${gpu}"/vendor)
     device=$(cat /sys/bus/pci/devices/"${gpu}"/device)
     if [ ! -d "/sys/bus/pci/devices/${gpu}/driver" ]; then
-        echo "E: Your GPU ${gpu} (${vendor}:${device}) haven't driver."
+        echo "E: Your GPU ${gpu} (${vendor}:${device}) hasn't driver."
         sudo lspci -nnvk -s "$gpu"
         result=255
     else
@@ -21,7 +24,7 @@ done
 
 
 # Check nvidia driver
-nvidia_version=$(modinfo nvidia| grep "^version"| awk '{print $2}')
+nvidia_version=$(modinfo nvidia 2>/dev/null| grep "^version"| awk '{print $2}')
 if [ -n "$nvidia_version" ]; then
     nvidia_pkg_prefix="nvidia-driver-"
     signed_nvidia_prefix="linux-modules-nvidia"
