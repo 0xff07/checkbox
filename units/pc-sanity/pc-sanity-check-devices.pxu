@@ -51,6 +51,19 @@ _summary: Check if kernel log contains mt7921e failed to start WM firmware
 _description:
  Check if the system experience mt7921e failed to start WM firmware.
 
+unit: template
+template-resource: device
+template-filter:
+ device.category == 'WIRELESS'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_{interface}_wifi6e_enabled
+command: check_wifi6e.py {interface}
+_summary: Check the status of Wifi6e
+_description:
+ Check if the system enable Wifi6e 6GHz band with Kernel less then 5.15
+
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel_pmc_core
