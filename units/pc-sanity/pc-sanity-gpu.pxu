@@ -1,6 +1,7 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check-gpu-driver
+user: root
 command:
  gpu-driver-checker.sh
 _summary: Check drivers on each gpu cards.
