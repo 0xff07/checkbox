@@ -59,6 +59,9 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_{interface}_wifi6e_enabled
+requires:
+ package.name == 'coreutils'
+ package.name == 'iw'
 command: check_wifi6e.py {interface}
 _summary: Check the status of Wifi6e
 _description:
