@@ -110,6 +110,7 @@ include:
     com.canonical.certification::miscellanea/check_.*_unchecked_msr_access_error
     com.canonical.certification::miscellanea/check_.*_start_rt_ucode_failed
     com.canonical.certification::miscellanea/check_.*_start_wm_firmware_failed
+    com.canonical.certification::miscellanea/check_.*_wifi6e_enabled
 exclude:
     com.canonical.certification::after-suspend-bluetooth4/beacon_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*
