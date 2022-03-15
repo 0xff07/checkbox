@@ -52,14 +52,20 @@ check_sutton_meta() {
     fi
 
     # Get the platform from installed meta package
-    for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem-*-meta"); do
+    for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem*-meta"); do
         platform_name=$(echo "${pkg}" | cut -d'-' -f3)
         if [ "$platform_name" = "factory" ]; then
             # Ignore factory's meta
             continue
         fi
+        if [ "$platform_name" = "meta" ]; then
+            # Ignore group's meta
+            continue
+        fi
         if [ -n "${platform_name}" ]; then
             platform_tag=${platform_name}
+	    # update the oem in case of there are no group name
+	    oem = $(echo "${pkg}"| cut -d'-' -f2)
             break
         else
             failed "Missing platform meta packages!!!"
@@ -182,7 +188,7 @@ main() {
         stella.cmit)
             check_stella_cmit_meta
             ;;
-        "sutton.newell" | "sutton.simon" | "sutton.bachman")
+        "sutton" | "sutton.newell" | "sutton.simon" | "sutton.bachman")
             check_sutton_meta
             ;;
         *)
