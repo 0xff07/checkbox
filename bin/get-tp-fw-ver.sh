@@ -17,14 +17,21 @@ case $PARA in
     ;;
 esac
 
-nodes=$(ls /sys/bus/i2c/drivers/i2c_hid)
-
-for node in $nodes
+while read -r line;
 do
-    if [ "${node:0:3}" = "i2c" ]; then
-        device="$node"
+    if [ "${line:3:4}" = "Name" ]; then
+        name="${line:9:-1}"
     fi
-done
+    if [ "${line:3:4}" = "Phys" ]; then
+        phys="${line:8}"
+    fi
+    if echo "$name" | grep -q "Touchpad"; then
+        if echo "$phys" | grep -q "i2c"; then
+            device="$phys"
+            break
+        fi
+    fi
+done < "/proc/bus/input/devices"
 
 tp_path=$(udevadm info /sys/bus/i2c/devices/"$device" | grep "P:" | cut -d " " -f2)
 sub=$(echo "$tp_path" | sed -E 's/\/i2c-[A-Z].*//')

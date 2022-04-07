@@ -1,3 +1,10 @@
+plainbox-provider-pc-sanity (1.0.2) UNRELEASED; urgency=medium
+
+  [ Kai-Chuan Hsieh ]
+  * bump version
+
+ -- Kai-Chuan Hsieh <kaichuan.hsieh@canonical.com>  Fri, 08 Apr 2022 11:36:18 +0800
+
 plainbox-provider-pc-sanity (1.0.1ubuntu1) focal; urgency=medium
 
   [ Alex Tu ]
