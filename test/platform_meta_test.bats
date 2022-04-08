@@ -12,6 +12,10 @@ function ubuntu-drivers() {
     echo "$ubuntu_drivers_string"
 }
 
+function lsb_release() {
+    echo "$ubuntu_codename"
+}
+
 @test "somerville in focal : Pass if meta package installed" {
     set -e
     ubuntu_codename='focal'
