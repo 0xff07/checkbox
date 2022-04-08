@@ -98,7 +98,7 @@ id: miscellanea/tgp-rid-check_{product_id}
 command:
  rid_hex=$(lspci -xs 00:1f.0 | grep "00: " | cut -d " " -f10)
  rid="0x$rid_hex"
- if [[ $rid -eq 0x10 ]]; then
+ if [[ $(("$rid")) -eq $((0x10)) ]]; then
      echo "The PCH has known issue, the detail is in lp:1909053."
      echo "Please request another hardware to proceed the test."
      exit 1
@@ -129,7 +129,7 @@ command:
  version=$(echo "$out" | cut -d "," -f3 | cut -d " " -f3)
  # shellcheck disable=SC2050
  if [ "{vendor_id}" = "1160" ] && [ "{product_id}" = "4618" ]; then
-     if [[ $major -lt 0x05 ]] || [[ $minor -lt 0x34 ]]; then
+     if [[ $(("$major")) -lt $((0x05)) ]] || [[ $(("$minor")) -lt $((0x34)) ]]; then
          echo "The touchpad firmware version is $version which is not correct."
          echo "please refer to the lp:1903951 for getting correct firmware."
          exit 1
