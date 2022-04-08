@@ -41,7 +41,7 @@ if [ -n "$nvidia_version" ]; then
     support=$(apt show "${pkg}" 2>/dev/null| grep "^Support:"| awk '{print $2}')
     if [ "$support" = "LTSB" ]; then
         echo "Nvidia driver is LTS version."
-    if [ "$support" = "PB" ]; then
+    elif [ "$support" = "PB" ]; then
         echo "Nvidia driver is production version."
     else
         echo "E: ${pkg} is not LTS version, please check."
