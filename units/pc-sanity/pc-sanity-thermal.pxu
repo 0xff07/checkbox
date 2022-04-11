@@ -203,7 +203,7 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermald
 requires:
  cpuinfo.type == 'GenuineIntel'
- cpuinfo.model_number != '6' or cpuinfo.model_version not in ['85']
+ cpuinfo.model_number != '6' or cpuinfo.model_version not in ['85', '143']
 command:
  systemctl is-active --quiet thermald
  RETVAL=$?
