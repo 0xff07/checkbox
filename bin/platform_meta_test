@@ -65,7 +65,7 @@ check_sutton_meta() {
         if [ -n "${platform_name}" ]; then
             platform_tag=${platform_name}
 	    # update the oem in case of there are no group name
-	    oem = $(echo "${pkg}"| cut -d'-' -f2)
+	    oem=$(echo "${pkg}"| cut -d'-' -f2)
             break
         else
             failed "Missing platform meta packages!!!"
