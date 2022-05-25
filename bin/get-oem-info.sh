@@ -3,6 +3,7 @@ set -e
 
 oem=""
 platform=""
+build_no=""
 usage() {
 cat << EOF
 usage: $0 options
@@ -11,6 +12,7 @@ usage: $0 options
     --oem-codename
     --platform-codename
     --get-platform-id
+    --get-build-no
 EOF
 exit 1
 }
@@ -86,6 +88,19 @@ get_platform_id() {
     echo "${platform_id}"
 }
 
+get_build_no() {
+
+    if [ -f /etc/buildstamp ]; then
+        image_build=$(tail -n1 /etc/buildstamp)
+        build_no=${image_build##*-}
+    else
+        # For somerville it'll use build version, but here I use build_no to
+        # save it.
+        image_build=$(ubuntu-report show | jq '.OEM.DCD' | sed -e 's/"//g')
+        build_no=${image_build#*X}
+    fi
+}
+
 main() {
     while [ $# -gt 0 ]
     do
@@ -104,6 +119,10 @@ main() {
                 ;;
             --get-platform-id)
                 get_platform_id
+                ;;
+            --get-build-no)
+                [ -n "$build_no" ] || get_build_no
+                echo "$build_no"
                 ;;
             *)
             usage
