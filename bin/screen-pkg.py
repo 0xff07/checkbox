@@ -7,7 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from apt.cache import Cache
 from apt.package import Package
@@ -75,6 +75,12 @@ def get_platform(apt_cache: Cache) -> Platform:
 class AllowedPackage(NamedTuple):
     package: str
     source: str
+    comment: Optional[str]
+
+    def __str__(self):
+        if self.comment != None:
+            return f"{self.package} ({self.source}) ({self.comment})"
+        return f"{self.package} ({self.source})"
 
 
 AllowList = Dict[str, AllowedPackage]
@@ -110,8 +116,19 @@ def get_allowlist(
         try:
             with open(os.path.join(allowlist_path, filename)) as file:
                 for pkg_name in file:
-                    pkg_name = pkg_name.rstrip()
-                    allowed_packages[pkg_name] = AllowedPackage(pkg_name, filename)
+                    # allow putting comments in allowlist, either by # in the
+                    # beginning of the line, or # after package name.  The
+                    # latter format will be shown in the message.
+                    pkg_name_split = pkg_name.split("#", 1)
+                    pkg_name = pkg_name_split[0].strip()
+                    comment = None
+                    if len(pkg_name_split) >= 2:
+                        comment = pkg_name_split[1].strip()
+                    if pkg_name == "":
+                        continue
+                    allowed_packages[pkg_name] = AllowedPackage(
+                        pkg_name, filename, comment
+                    )
         except FileNotFoundError:
             pass
 
@@ -157,7 +174,7 @@ def check_public_scanning(
             print(f" - {name} {version}")
 
     pkgs_allowed = [
-        (allowpkg.package, allowpkg.source)
+        allowpkg
         for pkg in pkgs_not_public
         if (allowpkg := allowlist.get(pkg.name)) != None
     ]
@@ -166,8 +183,8 @@ def check_public_scanning(
             "\n"
             "The following packages are not in public archive, but greenlit from manager:"
         )
-        for (name, source) in pkgs_allowed:
-            print(f" - {name} ({source})")
+        for allowpkg in pkgs_allowed:
+            print(f" - {allowpkg}")
 
     print()
 
