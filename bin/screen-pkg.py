@@ -269,6 +269,61 @@ def check_public_scanning(
     return len(pkgs_not_allowed) == 0
 
 
+def check_component_scanning(
+    apt_cache: Cache, platform: Platform, allowlist: AllowList
+) -> bool:
+    metapkg_names = platform.get_metapkg_names()
+    pkgs_filtered = [
+        pkg
+        for pkg in apt_cache
+        if pkg.installed != None
+        and pkg_is_manually_installed(pkg)
+        and not pkg_in_component(pkg, ["main", "restricted"])
+        and pkg.name not in metapkg_names
+    ]
+
+    pkgs_not_allowed = [
+        (
+            pkg.name,
+            pkg.installed.version,
+            set(origin.component for origin in pkg.installed.origins),
+        )
+        for pkg in pkgs_filtered
+        if pkg.name not in allowlist and pkg.installed != None
+    ]
+    if pkgs_not_allowed:
+        print(
+            f"""
+The following packages are not in main or restricted component. Send an MP to
+{ALLOWLIST_GIT_URL}
+to review by manager:"""
+        )
+        for (name, version, components) in pkgs_not_allowed:
+            components.remove("now")
+            if len(components) == 0:
+                components.add("local")
+            components_str = ", ".join(components)
+            print(f" - {name} {version} ({components_str})")
+
+    pkgs_allowed = [
+        allowpkg
+        for pkg in pkgs_filtered
+        if (allowpkg := allowlist.get(pkg.name)) != None and pkg.installed != None
+    ]
+    if pkgs_allowed:
+        print(
+            """
+The following packages are not in main or restricted component, but greenlit
+from manager:"""
+        )
+        for allowpkg in pkgs_allowed:
+            print(f" - {allowpkg}")
+
+    print()
+
+    return len(pkgs_not_allowed) == 0
+
+
 def pkg_is_public(pkg: Package) -> bool:
     ver = pkg.installed
     if ver and ver.origins[0].component == "now" and pkg.is_upgradable:
@@ -301,6 +356,25 @@ def pkg_is_uploaded_metapkg(pkg: Package, metapkg_names: List[str]) -> bool:
     return False
 
 
+def pkg_in_component(pkg: Package, components: List[str]) -> bool:
+    ver = pkg.installed
+    if ver and ver.origins[0].component == "now" and pkg.is_upgradable:
+        # this package is upgradable to a package in the archive
+        ver = pkg.candidate
+    if ver == None:
+        raise Exception("package is not installed")
+    for origin in ver.origins:
+        if origin.component in components:
+            return True
+    return False
+
+
+def pkg_is_manually_installed(pkg: Package) -> bool:
+    # either package is not auto_installed, or is auto_removable, so that
+    # the listed pacakges are not installed by dependency.
+    return (not pkg.is_auto_installed) or pkg.is_auto_removable
+
+
 def check_public(args):
     apt_cache = Cache()
 
@@ -323,6 +397,28 @@ def check_public(args):
     sys.exit()
 
 
+def check_component(args):
+    apt_cache = Cache()
+
+    print("# updating apt")
+    apt_cache.update()
+    apt_cache.open()
+
+    platform = get_platform(apt_cache)
+    print(f"# platform: {platform.oem}-{platform.platform}")
+
+    print("# getting allowlist")
+    (allowlist, repo_hash) = get_allowlist(platform, outdir=args.out)
+    print(f"# allowlist hash: {repo_hash}")
+
+    print("# scanning packages")
+    ok = check_component_scanning(apt_cache, platform, allowlist)
+    if not ok:
+        sys.exit("# check-component FAIL")
+
+    sys.exit()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -336,7 +432,12 @@ if __name__ == "__main__":
         required=True,
     )
     subparsers.add_parser("check-public", help="screen non-public packages")
+    subparsers.add_parser(
+        "check-component", help="screen packages not in main or restricted components"
+    )
     args = parser.parse_args()
 
     if args.cmd == "check-public":
         check_public(args)
+    elif args.cmd == "check-component":
+        check_component(args)
