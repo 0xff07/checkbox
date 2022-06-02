@@ -270,14 +270,14 @@ def check_public_scanning(
 
 
 def check_component_scanning(
-    apt_cache: Cache, platform: Platform, allowlist: AllowList
+    apt_cache: Cache, platform: Platform, allowlist: AllowList, only_manual: bool = True
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
     pkgs_filtered = [
         pkg
         for pkg in apt_cache
         if pkg.installed != None
-        and pkg_is_manually_installed(pkg)
+        and ((not only_manual) or pkg_is_manually_installed(pkg))
         and not pkg_in_component(pkg, ["main", "restricted"])
         and pkg.name not in metapkg_names
     ]
@@ -412,7 +412,9 @@ def check_component(args):
     print(f"# allowlist hash: {repo_hash}")
 
     print("# scanning packages")
-    ok = check_component_scanning(apt_cache, platform, allowlist)
+    ok = check_component_scanning(
+        apt_cache, platform, allowlist, only_manual=args.only_manual
+    )
     if not ok:
         sys.exit("# check-component FAIL")
 
@@ -431,9 +433,14 @@ if __name__ == "__main__":
         dest="cmd",
         required=True,
     )
-    subparsers.add_parser("check-public", help="screen non-public packages")
-    subparsers.add_parser(
-        "check-component", help="screen packages not in main or restricted components"
+    subparsers.add_parser("check-public", help="Screen non-public packages")
+    check_component_args_parser = subparsers.add_parser(
+        "check-component", help="Screen packages not in main or restricted components"
+    )
+    check_component_args_parser.add_argument(
+        "--only-manual",
+        action="store_true",
+        help="Only check packages that are manually installed",
     )
     args = parser.parse_args()
 
