@@ -1,6 +1,7 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/screen-pkg-not-public
+user: root
 command: screen-pkg.py --out "$PLAINBOX_SESSION_SHARE" check-public
 _summary: check if pkgs not on public archive
 _description:
