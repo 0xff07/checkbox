@@ -14,6 +14,8 @@ _description: Install linux-tools based on the running kernel version.
 plugin: shell
 id: misc/generic/grub_boothole
 user: root
+requires:
+ lsb.codename in ('xenial', 'bionic', 'focal')
 command:
  check_grub_boothole.sh
 _description:
