@@ -30,7 +30,7 @@ class Platform(NamedTuple):
 oem_re = re.compile(r"canonical-oem-(\w+)-")
 somerville_platform_re = re.compile(r"\+([\w-]+)\+")
 
-ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list" # noqa: E501,E261
+ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"  # noqa: E501
 
 
 def get_platform(apt_cache: Cache) -> Platform:
@@ -178,9 +178,7 @@ def check_public_scanning(
             print(f" - {name} {version}")
 
     pkgs_allowed = [
-        allowpkg
-        for pkg in pkgs_not_public
-        if (allowpkg := allowlist.get(pkg.name)) is not None
+        allowlist[pkg.name] for pkg in pkgs_not_public if pkg.name in allowlist
     ]
     if pkgs_allowed:
         print(
