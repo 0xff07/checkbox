@@ -30,7 +30,7 @@ class Platform(NamedTuple):
 oem_re = re.compile(r"canonical-oem-(\w+)-")
 somerville_platform_re = re.compile(r"\+([\w-]+)\+")
 
-ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"
+ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list" # noqa: E501,E261
 
 
 def get_platform(apt_cache: Cache) -> Platform:
@@ -42,22 +42,24 @@ def get_platform(apt_cache: Cache) -> Platform:
         dcd = report["OEM"]["DCD"]
     except KeyError:
         raise Exception(
-            "DCD entry in ubuntu-report not found; required to look up for OEM name"
+            "DCD entry in ubuntu-report not found; "
+            "required to look up for OEM name"
         )
     oem_match = oem_re.match(dcd)
-    if oem_match == None:
+    if oem_match is None:
         raise Exception("OEM name not found in DCD entry")
     oem = oem_match[1]
 
     if oem == "somerville":
         platform_match = somerville_platform_re.search(dcd)
-        if platform_match == None:
+        if platform_match is None:
             raise Exception("platform name not found in DCD entry")
         platform = platform_match[1]
         platform_in_metapkg = platform.split("-", 1)[1]
         return Platform(oem, platform, platform_in_metapkg)
 
-    # search for something like oem-stella.cmit-marowak-meta, without -factory in it
+    # search for something like oem-stella.cmit-marowak-meta,
+    # without -factory in it
     oem_meta_pkg_match = re.compile(
         r"oem-%s[^-]+(?!-factory)-[\w-]+-meta$" % re.escape(oem)
     )
@@ -78,7 +80,7 @@ class AllowedPackage(NamedTuple):
     comment: Optional[str]
 
     def __str__(self):
-        if self.comment != None:
+        if self.comment is not None:
             return f"{self.package} ({self.source}) ({self.comment})"
         return f"{self.package} ({self.source})"
 
@@ -96,7 +98,8 @@ def get_allowlist(
     except FileNotFoundError:
         pass
 
-    subprocess.run(["git", "clone", "--depth=1", ALLOWLIST_GIT_URL, allowlist_path])
+    cmd = ["git", "clone", "--depth=1", ALLOWLIST_GIT_URL, allowlist_path]
+    subprocess.run(cmd)
     repo_hash = (
         subprocess.run(
             ["git", "-C", allowlist_path, "rev-parse", "--short", "HEAD"],
@@ -139,7 +142,7 @@ def check_public_scanning(
     apt_cache: Cache, platform: Platform, allowlist: AllowList
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
-    pkgs_installed = [pkg for pkg in apt_cache if pkg.installed != None]
+    pkgs_installed = [pkg for pkg in apt_cache if pkg.installed is not None]
     pkgs_not_public = [
         pkg
         for pkg in pkgs_installed
@@ -149,12 +152,13 @@ def check_public_scanning(
     pkgs_not_allowed = [
         (pkg.name, pkg.installed.version)
         for pkg in pkgs_not_public
-        if pkg.name not in allowlist and pkg.installed != None
+        if pkg.name not in allowlist and pkg.installed is not None
     ]
     if pkgs_not_allowed:
         print(
             "\n"
-            "The following packages are not in public archive. Please send an MP to\n"
+            "The following packages are not in public archive."
+            "Please send an MP to\n"
             f"{ALLOWLIST_GIT_URL}\n"
             "to review by manager:"
         )
@@ -166,7 +170,7 @@ def check_public_scanning(
         for pkg in pkgs_installed
         if pkg.name in metapkg_names
         and not pkg_is_uploaded_metapkg(pkg, metapkg_names)
-        and pkg.installed != None
+        and pkg.installed is not None
     ]
     if pkgs_metapkg_not_uploaded:
         print("\n" "The following metapackages are not uploaded:")
@@ -176,12 +180,13 @@ def check_public_scanning(
     pkgs_allowed = [
         allowpkg
         for pkg in pkgs_not_public
-        if (allowpkg := allowlist.get(pkg.name)) != None
+        if (allowpkg := allowlist.get(pkg.name)) is not None
     ]
     if pkgs_allowed:
         print(
             "\n"
-            "The following packages are not in public archive, but greenlit from manager:"
+            "The following packages are not in public archive, "
+            "but greenlit from manager:"
         )
         for allowpkg in pkgs_allowed:
             print(f" - {allowpkg}")
@@ -196,11 +201,12 @@ def pkg_is_public(pkg: Package) -> bool:
     if ver and ver.origins[0].component == "now" and pkg.is_upgradable:
         # this package is upgradable to a package in the archive
         ver = pkg.candidate
-    if ver == None:
+    if ver is None:
         raise Exception("package is not installed")
     for origin in ver.origins:
         if (
-            "security.ubuntu.com" in origin.site or "archive.ubuntu.com" in origin.site
+            "security.ubuntu.com" in origin.site or
+            "archive.ubuntu.com" in origin.site
         ) and origin.trusted:
             return True
     return False
@@ -212,7 +218,7 @@ def pkg_is_uploaded_metapkg(pkg: Package, metapkg_names: List[str]) -> bool:
         # this package is upgradable to a package in the archive
         # XXX: should we look up for the newer package in the archive?
         ver = pkg.candidate
-    if ver == None:
+    if ver is None:
         raise Exception("package is not installed")
     if pkg.name not in metapkg_names:
         return False
