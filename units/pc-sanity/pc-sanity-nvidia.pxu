@@ -1,7 +1,7 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 requires:
- graphics_card.driver in ['nvidia', 'pcieport']
+ graphics_card.driver in ['nvidia']
 id: miscellanea/check-nvidia
 command:
  set -x
