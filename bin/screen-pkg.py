@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import lsb_release
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from apt.cache import Cache
@@ -14,9 +15,9 @@ from apt.package import Package
 
 
 class Platform(NamedTuple):
-    oem: str
-    platform: str
-    platform_in_metapkg: str
+    oem: str                    # somerville
+    platform_with_release: str  # fossa-abc
+    platform_in_metapkg: str    # abc
 
     def get_metapkg_names(self):
         return [
@@ -34,44 +35,43 @@ ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enabl
 
 
 def get_platform(apt_cache: Cache) -> Platform:
-    report_json = subprocess.run(
-        ["ubuntu-report", "show"], stdout=subprocess.PIPE
-    ).stdout
-    report = json.loads(report_json)
-    try:
-        dcd = report["OEM"]["DCD"]
-    except KeyError:
-        raise Exception(
-            "DCD entry in ubuntu-report not found; "
-            "required to look up for OEM name"
-        )
-    oem_match = oem_re.match(dcd)
-    if oem_match is None:
-        raise Exception("OEM name not found in DCD entry")
-    oem = oem_match[1]
+    oem = subprocess.run(
+        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh","--oem-codename"],
+        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+    if oem is None:
+        raise Exception("oem name not found by get-oem-info.sh.")
+
+    platform = subprocess.run(
+        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh","--platform-codename"],
+        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+    if platform is None:
+        raise Exception("platform name not found by get-oem-info.sh.")
+
+    # Since Ubuntu 22.04, there is no group layer
+    sys_ubuntu_codename = lsb_release.get_distro_information()['CODENAME']
+
+    if sys_ubuntu_codename == "focal":
+        oem_ubuntu_codename = "fossa"
+    elif sys_ubuntu_codename == "jammy":
+        oem_ubuntu_codename = "jellyfish"
+    if oem_ubuntu_codename is None:
+        raise Exception("oem ubuntu codename is empty.")
 
     if oem == "somerville":
-        platform_match = somerville_platform_re.search(dcd)
-        if platform_match is None:
-            raise Exception("platform name not found in DCD entry")
-        platform = platform_match[1]
-        platform_in_metapkg = platform.split("-", 1)[1]
-        return Platform(oem, platform, platform_in_metapkg)
+        platform_with_release = oem_ubuntu_codename + "-" + platform
+    else: # non-somerville
+        # In 20.04, allowing list is read from
+        # stella.cmit/abc
+        # in 22.04, allowing list is read from
+        # stella/jellyfish-abc
+        if sys_ubuntu_codename == "focal":
+            platform_with_release = platform
+        else: # Since 22.04, seperate allowing packages by release.
+            platform_with_release = oem_ubuntu_codename + "-" + platform
+    if platform_with_release is None:
+        raise Exception("platform_with_release is empty.")
 
-    # search for something like oem-stella.cmit-marowak-meta,
-    # without -factory in it
-    oem_meta_pkg_match = re.compile(
-        r"oem-%s[^-]+(?!-factory)-[\w-]+-meta$" % re.escape(oem)
-    )
-    names = [
-        pkg.shortname.split("-")
-        for pkg in apt_cache
-        if pkg.installed and oem_meta_pkg_match.match(pkg.shortname)
-    ]
-    if len(names) < 1:
-        raise Exception("platform meta package is not installed")
-    names = names[0]
-    return Platform(names[1], names[2], names[2])
+    return Platform(oem, platform_with_release, platform)
 
 
 class AllowedPackage(NamedTuple):
@@ -114,7 +114,7 @@ def get_allowlist(
         "testtools",
         "common",
         f"{platform.oem}/common",
-        f"{platform.oem}/{platform.platform}",
+        f"{platform.oem}/{platform.platform_with_release}",
     ]:
         try:
             with open(os.path.join(allowlist_path, filename)) as file:
@@ -234,7 +234,7 @@ def check_public(args):
     apt_cache.open()
 
     platform = get_platform(apt_cache)
-    print(f"# platform: {platform.oem}-{platform.platform}")
+    print(f"# platform: {platform.oem}-{platform.platform_with_release}")
 
     print("# getting allowlist")
     (allowlist, repo_hash) = get_allowlist(platform, outdir=args.out)
