@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import argparse
-import json
 import os
 import re
 import shutil
@@ -36,13 +35,15 @@ ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enabl
 
 def get_platform(apt_cache: Cache) -> Platform:
     oem = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh","--oem-codename"],
+        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+         "--oem-codename"],
         stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
     if oem is None:
         raise Exception("oem name not found by get-oem-info.sh.")
 
     platform = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh","--platform-codename"],
+        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+         "--platform-codename"],
         stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
     if platform is None:
         raise Exception("platform name not found by get-oem-info.sh.")
@@ -59,14 +60,16 @@ def get_platform(apt_cache: Cache) -> Platform:
 
     if oem == "somerville":
         platform_with_release = oem_ubuntu_codename + "-" + platform
-    else: # non-somerville
+    else:
+        # non-somerville
         # In 20.04, allowing list is read from
         # stella.cmit/abc
         # in 22.04, allowing list is read from
         # stella/jellyfish-abc
         if sys_ubuntu_codename == "focal":
             platform_with_release = platform
-        else: # Since 22.04, seperate allowing packages by release.
+        else:
+            # Since 22.04, seperate allowing packages by release.
             platform_with_release = oem_ubuntu_codename + "-" + platform
     if platform_with_release is None:
         raise Exception("platform_with_release is empty.")
