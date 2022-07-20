@@ -31,6 +31,15 @@ prepare() {
         oem="$(grep -q somerville <(ubuntu-report show | grep DCD) && echo somerville)" ||\
         { >&2 echo "[ERROR][CODE]got an empty OEM codename in ${FUNCNAME[0]}"; }
     fi
+    # Since Ubuntu 22.04, there is no group layer anymore
+    # Use 20.04 & 22.04 instead of focal & jammy since we may need to support N+1 in the future.
+    release=$(lsb_release -a 2>/dev/null| grep ^Release| awk '{print $2}')
+    if [[ "$release" == "20.04" ]]; then
+        meta_pattern="oem-$oem.*-meta"
+    else # elif [[ "$release" == "22.04" ]]; then
+        meta_pattern="oem-$oem*-meta"
+    fi
+
     # Remove the group name
     case "${oem%%.*}" in
         "somerville")
@@ -44,7 +53,7 @@ prepare() {
             done
             ;;
         "stella")
-            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
+            for pkg in $(dpkg-query -W -f='${Package}\n' "$meta_pattern"); do
                 _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
                 if [ "$_code_name" == "factory" ] ||
                     [ "$_code_name" == "meta" ]; then
@@ -55,7 +64,7 @@ prepare() {
             done
             ;;
         "sutton")
-            for pkg in $(dpkg-query -W -f='${Package}\n'  "oem-$oem.*-meta"); do
+            for pkg in $(dpkg-query -W -f='${Package}\n' "$meta_pattern"); do
                 _code_name=$(echo "${pkg}" | awk -F"-" '{print $3}')
                 if [ "$_code_name" == "factory" ] ||
                     [ "$_code_name" == "meta" ]; then
