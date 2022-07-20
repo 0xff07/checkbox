@@ -185,7 +185,7 @@ main() {
         somerville)
             check_somerville_meta
             ;;
-        stella.cmit)
+        "stella" | "stella.cmit")
             check_stella_cmit_meta
             ;;
         "sutton" | "sutton.newell" | "sutton.simon" | "sutton.bachman")
