@@ -27,6 +27,7 @@ include:
     com.canonical.certification::miscellanea/intel-powerclamp
     com.canonical.certification::miscellanea/intel-cpu-thermal
     com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
+    com.canonical.certification::miscellanea/intel_pmc_core
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
     com.canonical.certification::miscellanea/proc_thermal
     com.canonical.certification::miscellanea/thermald
@@ -90,6 +91,7 @@ include:
     com.canonical.certification::miscellanea/intel-powerclamp
     com.canonical.certification::miscellanea/intel-cpu-thermal
     com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
+    com.canonical.certification::miscellanea/intel_pmc_core
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
     com.canonical.certification::miscellanea/proc_thermal
     com.canonical.certification::miscellanea/thermald
