@@ -70,6 +70,7 @@ prepare() {
                     [ "$_code_name" == "meta" ]; then
                     continue
                 fi
+                oem="$(echo "$pkg" | cut -d'-' -f2 )"
                 platform="$(echo "$pkg" | cut -d'-' -f3 )"
             done
             ;;
