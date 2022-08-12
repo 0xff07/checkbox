@@ -36,6 +36,9 @@ case "$(lsb_release -cs)" in
             (5.14.0-*-oem)
                 TARGET_KERNEL=5.14.0-1002-oem
                 ;;
+            (5.15.0-*-generic)
+                TARGET_KERNEL=5.15.0-46-generic
+                ;;
             (*)
                 echo "Linux kernel '$(uname -r)' is not in the check list yet. Please report the bug."
                 exit 1
