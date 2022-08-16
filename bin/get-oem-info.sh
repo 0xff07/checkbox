@@ -49,7 +49,8 @@ prepare() {
                     [ "$_code_name" == "meta" ]; then
                     continue
                 fi
-                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+                tmp=${pkg/oem-$oem-/}
+                platform=${tmp/-meta/}
             done
             ;;
         "stella")
@@ -60,7 +61,8 @@ prepare() {
                     continue
                 fi
                 oem="$(echo "$pkg" | cut -d'-' -f2 )"
-                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+                tmp=${pkg/oem-$oem-/}
+                platform=${tmp/-meta/}
             done
             ;;
         "sutton")
@@ -71,7 +73,8 @@ prepare() {
                     continue
                 fi
                 oem="$(echo "$pkg" | cut -d'-' -f2 )"
-                platform="$(echo "$pkg" | cut -d'-' -f3 )"
+                tmp=${pkg/oem-$oem-/}
+                platform=${tmp/-meta/}
             done
             ;;
         *)
