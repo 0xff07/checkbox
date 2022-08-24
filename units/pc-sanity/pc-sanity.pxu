@@ -30,6 +30,7 @@ include:
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
     com.canonical.certification::miscellanea/proc_thermal
     com.canonical.certification::miscellanea/thermald
+    com.canonical.certification::miscellanea/thermal-policy-set_.*                    certification-status=blocker
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
     com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment
     com.canonical.certification::miscellanea/check_i2c_hid
@@ -94,6 +95,7 @@ include:
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
     com.canonical.certification::miscellanea/proc_thermal
     com.canonical.certification::miscellanea/thermald
+    com.canonical.certification::miscellanea/thermal-policy-set_.*                    certification-status=blocker
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
     com.canonical.certification::miscellanea/dump_libsmbios_tokens_attachment
     com.canonical.certification::miscellanea/check_i2c_hid
