@@ -15,7 +15,8 @@ from apt.package import Package
 
 class Platform(NamedTuple):
     oem: str  # somerville
-    platform_with_release: str  # fossa-abc
+    oem_series: str  # jellyfish
+    platform_with_release: str  # jellyfish-abc
     platform_in_metapkg: str  # abc
 
     def get_metapkg_names(self):
@@ -89,7 +90,7 @@ def get_platform() -> Platform:
     if platform_with_release is None:
         raise Exception("platform_with_release is empty.")
 
-    return Platform(oem, platform_with_release, platform)
+    return Platform(oem, oem_ubuntu_codename, platform_with_release, platform)
 
 
 class AllowedPackage(NamedTuple):
@@ -134,6 +135,7 @@ def get_allowlist(
         "testtools",
         "common",
         f"{platform.oem}/common",
+        f"{platform.oem}/{platform.oem_series}-common",
         f"{platform.oem}/{platform.platform_with_release}",
     ]:
         try:
