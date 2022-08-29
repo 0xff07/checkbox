@@ -6,17 +6,17 @@ import re
 import shutil
 import subprocess
 import sys
-import lsb_release
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+import lsb_release
 from apt.cache import Cache
 from apt.package import Package
 
 
 class Platform(NamedTuple):
-    oem: str                    # somerville
+    oem: str  # somerville
     platform_with_release: str  # fossa-abc
-    platform_in_metapkg: str    # abc
+    platform_in_metapkg: str  # abc
 
     def get_metapkg_names(self):
         return [
@@ -33,24 +33,39 @@ somerville_platform_re = re.compile(r"\+([\w-]+)\+")
 ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"  # noqa: E501
 
 
-def get_platform(apt_cache: Cache) -> Platform:
-    oem = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
-         "--oem-codename"],
-        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+def get_platform() -> Platform:
+    oem = (
+        subprocess.run(
+            [
+                "/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+                "--oem-codename",
+            ],
+            stdout=subprocess.PIPE,
+        )
+        .stdout.strip()
+        .decode("utf-8")
+    )
     if oem is None:
         raise Exception("oem name not found by get-oem-info.sh.")
 
-    platform = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
-         "--platform-codename"],
-        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+    platform = (
+        subprocess.run(
+            [
+                "/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+                "--platform-codename",
+            ],
+            stdout=subprocess.PIPE,
+        )
+        .stdout.strip()
+        .decode("utf-8")
+    )
     if platform is None:
         raise Exception("platform name not found by get-oem-info.sh.")
 
     # Since Ubuntu 22.04, there is no group layer
-    sys_ubuntu_codename = lsb_release.get_distro_information()['CODENAME']
+    sys_ubuntu_codename = lsb_release.get_distro_information()["CODENAME"]
 
+    oem_ubuntu_codename = None
     if sys_ubuntu_codename == "focal":
         oem_ubuntu_codename = "fossa"
     elif sys_ubuntu_codename == "jammy":
@@ -83,9 +98,11 @@ class AllowedPackage(NamedTuple):
     comment: Optional[str]
 
     def __str__(self):
+        note = f"({self.source})"
         if self.comment is not None:
-            return f"{self.package} ({self.source}) ({self.comment})"
-        return f"{self.package} ({self.source})"
+            note += f" ({self.comment})"
+
+        return f"{self.package} {note}"
 
 
 AllowList = Dict[str, AllowedPackage]
@@ -160,7 +177,7 @@ def check_public_scanning(
     if pkgs_not_allowed:
         print(
             "\n"
-            "The following packages are not in public archive."
+            "The following packages are not in public archive. "
             "Please send an MP to\n"
             f"{ALLOWLIST_GIT_URL}\n"
             "to review by manager:"
@@ -206,8 +223,8 @@ def pkg_is_public(pkg: Package) -> bool:
         raise Exception("package is not installed")
     for origin in ver.origins:
         if (
-            "security.ubuntu.com" in origin.site or
-            "archive.ubuntu.com" in origin.site
+            "security.ubuntu.com" in origin.site
+            or "archive.ubuntu.com" in origin.site
         ) and origin.trusted:
             return True
     return False
@@ -236,7 +253,7 @@ def check_public(args):
     apt_cache.update()
     apt_cache.open()
 
-    platform = get_platform(apt_cache)
+    platform = get_platform()
     print(f"# platform: {platform.oem}-{platform.platform_with_release}")
 
     print("# getting allowlist")
