@@ -6,17 +6,18 @@ import re
 import shutil
 import subprocess
 import sys
-import lsb_release
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
+import lsb_release
 from apt.cache import Cache
 from apt.package import Package
 
 
 class Platform(NamedTuple):
-    oem: str                    # somerville
-    platform_with_release: str  # fossa-abc
-    platform_in_metapkg: str    # abc
+    oem: str  # somerville
+    oem_series: str  # jellyfish
+    platform_with_release: str  # jellyfish-abc
+    platform_in_metapkg: str  # abc
 
     def get_metapkg_names(self):
         return [
@@ -33,24 +34,39 @@ somerville_platform_re = re.compile(r"\+([\w-]+)\+")
 ALLOWLIST_GIT_URL = "https://git.launchpad.net/~oem-solutions-engineers/pc-enablement/+git/oem-gap-allow-list"  # noqa: E501
 
 
-def get_platform(apt_cache: Cache) -> Platform:
-    oem = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
-         "--oem-codename"],
-        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+def get_platform() -> Platform:
+    oem = (
+        subprocess.run(
+            [
+                "/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+                "--oem-codename",
+            ],
+            stdout=subprocess.PIPE,
+        )
+        .stdout.strip()
+        .decode("utf-8")
+    )
     if oem is None:
         raise Exception("oem name not found by get-oem-info.sh.")
 
-    platform = subprocess.run(
-        ["/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
-         "--platform-codename"],
-        stdout=subprocess.PIPE).stdout.strip().decode("utf-8")
+    platform = (
+        subprocess.run(
+            [
+                "/usr/lib/plainbox-provider-pc-sanity/bin/get-oem-info.sh",
+                "--platform-codename",
+            ],
+            stdout=subprocess.PIPE,
+        )
+        .stdout.strip()
+        .decode("utf-8")
+    )
     if platform is None:
         raise Exception("platform name not found by get-oem-info.sh.")
 
     # Since Ubuntu 22.04, there is no group layer
-    sys_ubuntu_codename = lsb_release.get_distro_information()['CODENAME']
+    sys_ubuntu_codename = lsb_release.get_distro_information()["CODENAME"]
 
+    oem_ubuntu_codename = None
     if sys_ubuntu_codename == "focal":
         oem_ubuntu_codename = "fossa"
     elif sys_ubuntu_codename == "jammy":
@@ -74,21 +90,49 @@ def get_platform(apt_cache: Cache) -> Platform:
     if platform_with_release is None:
         raise Exception("platform_with_release is empty.")
 
-    return Platform(oem, platform_with_release, platform)
+    return Platform(oem, oem_ubuntu_codename, platform_with_release, platform)
+
+
+class PackageNameWithVersion(NamedTuple):
+    name: str
+    version: str
+
+    def __str__(self):
+        return f"{self.name} {self.version}"
 
 
 class AllowedPackage(NamedTuple):
-    package: str
+    package: Union[str, PackageNameWithVersion]
     source: str
     comment: Optional[str]
 
     def __str__(self):
+        note = f"({self.source})"
         if self.comment is not None:
-            return f"{self.package} ({self.source}) ({self.comment})"
-        return f"{self.package} ({self.source})"
+            note += f" ({self.comment})"
+
+        return f"{self.package} {note}"
 
 
-AllowList = Dict[str, AllowedPackage]
+AllowListInternal = Dict[Union[str, PackageNameWithVersion], AllowedPackage]
+
+
+class AllowList:
+    allowlist: AllowListInternal
+
+    def __init__(self, allowlist: AllowListInternal):
+        self.allowlist = allowlist
+
+    def get(self, pkg: PackageNameWithVersion):
+        item = self.allowlist.get(pkg.name)
+        if item is not None:
+            return item
+
+        item = self.allowlist.get(pkg)
+        if item is not None:
+            return item
+
+        return None
 
 
 def get_allowlist(
@@ -112,77 +156,105 @@ def get_allowlist(
         .rstrip()
     )
 
-    allowed_packages = {}
+    allowed_packages: AllowListInternal = {}
     for filename in [
         "testtools",
         "common",
         f"{platform.oem}/common",
+        f"{platform.oem}/{platform.oem_series}-common",
         f"{platform.oem}/{platform.platform_with_release}",
     ]:
         try:
             with open(os.path.join(allowlist_path, filename)) as file:
-                for pkg_name in file:
+                for line in file:
                     # allow putting comments in allowlist, either by # in the
                     # beginning of the line, or # after package name.  The
                     # latter format will be shown in the message.
-                    pkg_name_split = pkg_name.split("#", 1)
-                    pkg_name = pkg_name_split[0].strip()
+                    pkg_name_split = line.split("#", 1)
+                    pkg = pkg_name_split[0].strip()
                     comment = None
                     if len(pkg_name_split) >= 2:
                         comment = pkg_name_split[1].strip()
-                    if pkg_name == "":
+                    if pkg == "":
                         continue
-                    allowed_packages[pkg_name] = AllowedPackage(
-                        pkg_name, filename, comment
+
+                    pkg_ver_split = pkg.split(" ", 1)
+                    if len(pkg_ver_split) >= 2:
+                        pkg_name = pkg_ver_split[0].strip()
+                        pkg_ver = pkg_ver_split[1].strip()
+                        pkg = PackageNameWithVersion(pkg_name, pkg_ver)
+
+                    allowed_packages[pkg] = AllowedPackage(
+                        pkg, filename, comment
                     )
+                print(f"# allowlist {filename} loaded")
         except FileNotFoundError:
+            print(f"# allowlist {filename} not found")
             pass
 
-    return (allowed_packages, repo_hash)
+    return (AllowList(allowed_packages), repo_hash)
 
 
 def check_public_scanning(
     apt_cache: Cache, platform: Platform, allowlist: AllowList
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
-    pkgs_installed = [pkg for pkg in apt_cache if pkg.installed is not None]
+
+    class PkgTuple(NamedTuple):
+        k: PackageNameWithVersion
+        pkg: Package
+
+    pkgs_installed = [
+        PkgTuple(PackageNameWithVersion(pkg.name, pkg.installed.version), pkg)
+        for pkg in apt_cache
+        if pkg.installed is not None
+    ]
+
     pkgs_not_public = [
-        pkg
-        for pkg in pkgs_installed
-        if not pkg_is_public(pkg) and pkg.name not in metapkg_names
+        item
+        for item in pkgs_installed
+        if not pkg_is_public(item.pkg) and item.k.name not in metapkg_names
     ]
 
     pkgs_not_allowed = [
-        (pkg.name, pkg.installed.version)
-        for pkg in pkgs_not_public
-        if pkg.name not in allowlist and pkg.installed is not None
+        item for item in pkgs_not_public if allowlist.get(item.k) is None
     ]
     if pkgs_not_allowed:
         print(
             "\n"
-            "The following packages are not in public archive."
+            "The following packages are not in public archive. "
             "Please send an MP to\n"
             f"{ALLOWLIST_GIT_URL}\n"
             "to review by manager:"
         )
-        for (name, version) in pkgs_not_allowed:
-            print(f" - {name} {version}")
+        for item in pkgs_not_allowed:
+            print(f" - {item.k}")
 
     pkgs_metapkg_not_uploaded = [
-        (pkg.name, pkg.installed.version)
-        for pkg in pkgs_installed
-        if pkg.name in metapkg_names
-        and not pkg_is_uploaded_metapkg(pkg, metapkg_names)
-        and pkg.installed is not None
+        item
+        for item in pkgs_installed
+        if item.k.name in metapkg_names
+        and not pkg_is_uploaded_metapkg(item.pkg, metapkg_names)
     ]
     if pkgs_metapkg_not_uploaded:
         print("\n" "The following metapackages are not uploaded:")
-        for (name, version) in pkgs_metapkg_not_uploaded:
-            print(f" - {name} {version}")
+        for item in pkgs_metapkg_not_uploaded:
+            print(f" - {item.k}")
 
+    # TODO: Replace this in Python 3.8+ for Walrus (:=) operator:
+    # pkgs_allowed = [
+    #     allowlist_item
+    #     for item in pkgs_not_public
+    #     if (allowlist_item := allowlist.get(item.k)) is not None
+    # ]
     pkgs_allowed = [
-        allowlist[pkg.name] for pkg in pkgs_not_public if pkg.name in allowlist
+        allowlist_item
+        for allowlist_item in [
+            allowlist.get(item.k) for item in pkgs_not_public
+        ]
+        if allowlist_item is not None
     ]
+
     if pkgs_allowed:
         print(
             "\n"
@@ -206,8 +278,8 @@ def pkg_is_public(pkg: Package) -> bool:
         raise Exception("package is not installed")
     for origin in ver.origins:
         if (
-            "security.ubuntu.com" in origin.site or
-            "archive.ubuntu.com" in origin.site
+            "security.ubuntu.com" in origin.site
+            or "archive.ubuntu.com" in origin.site
         ) and origin.trusted:
             return True
     return False
@@ -236,7 +308,7 @@ def check_public(args):
     apt_cache.update()
     apt_cache.open()
 
-    platform = get_platform(apt_cache)
+    platform = get_platform()
     print(f"# platform: {platform.oem}-{platform.platform_with_release}")
 
     print("# getting allowlist")
