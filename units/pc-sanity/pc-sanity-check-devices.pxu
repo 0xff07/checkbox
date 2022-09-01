@@ -219,7 +219,7 @@ template-filter:
  cpuinfo.type in ['GenuineIntel','AuthenticAMD']
 template-unit: job
 plugin: shell
-category_id: com.canonical.plainbox:miscellanea
+category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/acpi-bios-error_{type}
 command: bios-error.sh
 _summary: Check if kernel reports ACPI BIOS Error
