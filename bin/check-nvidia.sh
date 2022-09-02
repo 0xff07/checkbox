@@ -94,15 +94,18 @@ check_environment() {
 }
 check_renderer() {
     local renderer
-    local _chassis_type
-    _chassis_type="$(cat /sys/class/dmi/id/chassis_type)"
+    local _nv_bootvga
+    # head -n 1 because of nv-link or any multiple nvidia cards case
+    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
     case $1 in
         on-demand-default )
             renderer="$(__NV_PRIME_RENDER_OFFLOAD=0 __GLX_VENDOR_LIBRARY_NAME="" glxinfo | grep "OpenGL renderer string")"
-            if [ "$_chassis_type" == "9" ] ||
-                [ "$_chassis_type" == "10" ] ||
-                [ "$_chassis_type" == "13" ]; then
-                [ -z "${renderer##*Intel*}" ] || show_error "The default renderer is NOT Intel in on-demand." exit1
+            # if nvidia is not bootvga, then the render should not be nvidia but
+            # i915, amdgpu, radeon
+            if [ "$_nv_bootvga" == 0 ]; then
+                echo "renderer"| grep -iq 'nvidia' && show_error "The default renderer should NOT be NVIDIA in on-demand." exit1
+            else
+                echo "renderer"| grep -iq 'nvidia' || show_error "The default renderer should be NVIDIA in on-demand." exit1
             fi
             ;;
         on-demand-nvidia )
@@ -126,11 +129,17 @@ check_renderer() {
     esac
 }
 check_ondemand_mode() {
-    local _chassis_type
-    _chassis_type="$(cat /sys/class/dmi/id/chassis_type)"
-    if [ "$_chassis_type" == "9" ] ||
-        [ "$_chassis_type" == "10" ] ||
-        [ "$_chassis_type" == "13" ]; then
+    local _gpu_mgr_nv_rtd3_sprt
+    local _nv_bootvga
+    # head -n 1 because of nv-link or any multiple nvidia cards case
+    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
+    # will empty if bootvga is nvidia
+    _gpu_mgr_nv_rtd3_sprt="$(grep 'Is nvidia runtime pm supported for' /var/log/gpu-manager.log| awk -F '?' '{print $2}'| sed 's/ //g')"
+    # The test case should test what ubuntu offers which relys on gpu-manager.
+    # Although after Ampere, the rtd3 will auto enable but which is depending on
+    # GPU. It's a black-box and we don't need to care.
+    if [ "$_nv_bootvga" == 0 ] &&
+       [ "$_gpu_mgr_nv_rtd3_sprt" == "yes" ]; then
         check_nvidia_sleep ondemand_
     fi
     check_renderer on-demand-default
