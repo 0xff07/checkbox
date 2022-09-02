@@ -67,6 +67,12 @@ collect_nvidia_debug_info() {
     nvidia-smi >> $OUTPUT_FOLDER/nvidia-debug-log
 }
 
+is_nv_bootvga() {
+    local _nv_bootvga
+    # head -n 1 because of nv-link or any multiple nvidia cards case
+    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
+    echo "$_nv_bootvga"
+}
 get_powertop_report() {
     sudo powertop --csv="$OUTPUT_FOLDER"/"$filename" -t 3 || show_error "Powertop failed.." usage-exit1
 }
@@ -96,16 +102,16 @@ check_renderer() {
     local renderer
     local _nv_bootvga
     # head -n 1 because of nv-link or any multiple nvidia cards case
-    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
+    _nv_bootvga="$(is_nv_bootvga)"
     case $1 in
         on-demand-default )
-            renderer="$(__NV_PRIME_RENDER_OFFLOAD=0 __GLX_VENDOR_LIBRARY_NAME="" glxinfo | grep "OpenGL renderer string")"
+            renderer="$(__NV_PRIME_RENDER_OFFLOAD=0 __GLX_VENDOR_LIBRARY_NAME="" glxinfo | grep "OpenGL vendor string")"
             # if nvidia is not bootvga, then the render should not be nvidia but
             # i915, amdgpu, radeon
             if [ "$_nv_bootvga" == 0 ]; then
-                echo "renderer"| grep -iq 'nvidia' && show_error "The default renderer should NOT be NVIDIA in on-demand." exit1
+                echo "$renderer"| grep -iq 'nvidia' && show_error "The default renderer should NOT be NVIDIA in on-demand." exit1
             else
-                echo "renderer"| grep -iq 'nvidia' || show_error "The default renderer should be NVIDIA in on-demand." exit1
+                echo "$renderer"| grep -iq 'nvidia' || show_error "The default renderer should be NVIDIA in on-demand." exit1
             fi
             ;;
         on-demand-nvidia )
@@ -127,12 +133,13 @@ check_renderer() {
             show_error "[ERROR][CODE] Not assigned which mode to check." usage-exit1
             ;;
     esac
+    return 0
 }
 check_ondemand_mode() {
     local _gpu_mgr_nv_rtd3_sprt
     local _nv_bootvga
     # head -n 1 because of nv-link or any multiple nvidia cards case
-    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
+    _nv_bootvga="$(is_nv_bootvga)"
     # will empty if bootvga is nvidia
     _gpu_mgr_nv_rtd3_sprt="$(grep 'Is nvidia runtime pm supported for' /var/log/gpu-manager.log| awk -F '?' '{print $2}'| sed 's/ //g')"
     # The test case should test what ubuntu offers which relys on gpu-manager.
