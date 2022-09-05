@@ -43,16 +43,12 @@ function setup() {
 
 @test "Check renderer when OpenGL renderer string: Mesa Intel(R)" {
     set -e
-    glxinfo_string="OpenGL renderer string: Mesa Intel(R)"
+    glxinfo_string=$'OpenGL vendor string: Intel\nOpenGL renderer string: Mesa Intel(R)'
     function glxinfo() {
         echo "$glxinfo_string"
     }
     echo run check_renderer intel
     run check_renderer intel
-    [ "$status" -eq 0 ]
-
-    echo run check_renderer on-demand-default
-    run check_renderer on-demand-default
     [ "$status" -eq 0 ]
 
     echo run check_renderer on-demand-nvidia
@@ -61,20 +57,30 @@ function setup() {
     echo run check_renderer on-nvidia
     run check_renderer nvidia
     [ "$status" -eq 1 ]
+
+    function is_nv_bootvga() {
+        echo "1"
+    }
+    echo run check_renderer on-demand-default
+    run check_renderer on-demand-default
+    [ "$status" -eq 1 ]
+
+    function is_nv_bootvga() {
+        echo "0"
+    }
+    echo run check_renderer on-demand-default
+    run check_renderer on-demand-default
+    [ "$status" -eq 0 ]
 }
 
 @test "Check renderer when OpenGL renderer string: GeForce GTX" {
     set -e
-    glxinfo_string="OpenGL renderer string: GeForce GTX"
+    glxinfo_string=$'OpenGL vendor string: NVIDIA Corporation\nOpenGL renderer string: GeForce GTX'
     function glxinfo() {
         echo "$glxinfo_string"
     }
     echo run check_renderer intel
     run check_renderer intel
-    [ "$status" -eq 1 ]
-
-    echo run check_renderer on-demand-default
-    run check_renderer on-demand-default
     [ "$status" -eq 1 ]
 
     echo run check_renderer on-demand-nvidia
@@ -83,10 +89,24 @@ function setup() {
     echo run check_renderer on-nvidia
     run check_renderer nvidia
     [ "$status" -eq 0 ]
+
+    function is_nv_bootvga() {
+        echo "1"
+    }
+    echo run check_renderer on-demand-default
+    run check_renderer on-demand-default
+    [ "$status" -eq 0 ]
+
+    function is_nv_bootvga() {
+        echo "0"
+    }
+    echo run check_renderer on-demand-default
+    run check_renderer on-demand-default
+    [ "$status" -eq 1 ]
 }
 @test "Check renderer when OpenGL renderer string: llvmpipe (LLVM 10.0.0, 256 bits)" {
     set -e
-    glxinfo_string="OpenGL renderer string: llvmpipe (LLVM 10.0.0, 256 bits)"
+    glxinfo_string=$'OpenGL vendor string: Mesa/X.org\nOpenGL renderer string: llvmpipe (LLVM 10.0.0, 256 bits)'
     function glxinfo() {
         echo "$glxinfo_string"
     }
