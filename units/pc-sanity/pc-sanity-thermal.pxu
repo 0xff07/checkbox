@@ -19,11 +19,14 @@ _summary: Check if Intel RAPL power capping driver is installed
 _description:
  Check if Intel RAPL power capping  driver is installed
 
+unit: template
+template-resource: device
+template-filter:
+ device.path == '/devices/pci0000:00/0000:00:04.0' and device.vendor_id == '32902'
+template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/intel-rapl-mmio
-requires: cpuinfo.type == 'GenuineIntel'
-depends: miscellanea/proc_thermal
+id: miscellanea/intel-rapl-mmio_{product_id}
 command:
  if test -d /sys/class/powercap/intel-rapl-mmio; then
      exit 0
@@ -172,31 +175,27 @@ _description:
  Check if the system contains valid trip points, iwlwifi/INT3400 Thermal/x86_pkg_temp are
  ignored.
 
+unit: template
+template-resource: device
+template-filter:
+ device.path == '/devices/pci0000:00/0000:00:04.0' and device.vendor_id == '32902'
+template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/proc_thermal
-requires:
-  cpuinfo.type == 'GenuineIntel'
-  device.path in ['/devices/platform/INTC1040:00','/devices/platform/INT3400:00','/devices/platform/INTC10A0:00','/devices/platform/INTC10A1:00','/devices/platform/INTC10A2:00','/devices/platform/INTC10A3:00','/devices/platform/INTC10A4:00','/devices/platform/INTC10A5:00']
+id: miscellanea/proc_thermal_{product_id}
 command:
- set -x
- report_folder="$HOME/submission-report-$(date +%Y%m%d%H%M)"
- mkdir -p "$report_folder"
- if lspci -nnk  | grep driver | grep proc_thermal;then
-        true;
- else
-        journalctl -k > "$report_folder"/dmesg.log
-        lspci -nnk > "$report_folder"/dmesg.log
-        lsmod > "$report_folder"/lsmod.log
-        false;
-        echo "proc_thermal driver is not loaded."
-        echo "It could caused by lake of ID in kernel like LP: #1874008."
-        exit 1
+ if [ ! -d "/sys{path}/driver" ]; then
+     echo "The error indicates there is no processor thermal driver probed."
+     echo "Dynamic Tuning Technology (DTT) - Logically, this device appears as a"
+     echo "PCI device residing on PCI Bus 0. Device 4 contains the configuration"
+     echo "registers for the DPPM device."
+     echo "More detail is in Intel Document ID:640686, Processor EDS."
+     exit 1
  fi
-_summary: Check if thermal driver be loaded.
+_summary: Check if processor thermal driver is loaded.
 _description:
- Check if thermal driver be loaded. Which also checked if the CPU id be recognized by kernel.
- Thermal zone TCPU will not be created without this driver which also impact thermald operation.
+ Intel PCI device 4 function 0 is DTT, which should be probed by processor thermal driver.
+ The driver helps create CPU thermal zone for doing CPU thermal control on Intel platform.
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
