@@ -21,14 +21,14 @@ include:
     com.canonical.certification::power-management/check-turbostat-s2i-s0ix-residency
     com.canonical.certification::power-management/check-turbostat-s2i-gfxrc6-residency
     com.canonical.certification::miscellanea/intel-rapl
-    com.canonical.certification::miscellanea/intel-rapl-mmio
+    com.canonical.certification::miscellanea/intel-rapl-mmio_.*
     com.canonical.certification::miscellanea/intel-p-state
     com.canonical.certification::miscellanea/intel-powerclamp
     com.canonical.certification::miscellanea/intel-cpu-thermal
     com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
     com.canonical.certification::miscellanea/intel_pmc_core
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
-    com.canonical.certification::miscellanea/proc_thermal
+    com.canonical.certification::miscellanea/proc_thermal_.*
     com.canonical.certification::miscellanea/thermald
     com.canonical.certification::miscellanea/thermal-policy-set_.*
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
@@ -87,14 +87,14 @@ include:
     com.canonical.certification::power-management/check-turbostat-s2i-s0ix-residency
     com.canonical.certification::power-management/check-turbostat-s2i-gfxrc6-residency
     com.canonical.certification::miscellanea/intel-rapl
-    com.canonical.certification::miscellanea/intel-rapl-mmio
+    com.canonical.certification::miscellanea/intel-rapl-mmio_.*
     com.canonical.certification::miscellanea/intel-p-state
     com.canonical.certification::miscellanea/intel-powerclamp
     com.canonical.certification::miscellanea/intel-cpu-thermal
     com.canonical.certification::miscellanea/intel-x86-pkg-temp-thermal
     com.canonical.certification::miscellanea/intel_pmc_core
     com.canonical.certification::miscellanea/valid-thermal-zone-trip-points
-    com.canonical.certification::miscellanea/proc_thermal
+    com.canonical.certification::miscellanea/proc_thermal_.*
     com.canonical.certification::miscellanea/thermald
     com.canonical.certification::miscellanea/thermal-policy-set_.*
     com.canonical.certification::miscellanea/dump_libsmbios_tokens
