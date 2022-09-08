@@ -11,7 +11,7 @@ def main():
         return 0
 
     kernel_version = subprocess.getoutput("uname -r").split(".")
-    if int(kernel_version[1]) > 15:
+    if int(kernel_version[0]) > 5 or int(kernel_version[1]) > 15:
         return 0
 
     _6g_start = 5945
