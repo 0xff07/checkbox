@@ -2,6 +2,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if test -d /sys/class/powercap/intel-rapl; then
      exit 0
@@ -27,6 +28,7 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl-mmio_{product_id}
+depends: miscellanea/thermald
 command:
  if test -d /sys/class/powercap/intel-rapl-mmio; then
      exit 0
@@ -50,6 +52,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-p-state
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if test -d /sys/devices/system/cpu/intel_pstate; then
      exit 0
@@ -72,6 +75,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-powerclamp
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'intel_powerclamp' /sys/class/thermal/cooling_device*/type; then
      exit 0
@@ -91,6 +95,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-cpu-thermal
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'B0D4\|B0DB\|TCPU' /sys/class/thermal/thermal_zone*/type; then
      exit 0
@@ -118,6 +123,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-x86-pkg-temp-thermal
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type; then
      exit 0
@@ -135,6 +141,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/valid-thermal-zone-trip-points
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  fail=0
  for zone in /sys/class/thermal/thermal_zone*
@@ -183,6 +190,7 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/proc_thermal_{product_id}
+depends: miscellanea/thermald
 command:
  if [ ! -d "/sys{path}/driver" ]; then
      echo "The error indicates there is no processor thermal driver probed."
