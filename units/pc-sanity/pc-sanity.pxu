@@ -129,6 +129,7 @@ exclude:
     com.canonical.certification::graphics/2_.*
 nested_part:
     com.canonical.certification::client-cert-auto
+    com.canonical.certification::power-management-cpu-cstate-cert-automated
 bootstrap_include:
     device
     graphics_card
