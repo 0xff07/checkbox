@@ -2,6 +2,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if test -d /sys/class/powercap/intel-rapl; then
      exit 0
@@ -27,6 +28,7 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-rapl-mmio_{product_id}
+depends: miscellanea/thermald
 command:
  if test -d /sys/class/powercap/intel-rapl-mmio; then
      exit 0
@@ -50,6 +52,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-p-state
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if test -d /sys/devices/system/cpu/intel_pstate; then
      exit 0
@@ -72,6 +75,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-powerclamp
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'intel_powerclamp' /sys/class/thermal/cooling_device*/type; then
      exit 0
@@ -91,6 +95,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-cpu-thermal
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'B0D4\|B0DB\|TCPU' /sys/class/thermal/thermal_zone*/type; then
      exit 0
@@ -118,6 +123,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-x86-pkg-temp-thermal
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  if grep -q 'x86_pkg_temp' /sys/class/thermal/thermal_zone*/type; then
      exit 0
@@ -135,6 +141,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/valid-thermal-zone-trip-points
 requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
 command:
  fail=0
  for zone in /sys/class/thermal/thermal_zone*
@@ -183,6 +190,7 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/proc_thermal_{product_id}
+depends: miscellanea/thermald
 command:
  if [ ! -d "/sys{path}/driver" ]; then
      echo "The error indicates there is no processor thermal driver probed."
@@ -233,21 +241,30 @@ template-filter:
  device.path in ['/devices/platform/INT3400:00','/devices/platform/INT3403:00','/devices/platform/INTC1040:00','/devices/platform/INTC1041:00','/devices/platform/INTC1042:00','/devices/platform/INTC1043:00','/devices/platform/INTC1046:00','/devices/platform/INTC1062:00','/devices/platform/INTC10A0:00','/devices/platform/INTC10A1:00']
 template-unit: job
 plugin: shell
+depends: miscellanea/thermald
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/thermal-policy-set_{driver}
 command:
  policy=$(cat "/sys{path}/uuids/current_uuid")
  if [ "$policy" = "INVALID" ]; then
      echo "Check /sys{path}/uuids/current_uuid got INVALID."
-     echo "The implementation detail is:"
+     echo "The implementation detail:"
      echo "https://github.com/torvalds/linux/commit/c7ff29763989bd09c433f73fae3c1e1c15d9cda4"
-     echo "CPU thermal policy is not set:"
-     echo "1. thermald can't support the configuration in BIOS"
-     echo "2. BIOS didn't configure the policy correctly"
+     echo "INVALID means thermal policy is not set."
+     echo "The possible causes:"
+     echo "a. thermald can't support the adaptive table in BIOS"
+     echo "b. BIOS didn't configure any adaptive table"
+     echo "c. The BIOS only supports the default passive table"
+     echo "d. The platform doesn't require the OS to do thermal management"
      echo "How to handle the issue:"
-     echo "1. Check if the platform support DPTF? if not, set it to invalid."
-     echo "2. Ask OEM what policy should be applied on the platform?"
-     echo "Intel Document ID: 655258 Thermal Management provide more detail."
+     echo "a. Check with ODM if the platform required user space daemon to do policy selection? ref lp:1982073, if not, set it to invalid"
+     echo "   - The platform might doesn't reuqire OS to do thermal management, like control it by EC."
+     echo "b. Is the platform complied with DPTF/DTT? if not, set it to invalid"
+     echo "   - We only have thermald in Ubuntu comply to DPTF so far."
+     echo "c. Ask OEM what default policy should be applied on the platform? refer to [1]"
+     echo "   - The platform expect which adaptive table is used, and what default policy be set?"
+     echo "[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/thermal/intel/int340x_thermal/int3400_thermal.c#n33"
+     echo "[2] Intel Document ID: 655258 Thermal Management provides more detail."
      exit 1
  fi
 _summary: Check if the system has thermal policy applied
