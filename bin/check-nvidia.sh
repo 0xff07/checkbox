@@ -70,7 +70,12 @@ collect_nvidia_debug_info() {
 is_nv_bootvga() {
     local _nv_bootvga
     # head -n 1 because of nv-link or any multiple nvidia cards case
-    _nv_bootvga="$(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga| head -n 1)"
+    for bv in $(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga); do
+        if [ "$bv" == "1" ]; then
+            _nv_bootvga=1
+            break
+        fi
+    done
     echo "$_nv_bootvga"
 }
 get_powertop_report() {
