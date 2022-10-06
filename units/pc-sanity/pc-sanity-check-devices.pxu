@@ -238,3 +238,32 @@ command: check-device-power-control.sh
 _summary: Check if devices runtime PM enabled
 _description:
  Check if devices runtime PM is enabled for power sensitive platforms
+
+unit: template
+template-resource: device
+template-filter: device.driver in ['iosm', 'mtk_t7xx']
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-vtd-enabled_{driver}
+user: root
+command:
+ if ! journalctl -k | grep -q 'Intel(R) Virtualization Technology for Directed I/O'; then
+    echo "Intel VT-d disabled which is need for device"
+    echo "Reference for enabling VT-d:"
+    echo "Kernel with CONFIG_INTEL_IOMMU"
+    echo " 1. Kernel with CONFIG_INTEL_IOMMU_DEFAULT_ON"
+    echo " 2. Kernel parameter intel_iommu=on"
+    echo " 3. Force enable Intel VT-d in BIOS"
+    exit 1
+ fi
+ device=$(echo {path} | rev | cut -d '/' -f 1 | rev)
+ if [ ! -d /sys/{path}/iommu ];then
+    echo "Device $device not add to iommu group"
+    exit 1
+ fi
+ exit 0
+_summary: Check the status of Intel VT-d
+_description:
+ The test case is for checking the status of Intel VT-d (Virtualization 
+ Technology direct I/O)
