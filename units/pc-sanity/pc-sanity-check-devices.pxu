@@ -225,3 +225,16 @@ command: bios-error.sh
 _summary: Check if kernel reports ACPI BIOS Error
 _description:
  Check if the kernel reports ACPI BIOS Error
+
+unit: template
+template-resource: dmi
+template-filter:
+ dmi.category == 'CHASSIS' and dmi.product not in ['Mini_Tower', 'Tower', 'Main_Server_Chassis','Rack_Mount_Chassis']
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-device-runtime-pm_{product}
+command: check-device-power-control.sh
+_summary: Check if devices runtime PM enabled
+_description:
+ Check if devices runtime PM is enabled for power sensitive platforms
