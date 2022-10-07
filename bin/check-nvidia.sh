@@ -68,7 +68,7 @@ collect_nvidia_debug_info() {
 }
 
 is_nv_bootvga() {
-    local _nv_bootvga
+    local _nv_bootvga=0
     # head -n 1 because of nv-link or any multiple nvidia cards case
     while IFS= read -r line; do
         if [ "$line" == "1" ]; then
