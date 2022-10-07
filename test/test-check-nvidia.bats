@@ -116,7 +116,7 @@ function setup() {
 
     echo run check_renderer on-demand-default
     run check_renderer on-demand-default
-    [ "$status" -eq 1 ]
+    [ "$status" -eq 0 ]
 
     echo run check_renderer on-demand-nvidia
     run check_renderer on-demand-nvidia
