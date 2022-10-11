@@ -13,7 +13,6 @@ include:
     com.canonical.certification::miscellanea/check-nvidia
     com.canonical.certification::miscellanea/check-gpu-driver
     com.canonical.certification::miscellanea/debsums
-    com.canonical.certification::miscellanea/install_kernel_tools_testing
     com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
     com.canonical.certification::power-management/check-turbostat-long-idle-s0ix-residency
     com.canonical.certification::power-management/check-turbostat-long-idle-gfxrc6-residency
@@ -79,7 +78,6 @@ include:
     com.canonical.certification::miscellanea/check-nvidia
     com.canonical.certification::miscellanea/check-gpu-driver
     com.canonical.certification::miscellanea/debsums
-    com.canonical.certification::miscellanea/install_kernel_tools_testing
     com.canonical.certification::power-management/check-turbostat-long-idle-cpu-residency
     com.canonical.certification::power-management/check-turbostat-long-idle-s0ix-residency
     com.canonical.certification::power-management/check-turbostat-long-idle-gfxrc6-residency
