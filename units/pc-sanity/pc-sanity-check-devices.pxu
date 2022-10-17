@@ -246,6 +246,8 @@ template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/intel-vtd-enabled_{driver}
+requires:
+ cpuinfo.type == 'GenuineIntel'
 user: root
 command:
  if ! journalctl -k | grep -q 'Intel(R) Virtualization Technology for Directed I/O'; then
