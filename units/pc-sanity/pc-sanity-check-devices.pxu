@@ -245,7 +245,7 @@ template-filter: device.driver in ['iosm', 'mtk_t7xx', 'thunderbolt']
 template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/intel-vtd-enabled_{driver}
+id: miscellanea/intel-vtd-enabled_{driver}_{__index__}
 requires:
  cpuinfo.type == 'GenuineIntel'
 user: root
