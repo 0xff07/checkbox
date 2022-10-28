@@ -141,3 +141,21 @@ requires:
 command: csme-detection-tool.sh
 _description:
  Attach Intel ME info.
+
+unit: template
+template-resource: dmi
+template-filter:
+ dmi.category == 'CHASSIS' and dmi.product not in ['Mini_Tower', 'Tower', 'Main_Server_Chassis','Rack_Mount_Chassis']
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/ac-automatic-suspend-estar-settings_{product}
+command:
+ if [ ! -f /usr/share/glib-2.0/schemas/40_manage-estar-settings.gschema.override ]; then
+   echo "For somerville project, please check your manifest to see lp:1993993 is applied or not"
+   echo "For stella and sutton, please check manage-estar-settings is installed or not"
+   exit 1
+ fi
+_description:
+  Check if image include manage-estar-settings package to apply default e-star setting
+  LP#1993993
