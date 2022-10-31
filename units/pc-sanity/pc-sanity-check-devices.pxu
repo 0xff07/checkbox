@@ -269,3 +269,30 @@ _summary: Check the status of Intel VT-d ({driver})
 _description:
  The test case is for checking the status of Intel VT-d (Virtualization 
  Technology direct I/O)
+
+unit: template
+template-resource: cpuinfo
+template-filter: cpuinfo.type == 'GenuineIntel'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/intel-hid_{model_number}_{model_version}_{model_revision}
+requires:
+ sleep.mem_sleep == 's2idle'
+command:
+ if grep -q HIDD /sys/bus/acpi/devices/*/path; then
+     if grep -q intel_hid /proc/modules; then
+         exit 0
+     else
+         echo "The intel_hid is not loaded."
+         echo "HIDD device node:"
+         grep HIDD /sys/bus/acpi/devices/*/path
+         echo "intel_hid modinfo:"
+         modinfo intel_hid
+         exit 1
+    fi
+ fi
+_summary: Check if the intel_hid loaded on the system
+_description:
+ Intel changes intel_hid supported acpi device ID for different generations.
+ Capture the newly added ID before image release.
