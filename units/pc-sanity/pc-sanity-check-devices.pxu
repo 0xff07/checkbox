@@ -296,3 +296,35 @@ _summary: Check if the intel_hid loaded on the system
 _description:
  Intel changes intel_hid supported acpi device ID for different generations.
  Capture the newly added ID before image release.
+
+unit: template
+template-resource: dmi
+template-filter:
+ dmi.category == 'CHASSIS' and dmi.product not in ['Mini_Tower', 'Tower', 'Main_Server_Chassis','Rack_Mount_Chassis']
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-display_{product}
+command:
+ for file in /sys/class/drm/*/status;
+ do
+     status=$(cat < "$file")
+     if [ "$status" = "connected" ]; then
+         # shellcheck disable=SC2001
+         dpms_path=$(echo "$file" | sed "s/status/dpms/g")
+         dpms=$(cat < "$dpms_path")
+         if [ "$dpms" = "On" ]; then
+             echo "Has disaplay attached and screen on"
+             echo "$file:connected"
+             echo "$dpms_path:On"
+             exit 0
+         fi
+     fi
+ done
+ echo "No display attach to any connectors"
+ echo "Please check if graphic driver probed properly."
+ echo "Please check if display attach to it."
+ exit 1
+_summary: Check if display is available for the machine
+_description: Check if the display is available for the machine
+ to avoid release image without output.
