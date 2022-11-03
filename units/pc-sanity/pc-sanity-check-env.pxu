@@ -38,7 +38,7 @@ requires:
 command:
  if dpkg-query -W -f='${Version}\n' dell-recovery | grep -q somerville; then
      exit 0
- elif dpkg-query -W -f='${Version}\n' ubuntu-recovery | grep -q -e ouagadougou -e jiayi; then
+ elif dpkg-query -W -f='${Version}\n' ubuntu-recovery | grep -q -e timbuktu -e ouagadougou -e jiayi; then
      exit 0
  else
      echo "The recovery package version string is wrong, expect somerville for dell-recovery,"
