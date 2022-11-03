@@ -310,8 +310,7 @@ command:
  do
      status=$(cat < "$file")
      if [ "$status" = "connected" ]; then
-         # shellcheck disable=SC2001
-         dpms_path=$(echo "$file" | sed "s/status/dpms/g")
+         dpms_path="${{file//status/dpms}}"
          dpms=$(cat < "$dpms_path")
          if [ "$dpms" = "On" ]; then
              echo "Has disaplay attached and screen on"
