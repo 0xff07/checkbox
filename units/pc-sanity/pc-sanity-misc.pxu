@@ -145,7 +145,7 @@ _description:
 unit: template
 template-resource: dmi
 template-filter:
- dmi.category == 'CHASSIS' and dmi.product not in ['Mini_Tower', 'Tower', 'Main_Server_Chassis','Rack_Mount_Chassis']
+ dmi.category == 'CHASSIS' and dmi.product not in ['Mini Tower', 'Tower', 'Main Server Chassis','Rack Mount Chassis']
 template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
