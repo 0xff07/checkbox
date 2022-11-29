@@ -159,3 +159,19 @@ command:
 _description:
   Check if image include manage-estar-settings package to apply default e-star setting
   LP#1993993
+
+unit: template
+template-resource: dmi
+template-filter:
+ dmi.category == 'SYSTEM' and dmi.vendor == 'Dell Inc.'
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/google-chrome-included_{vendor}
+command:
+ dpkg-query -W -f='${{Status}}' google-chrome-stable 2>/dev/null | grep -q -c "ok installed"
+_summary:
+ Check if Google Chrome is included
+_description:
+ According to PRD 3.9.9, {vendor} has a requirement to include Google Chrome.
+ This check is to ensure the package "google-chrome-stable" is included.
