@@ -175,3 +175,18 @@ _summary:
 _description:
  According to PRD 3.9.9, {vendor} has a requirement to include Google Chrome.
  This check is to ensure the package "google-chrome-stable" is included.
+
+plugin: attachment
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/get-wwan-firmware-version
+estimated_duration: 2.0
+requires:
+ package.name == 'modemmanager'
+ mobilebroadband.gsm == 'supported'
+command:
+ for i in $(mmcli -L | awk '/freedesktop\/ModemManager1\/Modem/ {print $1;}'); do
+   echo "model: $(mmcli -m "$i" | grep "model" | awk -F'model:' '{print $2}')"
+   echo "revision: $(mmcli -m "$i" | grep "firmware revision" | awk -F'firmware revision:' '{print $2}')"
+ done
+_description:
+ Attach WWAN module FW info.
