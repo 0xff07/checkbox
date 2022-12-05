@@ -2,9 +2,14 @@
 
 import sys
 import xml.etree.ElementTree as ET
+from typing import List, Tuple, Callable
+
+# type aliases
+DfsCbRtn = Tuple[bool, str]
+DfsCb = Callable[[ET.Element, List[str]], DfsCbRtn]
 
 
-def ns_skipper(html: ET.Element):
+def ns_skipper(html: ET.Element) -> Callable[[ET.Element], str]:
     import re
 
     rgx = re.compile("^({http[s]?://(www.|)w3.org/[\w+/]+})?html$")
@@ -20,7 +25,7 @@ def ns_skipper(html: ET.Element):
     return real_tag
 
 
-def dfs(elem: ET.Element, paths: list[str], cb):
+def dfs(elem: ET.Element, paths: List[str], cb: DfsCb) -> bool:
     early_stop, ident = cb(elem, paths)
     if early_stop:
         return True
@@ -55,8 +60,8 @@ def main(report: str):
 
     target_css = ["resultbadA", "resultbadB"]
 
-    def has_css_classes(targets: list[str]):
-        def validator(elem: ET.Element, paths: list[str]):
+    def has_css_classes(targets: List[str]) -> DfsCb:
+        def validator(elem: ET.Element, paths: List[str]) -> DfsCbRtn:
             tag = real_tag(elem)
             if paths != ["html", "head"]:
                 return False, tag
@@ -76,14 +81,14 @@ def main(report: str):
             + "that this script is outdated!"
         )
 
-    def identify(elem: ET.Element):
+    def identify(elem: ET.Element) -> str:
         class_list = elem.attrib.get("class")
         tag = real_tag(elem)
         return ".".join([tag] + ([] if class_list is None else class_list.split(" ")))
 
     has_vuln = False
 
-    def peek_vuln(elem: ET.Element, paths: list[str]):
+    def peek_vuln(elem: ET.Element, paths: List[str]) -> DfsCbRtn:
         ident = identify(elem)
         if (
             paths[-2:] != ["table", "tr.LightRow.Center"]
@@ -106,7 +111,7 @@ def main(report: str):
         print("All avaliable CVEs are patched!")
         sys.exit(0)
 
-    def report_vuln(elem: ET.Element, paths: list[str]):
+    def report_vuln(elem: ET.Element, paths: List[str]) -> DfsCbRtn:
         ident = identify(elem)
         if paths[-1:] == ["table"]:
             if ident in [f"tr.{c}" for c in target_css]:
