@@ -68,8 +68,8 @@ _description:
 unit: packaging meta-data
 os-id: ubuntu
 Depends:
-  bzip2
-  wget
+  bzip2,
+  wget,
   libopenscap8
 
 plugin: shell
