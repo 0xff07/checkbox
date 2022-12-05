@@ -31,7 +31,8 @@ Depends: git,
          sudo,
          xautomation,
          ${misc:Depends},
-         ${shlibs:Depends}
+         ${shlibs:Depends},
+         ${plainbox:Depends}
 Recommends: oem-scripts
 X-Plainbox-Provider: yes
 Description: CheckBox pc sanity jobs provider which forked from plainbox-provider-sru

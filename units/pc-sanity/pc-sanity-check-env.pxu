@@ -54,10 +54,22 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/cvescan
 command:
- cvescan.sh --out "$PLAINBOX_SESSION_SHARE"
+ if [[ "$(lsb_release -rs)" < "22" ]]; then
+   cvescan.sh --out "$PLAINBOX_SESSION_SHARE"
+ else
+   ubuntu-oval.sh "$PLAINBOX_SESSION_SHARE/oval"
+ fi
 _summary: Scan if all CVEs are fixed well.
 _description:
- Refer to https://github.com/canonical/sec-cvescan, to scan if all CVEs are fixed well on the target machine.
+ Refer to https://ubuntu.com/security/oval,
+ to scan if all CVEs are fixed well on the target machine.
+
+unit: packaging meta-data
+os-id: ubuntu
+Depends:
+  bzip2
+  wget
+  libopenscap8
 
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
