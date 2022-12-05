@@ -12,7 +12,7 @@ DfsCb = Callable[[ET.Element, List[str]], DfsCbRtn]
 def ns_skipper(html: ET.Element) -> Callable[[ET.Element], str]:
     import re
 
-    rgx = re.compile("^({http[s]?://(www.|)w3.org/[\w+/]+})?html$")
+    rgx = re.compile(r"^({http[s]?://(www.|)w3.org/[\w+/]+})?html$")
     match = rgx.match(html.tag)
     if match is None:
         raise ValueError('Root element\'s tag should be "html"!')
@@ -56,7 +56,7 @@ def main(report: str):
             body = child
 
     if head is None or body is None:
-        raise ValueError("Cannot locate both <head> and <body> tags under <html>.")
+        raise ValueError("Cannot locate <head> and <body> tags under <html>.")
 
     target_css = ["resultbadA", "resultbadB"]
 
@@ -84,7 +84,8 @@ def main(report: str):
     def identify(elem: ET.Element) -> str:
         class_list = elem.attrib.get("class")
         tag = real_tag(elem)
-        return ".".join([tag] + ([] if class_list is None else class_list.split(" ")))
+        class_parts = [] if class_list is None else class_list.split(" ")
+        return ".".join([tag] + class_parts)
 
     has_vuln = False
 
@@ -98,7 +99,9 @@ def main(report: str):
         nonlocal has_vuln
         has_vuln = int(elem.text) > 0
         if has_vuln:
-            print(f'[ERROR] {elem.attrib["title"]}: {elem.text}', file=sys.stderr)
+            print(
+                f'[ERROR] {elem.attrib["title"]}: {elem.text}', file=sys.stderr
+            )
         return True, ident
 
     is_valid = dfs(body, ["html"], peek_vuln)
@@ -128,6 +131,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(prog="oval-report")
     parser.add_argument("--report", metavar="report.html", required=True)
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s 0.1.0"
+    )
     args = parser.parse_args()
     main(args.report)
