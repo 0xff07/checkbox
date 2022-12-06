@@ -1,6 +1,5 @@
 #!/bin/sh
 set -x
 sudo apt-get update; sudo apt-get dist-upgrade -y
-sudo mkdir -p /etc/xdg/autostart/
 checkbox-cli run com.canonical.certification::miscellanea/cvescan 2>&1 | tee /tmp/checkbox-result.log
 grep "job passed   : Scan if all CVEs are fixed well." /tmp/checkbox-result.log || exit 1
