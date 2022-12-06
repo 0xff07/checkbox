@@ -54,12 +54,11 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/cvescan
 command:
- lsb_release -ds    # debug
  BEFORE_JAMMY=$(bc <<< "$(lsb_release -rs) < 22.04")
  if [ "$BEFORE_JAMMY" -eq 1 ]; then
-   cvescan.sh --out "$PLAINBOX_SESSION_SHARE"
+     cvescan.sh --out "$PLAINBOX_SESSION_SHARE"
  else
-   ubuntu-oval.sh "$PLAINBOX_SESSION_SHARE/oval"
+     ubuntu-oval.sh "$PLAINBOX_SESSION_SHARE/oval"
  fi
 _summary: Scan if all CVEs are fixed well.
 _description:
