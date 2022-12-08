@@ -9,6 +9,10 @@ DfsCbRtn = Tuple[bool, str]
 DfsCb = Callable[[ET.Element, List[str]], DfsCbRtn]
 
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 def ns_skipper(html: ET.Element) -> Callable[[ET.Element], str]:
     import re
 
@@ -99,9 +103,7 @@ def main(report: str):
         nonlocal has_vuln
         has_vuln = int(elem.text) > 0
         if has_vuln:
-            print(
-                f'[ERROR] {elem.attrib["title"]}: {elem.text}', file=sys.stderr
-            )
+            eprint(f'[ERROR] {elem.attrib["title"]}: {elem.text}')
         return True, ident
 
     is_valid = dfs(body, ["html"], peek_vuln)
@@ -114,12 +116,18 @@ def main(report: str):
         print("All avaliable CVEs are patched!")
         sys.exit(0)
 
+    vuln_idents = [f"tr.{c}" for c in target_css]
+
     def report_vuln(elem: ET.Element, paths: List[str]) -> DfsCbRtn:
         ident = identify(elem)
-        if paths[-1:] == ["table"]:
-            if ident in [f"tr.{c}" for c in target_css]:
-                if len(elem) > 0:
-                    print(elem[-1].text, file=sys.stderr)
+        if paths[-1:] == ["table"] and ident in vuln_idents:
+            if len(elem) > 0:
+                eprint(elem[-1].text)
+            if len(elem) > 1 and len(elem[-2]) > 0:
+                anchor = elem[-2][0]
+                if identify(anchor) == "a.Hover":
+                    eprint(f"\t- {anchor.attrib['href']}")
+
         return False, ident
 
     dfs(body, ["html"], report_vuln)
