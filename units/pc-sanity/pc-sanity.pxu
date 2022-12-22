@@ -57,6 +57,7 @@ include:
     com.canonical.certification::miscellanea/check-display_.*
     com.canonical.certification::miscellanea/google-chrome-included_.*
     com.canonical.certification::miscellanea/get-wwan-firmware-version
+    com.canonical.certification::miscellanea/renderer-mesa-driver-check_.*
 exclude:
     com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
     com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
@@ -129,6 +130,7 @@ include:
     com.canonical.certification::miscellanea/check-display_.*
     com.canonical.certification::miscellanea/google-chrome-included_.*
     com.canonical.certification::miscellanea/get-wwan-firmware-version
+    com.canonical.certification::miscellanea/renderer-mesa-driver-check_.*
 exclude:
     com.canonical.certification::after-suspend-bluetooth4/beacon_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*

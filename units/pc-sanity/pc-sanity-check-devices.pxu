@@ -327,3 +327,16 @@ command:
 _summary: Check if display is available for the machine
 _description: Check if the display is available for the machine
  to avoid release image without output.
+
+unit: template
+template-resource: graphics_card
+template-unit: job
+requires:
+    package.name == 'mesa-utils'
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/renderer-mesa-driver-check_{product_slug}
+command: renderer-mesa-driver-check.sh
+_summary: Check if renderer mesa driver support correctness
+_description:
+ Check if mesa driver support the renderer correctly
