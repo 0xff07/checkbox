@@ -44,7 +44,7 @@ def dfs(elem: ET.Element, paths: List[str], cb: DfsCb) -> bool:
     return False
 
 
-def main(report: str):
+def main(report: str, buffer_days: int):
     tree = ET.parse(report)
     root = tree.getroot()
     real_tag = ns_skipper(root)
@@ -125,10 +125,36 @@ def main(report: str):
                 eprint(elem[-1].text)
             if len(elem) > 1 and len(elem[-2]) > 0:
                 anchor = elem[-2][0]
-                if identify(anchor) == "a.Hover":
-                    eprint(f"\t- {anchor.attrib['href']}")
+                report_vuln_detail(anchor, "\t- ")
 
         return False, ident
+
+    def report_vuln_detail(elem: ET.Element, indent: str):
+        import re
+        from datetime import datetime
+        from urllib import request
+        if identify(elem) != "a.Hover":
+            return
+        href = elem.attrib["href"]
+        eprint(f"{indent}{href}")
+        rgx = re.compile(r'<p class="p-muted-heading">(\d+) (\w+) (\d+)</p>')
+        if buffer_days == 0:
+            return
+        with request.urlopen(href) as fd:
+            raw_html = fd.read().decode("utf-8")
+            match = rgx.search(raw_html)
+            if not match:
+                return
+            day, month, year = match.groups()
+            display = f"{day} {month} {year}"
+            parsable = f"{day} {month[:3]} {year}"
+            try:
+                published = datetime.strptime(parsable, "%d %b %Y")
+                passed = datetime.now() - published
+                log_lvl = "ERROR" if passed.days > buffer_days else "WARN"
+                eprint(f"{indent}[{log_lvl}] Published: {display}")
+            except ValueError as e:
+                eprint(indent, *e.args)
 
     dfs(body, ["html"], report_vuln)
     sys.exit(1)
@@ -139,8 +165,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(prog="oval-report")
     parser.add_argument("--report", metavar="report.html", required=True)
+    parser.add_argument("--buffer-days", type=int, default=7)
     parser.add_argument(
-        "--version", action="version", version="%(prog)s 0.1.0"
+        "--version", action="version", version="%(prog)s 0.2.0"
     )
     args = parser.parse_args()
-    main(args.report)
+    main(args.report, args.buffer_days)
