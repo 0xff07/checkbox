@@ -130,22 +130,19 @@ function setup() {
     set -e
     OUTPUT_FOLDER="$(mktemp -d)"
 
-    function get_powertop_report() {
-        rm -f "$OUTPUT_FOLDER"/"$1"
-        echo "$powertop_str1" > "$OUTPUT_FOLDER"/"$1"
-        echo "$powertop_str2" >> "$OUTPUT_FOLDER"/"$1"
+    function get_nvidia_runtime_status() {
+        echo "$status"
     }
 
     # the string will show by checkbox process
-    powertop_str1="100.0%;checkbox nvidia"
+    status="active"
 
-    echo "When Nvidia not sleep deep to 0%, it should be failed."
-    powertop_str2="30.0%;PCI Device: NVIDIA"
+    echo "When Nvidia is active, then it should be failed."
     run check_nvidia_sleep ondemand_
     run check_nvidia_sleep intel_
     [ "$status" -eq 1 ]
-    echo "When Nvidia sleep deep to 0%, it should be pass."
-    powertop_str2="0.0%;PCI Device: NVIDIA"
+    echo "When Nvidia is suspended, it should be pass."
+    status="suspended"
     run check_nvidia_sleep ondemand_
     run check_nvidia_sleep intel_
     [ "$status" -eq 0 ]

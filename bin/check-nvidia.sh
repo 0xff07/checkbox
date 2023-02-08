@@ -15,7 +15,6 @@ this script is target to check the expected behavior of nviia driver, and gpu ma
 
 This script will need some environment precondition that DISPLAY environment is assigned,
 nvidia-prime and ubuntu-drivers-common are installed. Nvidia drvier newer than version 450.
-Powertop is needed to check the sleep status of nvidia graphic.
 
     -h|--help print this message
     --dry-run dryrun
@@ -78,17 +77,15 @@ is_nv_bootvga() {
     done < <(cat /sys/module/nvidia/drivers/pci:nvidia/*/boot_vga)
     echo "$_nv_bootvga"
 }
-get_powertop_report() {
-    sudo powertop --csv="$OUTPUT_FOLDER"/"$filename" -t 3 || show_error "Powertop failed.." usage-exit1
+get_nvidia_runtime_status() {
+    local status=$(cat /sys/module/nvidia/drivers/pci:nvidia/*/power/runtime_status)
+    echo $status
 }
 check_nvidia_sleep() {
     local result
-    local filename="$1powertop.csv"
-    get_powertop_report "$filename"
-    result="$(grep -i "NVIDIA" $OUTPUT_FOLDER/"$filename" | grep "%" | grep -v checkbox | awk -F'%' '{ if ($1 > 0) print "failed:"$0}')"
-    if [ -n "$result" ]; then
-       show_error "$result"
-       show_error "nvidia devices not sleep deep to 0%. Check $OUTPUT_FOLDER/$filename for detail."
+    local status=$(get_nvidia_runtime_status)
+    if [ "$status" != "suspended" ]; then
+       show_error "nvidia graphic is still active but expects to suspended."
        if uname -r | grep -q "5.10"; then
         echo "[INFO] There's a know issue LP: #1904762 that Nvidia driver not sleep with kernel 5.10"
        fi
@@ -101,7 +98,6 @@ check_environment() {
     dpkg --compare-versions "$(modinfo nvidia -F version)" "gt" "450" || show_error "[ERROR] $(basename "$0") only support nvidia driver >= 450." usage-exit1
     command -v prime-select || show_error "nvidia-prime is not installed."  usage-exit1
     command -v gpu-manager || show_error "ubuntu-drivers-common is not installed." usage-exit1
-    command -v powertop || show_error "powertop is not installed." usage-exit1
 }
 check_renderer() {
     local renderer
