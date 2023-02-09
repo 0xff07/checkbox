@@ -131,20 +131,18 @@ function setup() {
     OUTPUT_FOLDER="$(mktemp -d)"
 
     function get_nvidia_runtime_status() {
-        echo "$status"
+        echo "$state"
     }
 
     # the string will show by checkbox process
-    status="active"
+    state="active"
 
     echo "When Nvidia is active, then it should be failed."
-    run check_nvidia_sleep ondemand_
-    run check_nvidia_sleep intel_
+    run check_nvidia_sleep
     [ "$status" -eq 1 ]
     echo "When Nvidia is suspended, it should be pass."
-    status="suspended"
-    run check_nvidia_sleep ondemand_
-    run check_nvidia_sleep intel_
+    state="suspended"
+    run check_nvidia_sleep
     [ "$status" -eq 0 ]
 }
 

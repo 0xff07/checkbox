@@ -78,12 +78,13 @@ is_nv_bootvga() {
     echo "$_nv_bootvga"
 }
 get_nvidia_runtime_status() {
-    local status=$(cat /sys/module/nvidia/drivers/pci:nvidia/*/power/runtime_status)
-    echo $status
+    local status
+    status=$(cat /sys/module/nvidia/drivers/pci:nvidia/*/power/runtime_status)
+    echo "$status"
 }
 check_nvidia_sleep() {
-    local result
-    local status=$(get_nvidia_runtime_status)
+    local status
+    status=$(get_nvidia_runtime_status)
     if [ "$status" != "suspended" ]; then
        show_error "nvidia graphic is still active but expects to suspended."
        if uname -r | grep -q "5.10"; then
