@@ -51,7 +51,6 @@ include:
     com.canonical.certification::miscellanea/check_secureboot_fish_not_installed
     com.canonical.certification::miscellanea/acpi-bios-error_.*                        certification-status=blocker
     com.canonical.certification::miscellanea/intel-vtd-enabled_.*
-    com.canonical.certification::miscellanea/check-device-runtime-pm_.*
     com.canonical.certification::miscellanea/ac-automatic-suspend-estar-settings_.*
     com.canonical.certification::miscellanea/intel-hid_.*
     com.canonical.certification::miscellanea/check-display_.*
@@ -124,7 +123,6 @@ include:
     com.canonical.certification::miscellanea/check_secureboot_fish_not_installed
     com.canonical.certification::miscellanea/acpi-bios-error_.*                        certification-status=blocker
     com.canonical.certification::miscellanea/intel-vtd-enabled_.*
-    com.canonical.certification::miscellanea/check-device-runtime-pm_.*
     com.canonical.certification::miscellanea/ac-automatic-suspend-estar-settings_.*
     com.canonical.certification::miscellanea/intel-hid_.*
     com.canonical.certification::miscellanea/check-display_.*
