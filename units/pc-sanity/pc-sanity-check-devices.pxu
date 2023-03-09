@@ -335,7 +335,7 @@ requires:
     package.name == 'mesa-utils'
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/renderer-mesa-driver-check_{product_slug}
+id: miscellanea/renderer-mesa-driver-check_{product_slug}_{index}
 command: renderer-mesa-driver-check.sh
 _summary: Check if renderer mesa driver support correctness
 _description:
