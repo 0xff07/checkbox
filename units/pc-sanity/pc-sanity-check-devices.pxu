@@ -340,3 +340,20 @@ command: renderer-mesa-driver-check.sh
 _summary: Check if renderer mesa driver support correctness
 _description:
  Check if mesa driver support the renderer correctly
+
+unit: template
+template-resource: device
+template-filter:
+ (device.vendor_id == '32902' and device.product_id == '30048') or (device.vendor_id == '5315' and device.product_id == '19829')
+template-unit: job
+requires:
+ package.name == 'modemmanager'
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-fcclock-state_{product_id}_{__index__}
+user: root
+command:
+ check-fcclock-state.sh {path}
+_summary: Check the fcclock state of ({product_id})
+_description:
+ The test case is for checking the fcclock state of WWAN module
