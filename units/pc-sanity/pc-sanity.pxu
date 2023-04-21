@@ -59,8 +59,7 @@ include:
     com.canonical.certification::miscellanea/renderer-mesa-driver-check_.*
     com.canonical.certification::miscellanea/check-fcclock-state_.*
 exclude:
-    com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
-    com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
+    com.canonical.certification::suspend/bluetooth_obex_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*
     com.canonical.certification::after-suspend-bluetooth4/beacon_.*
 nested_part:
@@ -134,8 +133,7 @@ include:
 exclude:
     com.canonical.certification::after-suspend-bluetooth4/beacon_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*
-    com.canonical.certification::suspend/bluetooth_obex_send_before_suspend
-    com.canonical.certification::suspend/bluetooth_obex_send_after_suspend_auto
+    com.canonical.certification::suspend/bluetooth_obex_.*
     com.canonical.certification::graphics/1_auto_switch_card_.*
     com.canonical.certification::after-suspend-graphics/1_auto_switch_card_.*
     com.canonical.certification::suspend/1_.*

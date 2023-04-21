@@ -10,8 +10,6 @@ for-all:
         public-bug: 1908961
     disk/storage_device_sdb:
         public-bug: 1908504
-    suspend/bluetooth_obex_send_before_suspend:
-        public-bug: 1909208
     disk/hdd-parking:
         public-bug: 1910516
 for-desktop-only:
