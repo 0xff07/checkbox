@@ -84,6 +84,10 @@ get_nvidia_runtime_status() {
 }
 check_nvidia_sleep() {
     local status
+    # 60 seconds was test on G9~G10 HP mobile workstations.
+    # Some nvidia gpu needs 30+ seconds to determine goes sleep or not.
+    echo "[INFO] Wait 60 seconds for nvidia gpu goes to sleep."
+    sleep 60
     status=$(get_nvidia_runtime_status)
     if [ "$status" != "suspended" ]; then
        show_error "nvidia graphic is still active but expects to suspended."
