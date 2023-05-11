@@ -114,3 +114,21 @@ _summary: Check secureboot fish is not installed
 _description:
  The FVR image no longer require dkms, so check if the secureboot fish
  has removed.
+
+unit: template
+template-resource: dmi
+template-filter:
+ dmi.category == 'CHASSIS' and dmi.product not in ['Mini Tower', 'Tower', 'Main Server Chassis','Rack Mount Chassis']
+template-unit: job
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_windowing_system_{product}
+requires:
+ lsb.release >= "22.04"
+ package.name == "pciutils"
+depends: miscellanea/check-display_{product}
+command: check-windowing-system.sh
+_summary: Check if system using correct windowing system
+_description:
+ After 22.04, machine with Nvidia GPU will using X11 as windowing system.
+ And machine with AMD and Intel GPU will default to wayland.
