@@ -135,6 +135,11 @@ class AllowList:
         return None
 
 
+class PkgTuple(NamedTuple):
+    k: PackageNameWithVersion
+    pkg: Package
+
+
 def get_allowlist(
     platform: Platform,
     outdir: str = os.getcwd(),
@@ -199,10 +204,6 @@ def check_public_scanning(
     apt_cache: Cache, platform: Platform, allowlist: AllowList
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
-
-    class PkgTuple(NamedTuple):
-        k: PackageNameWithVersion
-        pkg: Package
 
     pkgs_installed = [
         PkgTuple(PackageNameWithVersion(pkg.name, pkg.installed.version), pkg)
@@ -270,13 +271,16 @@ def check_public_scanning(
 
 
 def check_component_scanning(
-    apt_cache: Cache, platform: Platform, allowlist: AllowList, only_manual: bool = True
+    apt_cache: Cache,
+    platform: Platform,
+    allowlist: AllowList,
+    only_manual: bool = True,
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
     pkgs_filtered = [
-        pkg
+        PkgTuple(PackageNameWithVersion(pkg.name, pkg.installed.version), pkg)
         for pkg in apt_cache
-        if pkg.installed != None
+        if pkg.installed is not None
         and ((not only_manual) or pkg_is_manually_installed(pkg))
         and not pkg_in_component(pkg, ["main", "restricted"])
         and pkg.name not in metapkg_names
@@ -284,12 +288,11 @@ def check_component_scanning(
 
     pkgs_not_allowed = [
         (
-            pkg.name,
-            pkg.installed.version,
-            set(origin.component for origin in pkg.installed.origins),
+            item,
+            set(origin.component for origin in item.pkg.installed.origins),
         )
-        for pkg in pkgs_filtered
-        if pkg.name not in allowlist and pkg.installed != None
+        for item in pkgs_filtered
+        if allowlist.get(item.k) is None and item.pkg.installed is not None
     ]
     if pkgs_not_allowed:
         print(
@@ -298,23 +301,28 @@ The following packages are not in main or restricted component. Send an MP to
 {ALLOWLIST_GIT_URL}
 to review by manager:"""
         )
-        for (name, version, components) in pkgs_not_allowed:
+        for item, components in pkgs_not_allowed:
             components.remove("now")
             if len(components) == 0:
                 components.add("local")
             components_str = ", ".join(components)
-            print(f" - {name} {version} ({components_str})")
+            print(f" - {item.k} ({components_str})")
 
     pkgs_allowed = [
-        allowpkg
-        for pkg in pkgs_filtered
-        if (allowpkg := allowlist.get(pkg.name)) != None and pkg.installed != None
+        allowlist_item
+        for allowlist_item in [
+            allowlist.get(item.k)
+            for item in pkgs_filtered
+            if item.pkg.installed is not None
+        ]
+        if allowlist_item is not None
     ]
+
     if pkgs_allowed:
         print(
-            """
-The following packages are not in main or restricted component, but greenlit
-from manager:"""
+            "\n"
+            "The following packages are not in main or restricted component, "
+            "but greenlit from manager:"
         )
         for allowpkg in pkgs_allowed:
             print(f" - {allowpkg}")
@@ -361,7 +369,7 @@ def pkg_in_component(pkg: Package, components: List[str]) -> bool:
     if ver and ver.origins[0].component == "now" and pkg.is_upgradable:
         # this package is upgradable to a package in the archive
         ver = pkg.candidate
-    if ver == None:
+    if ver is None:
         raise Exception("package is not installed")
     for origin in ver.origins:
         if origin.component in components:
@@ -404,8 +412,8 @@ def check_component(args):
     apt_cache.update()
     apt_cache.open()
 
-    platform = get_platform(apt_cache)
-    print(f"# platform: {platform.oem}-{platform.platform}")
+    platform = get_platform()
+    print(f"# platform: {platform.oem}-{platform.platform_with_release}")
 
     print("# getting allowlist")
     (allowlist, repo_hash) = get_allowlist(platform, outdir=args.out)
@@ -435,7 +443,8 @@ if __name__ == "__main__":
     )
     subparsers.add_parser("check-public", help="Screen non-public packages")
     check_component_args_parser = subparsers.add_parser(
-        "check-component", help="Screen packages not in main or restricted components"
+        "check-component",
+        help="Screen packages not in main or restricted components",
     )
     check_component_args_parser.add_argument(
         "--only-manual",
