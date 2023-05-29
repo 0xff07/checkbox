@@ -102,15 +102,12 @@ get_platform_id() {
 }
 
 get_build_no() {
-
-    if [ -f /etc/buildstamp ]; then
+    udc=$(tail -n1 /var/lib/ubuntu_dist_channel)
+    if [[ $udc =~ canonical-oem-somerville.* ]]; then
+        build_no=${udc#*X}
+    elif [ -f /etc/buildstamp ]; then
         image_build=$(tail -n1 /etc/buildstamp)
         build_no=${image_build##*-}
-    else
-        # For somerville it'll use build version, but here I use build_no to
-        # save it.
-        image_build=$(ubuntu-report show | jq '.OEM.DCD' | sed -e 's/"//g')
-        build_no=${image_build#*X}
     fi
 }
 
