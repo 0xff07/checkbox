@@ -357,3 +357,11 @@ command:
 _summary: Check the fcclock state of ({product_id})
 _description:
  The test case is for checking the fcclock state of WWAN module
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_UBSAN_error
+command: check-error-string.sh "UBSAN:"
+_summary: Check if kernel log contains Undefined Behavior Sanitizer (UBSAN) error
+_description:
+ Check if the system experience Undefined Behavior Sanitizer (UBSAN) error.
