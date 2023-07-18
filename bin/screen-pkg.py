@@ -200,16 +200,60 @@ def get_allowlist(
     return (AllowList(allowed_packages), repo_hash)
 
 
-def check_public_scanning(
-    apt_cache: Cache, platform: Platform, allowlist: AllowList
-) -> bool:
-    metapkg_names = platform.get_metapkg_names()
+def get_installed_pkgs(apt_cache: Cache) -> list[PkgTuple]:
+    installed_pkgs = None
+
+    try:
+        with open(
+            "/var/local/plainbox-provider-pc-sanity/clean-installed-dpkg.list",
+            "r",
+        ) as dpkglist:
+            installed_pkgs = set(
+                line.strip().split(":")[0] for line in dpkglist
+            )
+    except IOError:
+        print(
+            """
+WARNING: clean-installed-dpkg.list not found, will check all installed
+packages."""
+        )
+
+        return [
+            PkgTuple(
+                PackageNameWithVersion(pkg.name, pkg.installed.version), pkg
+            )
+            for pkg in apt_cache
+            if pkg.installed is not None
+        ]
 
     pkgs_installed = [
         PkgTuple(PackageNameWithVersion(pkg.name, pkg.installed.version), pkg)
         for pkg in apt_cache
-        if pkg.installed is not None
+        if pkg.installed is not None and pkg.shortname in installed_pkgs
     ]
+
+    pkgs_from_test_utils = [
+        pkg.name
+        for pkg in apt_cache
+        if pkg.installed is not None and pkg.shortname not in installed_pkgs
+    ]
+
+    if pkgs_from_test_utils:
+        print(
+            """
+The following packages are installed by test utilities:"""
+        )
+        for name in pkgs_from_test_utils:
+            print(f" - {name}")
+        print()
+
+    return pkgs_installed
+
+
+def check_public_scanning(
+    pkgs_installed: list[PkgTuple], platform: Platform, allowlist: AllowList
+) -> bool:
+    metapkg_names = platform.get_metapkg_names()
 
     pkgs_not_public = [
         item
@@ -271,19 +315,16 @@ def check_public_scanning(
 
 
 def check_component_scanning(
-    apt_cache: Cache,
+    pkgs_installed: list[PkgTuple],
     platform: Platform,
     allowlist: AllowList,
-    only_manual: bool = True,
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
     pkgs_filtered = [
-        PkgTuple(PackageNameWithVersion(pkg.name, pkg.installed.version), pkg)
-        for pkg in apt_cache
-        if pkg.installed is not None
-        and ((not only_manual) or pkg_is_manually_installed(pkg))
-        and not pkg_in_component(pkg, ["main", "restricted"])
-        and pkg.name not in metapkg_names
+        item
+        for item in pkgs_installed
+        if not pkg_in_component(item.pkg, ["main", "restricted"])
+        and item.pkg.name not in metapkg_names
     ]
 
     pkgs_not_allowed = [
@@ -377,12 +418,6 @@ def pkg_in_component(pkg: Package, components: List[str]) -> bool:
     return False
 
 
-def pkg_is_manually_installed(pkg: Package) -> bool:
-    # either package is not auto_installed, or is auto_removable, so that
-    # the listed pacakges are not installed by dependency.
-    return (not pkg.is_auto_installed) or pkg.is_auto_removable
-
-
 def check_public(args):
     apt_cache = Cache()
 
@@ -397,8 +432,11 @@ def check_public(args):
     (allowlist, repo_hash) = get_allowlist(platform, outdir=args.out)
     print(f"# allowlist hash: {repo_hash}")
 
+    print("# getting list of installed packages")
+    installed_pkgs = get_installed_pkgs(apt_cache)
+
     print("# scanning packages")
-    ok = check_public_scanning(apt_cache, platform, allowlist)
+    ok = check_public_scanning(installed_pkgs, platform, allowlist)
     if not ok:
         sys.exit("# check-public FAIL")
 
@@ -419,10 +457,11 @@ def check_component(args):
     (allowlist, repo_hash) = get_allowlist(platform, outdir=args.out)
     print(f"# allowlist hash: {repo_hash}")
 
+    print("# getting list of installed packages")
+    installed_pkgs = get_installed_pkgs(apt_cache)
+
     print("# scanning packages")
-    ok = check_component_scanning(
-        apt_cache, platform, allowlist, only_manual=args.only_manual
-    )
+    ok = check_component_scanning(installed_pkgs, platform, allowlist)
     if not ok:
         sys.exit("# check-component FAIL")
 
