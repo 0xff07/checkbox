@@ -200,7 +200,7 @@ def get_allowlist(
     return (AllowList(allowed_packages), repo_hash)
 
 
-def get_installed_pkgs(apt_cache: Cache) -> list[PkgTuple]:
+def get_installed_pkgs(apt_cache: Cache) -> List[PkgTuple]:
     installed_pkgs = None
 
     try:
@@ -251,7 +251,7 @@ The following packages are installed by test utilities:"""
 
 
 def check_public_scanning(
-    pkgs_installed: list[PkgTuple], platform: Platform, allowlist: AllowList
+    pkgs_installed: List[PkgTuple], platform: Platform, allowlist: AllowList
 ) -> bool:
     metapkg_names = platform.get_metapkg_names()
 
@@ -315,7 +315,7 @@ def check_public_scanning(
 
 
 def check_component_scanning(
-    pkgs_installed: list[PkgTuple],
+    pkgs_installed: List[PkgTuple],
     platform: Platform,
     allowlist: AllowList,
 ) -> bool:
