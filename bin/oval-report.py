@@ -72,7 +72,7 @@ def main(report: str, buffer_days: int):
             if tag != "style":
                 return False, tag
             for selector in (f".{t}" for t in targets):
-                if elem.text.find(selector) < 0:
+                if elem.text is not None and elem.text.find(selector) < 0:
                     return False, tag
             return True, tag
 
@@ -101,7 +101,7 @@ def main(report: str, buffer_days: int):
         ):
             return False, ident
         nonlocal has_vuln
-        has_vuln = int(elem.text) > 0
+        has_vuln = int(elem.text or 0) > 0
         if has_vuln:
             eprint(f'[ERROR] {elem.attrib["title"]}: {elem.text}')
         return True, ident
