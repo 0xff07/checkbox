@@ -1,8 +1,13 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-  echo "usage: $0 {output}"
+  echo "usage: $0 {output} [dpkg.list]"
   exit 0
+fi
+
+ADDITIONAL_OPTIONS=""
+if [ -z "$2" ]; then
+    ADDITIONAL_OPTIONS="--include-packages $2"
 fi
 
 mkdir -p "$1" && cd "$1" || exit 1
@@ -23,4 +28,6 @@ bunzip2 "$OVAL_XML_BZ2"
 oscap oval eval --report "$REPORT_HTML" "$OVAL_XML" &>/dev/null
 
 oval-report.py --version
-oval-report.py --report "$REPORT_HTML"
+
+# shellcheck disable=SC2086
+oval-report.py --report "$REPORT_HTML" --series "$(lsb_release -rs)" $ADDITIONAL_OPTIONS
