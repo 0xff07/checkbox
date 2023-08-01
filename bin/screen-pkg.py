@@ -165,8 +165,13 @@ def get_allowlist(
     for filename in [
         "testtools",
         "common",
+        # jellyfish-common
+        f"{platform.oem_series}-common",
+        # somerville/common
         f"{platform.oem}/common",
+        # somerville/jellyfish-common
         f"{platform.oem}/{platform.oem_series}-common",
+        # somerville/jellyfish-rockruff-rpl
         f"{platform.oem}/{platform.platform_with_release}",
     ]:
         try:
