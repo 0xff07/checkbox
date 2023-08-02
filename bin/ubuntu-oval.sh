@@ -14,7 +14,8 @@ mkdir -p "$1" && cd "$1" || exit 1
 
 # See also: https://ubuntu.com/security/oval
 
-OVAL_XML=com.ubuntu.$(lsb_release -cs).usn.oval.xml
+RELEASE=$(lsb_release -cs)
+OVAL_XML=com.ubuntu.$RELEASE.usn.oval.xml
 OVAL_XML_BZ2=$OVAL_XML.bz2
 REPORT_HTML=report.html
 
@@ -30,4 +31,4 @@ oscap oval eval --report "$REPORT_HTML" "$OVAL_XML" &>/dev/null
 oval-report.py --version
 
 # shellcheck disable=SC2086
-oval-report.py --report "$REPORT_HTML" --series "$(lsb_release -rs)" $ADDITIONAL_OPTIONS
+oval-report.py --report "$REPORT_HTML" --release "$RELEASE" $ADDITIONAL_OPTIONS

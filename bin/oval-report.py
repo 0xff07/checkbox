@@ -5,8 +5,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from typing import List, Tuple, Callable, Optional, Dict
-from html.parser import HTMLParser
+from typing import List, Sequence, Tuple, Callable, Optional
 
 # type aliases
 DfsCbRtn = Tuple[bool, str]
@@ -14,192 +13,46 @@ DfsCb = Callable[[ET.Element, List[str]], DfsCbRtn]
 TagGetter = Callable[[ET.Element], str]
 
 
-class USNVulnInfo:
-    def __init__(self, package: str, version: str, need_ubuntu_pro: bool):
-        self.package = package
-        self.version = version
-        self.need_ubuntu_pro = need_ubuntu_pro
-
-    def __repr__(self):
-        additional = "(Ubuntu Pro)" if self.need_ubuntu_pro else ""
-        return f"{self.package} - {self.version} {additional}"
-
-
-class HTMLProjectionElement:
-    def __init__(
-        self,
-        tag: str,
-        classes: List[str],
-        parent: Optional["HTMLProjectionElement"] = None,
-    ):
-        self.tag = tag
-        self.classes = classes
-        self.parent = parent
-        self._text = ""
+class Package:
+    def __init__(self, json_obj: dict):
+        self.json_obj = json_obj
 
     @property
-    def text(self) -> str:
-        return self._text
-
-    def append_text(self, text: str):
-        self._text += text
-        if self.parent is not None:
-            self.parent.append_text(text)
+    def name(self) -> str:
+        return self.json_obj["name"]
 
     @property
-    def is_plist(self) -> bool:
-        return self.tag == "ul" and "p-list" in self.classes
+    def version(self) -> str:
+        return self.json_obj["version"]
 
     @property
-    def is_plist_item(self) -> bool:
-        return self.tag == "li" and "p-list__item" in self.classes
+    def is_source(self) -> bool:
+        return self.json_obj["is_source"]
 
     @property
-    def published_date(self) -> Optional[datetime]:
-        if self.tag != "p" or "p-muted-heading" not in self.classes:
-            return None
-        try:
-            rgx = re.compile(r"(\d+) (\w+) (\d+)")
-            match = rgx.match(self.text)
-            if match is None:
-                return None
-            day, month, year = match.groups()
-            parsable = f"{day} {month[:3]} {year}"
-            published = datetime.strptime(parsable, "%d %b %Y")
-            return published
-        except ValueError:
-            return None
+    def is_visible(self) -> bool:
+        return self.json_obj.get("is_visible", not self.is_source)
 
     @property
-    def series(self) -> Optional[float]:
-        if self.tag != "h5" or self.classes:
-            return None
-        parts = self.text.split(" ")
-        if len(parts) != 2 or parts[0] != "Ubuntu":
-            return None
-        try:
-            return float(parts[1])
-        except ValueError:
-            return None
+    def need_ubuntu_pro(self) -> bool:
+        return self.json_obj["pocket"].startswith("esm")
+
+    def __repr__(self) -> str:
+        additional = " (Ubuntu Pro)" if self.need_ubuntu_pro else ""
+        return f"{self.name} - {self.version}{additional}"
 
 
-class SentinelElement(HTMLProjectionElement):
-    def __init__(self):
-        super().__init__("", [], self)
-
-    def append_text(self, _: str):
-        pass
-
-
-class USNParser(HTMLParser):
-    IGNORED_TAGS = set(["script", "style", "script", "noscript", "svg"])
-    UNCLOSED_TAGS = set(
-        [
-            "area",
-            "base",
-            "br",
-            "col",
-            "embed",
-            "hr",
-            "img",
-            "input",
-            "keygen",
-            "link",
-            "menuitem",
-            "meta",
-            "param",
-            "source",
-            "track",
-            "wbr",
-        ]
-    )
-
-    def __init__(self):
-        self._stack: List[HTMLProjectionElement] = []
-        self._series: Optional[float] = None
-        # key: Ubuntu series, e.g. "22.04"
-        self.vulns: Dict[float, List[USNVulnInfo]] = {}
-        self.published_date: Optional[datetime] = None
-        super().__init__()
-
-    def handle_starttag(self, tag, attrs):
-        parent = self._current or SentinelElement()
-        if tag == "br":
-            parent.append_text("\n")
-            return
-
-        if (
-            parent.tag == "head"
-            or tag in self.IGNORED_TAGS
-            or tag in self.UNCLOSED_TAGS
-        ):
-            return
-
-        classes = []
-        for key, value in attrs:
-            if key != "class" or value is None:
-                continue
-            classes = value.split(" ")
-            break
-
-        elem = HTMLProjectionElement(tag, classes, parent)
-        self._stack.append(elem)
-
-    def handle_endtag(self, tag):
-        elem = self._current
-        if (
-            elem is None
-            or (elem.tag == "head" and tag != "head")
-            or tag in self.IGNORED_TAGS
-            or tag in self.UNCLOSED_TAGS
-        ):
-            return
-
-        if elem.tag != tag:
-            raise ValueError(
-                f"HTMLParser: tag mismatch, expect {elem.tag}, got {tag}"
-            )
-        self._stack.pop()
-
-        published_date = elem.published_date
-        if self.published_date is None and published_date is not None:
-            self.published_date = published_date
-
-        series = elem.series
-        if series is not None:
-            self._series = series
-            self.vulns[series] = []
-
-        if self._series is None:
-            return
-
-        if elem.is_plist:
-            self._series = None
-        elif elem.is_plist_item and elem.parent.is_plist:  # pyright: ignore[reportOptionalMemberAccess] # noqa: E501
-            rgx = re.compile(
-                "([^ \n]+)[ \n]+-[ \n]+([^ \n]+)[ \n]+"
-                + "(Available with Ubuntu Pro)?"
-            )
-            match = rgx.search(elem.text)
-            if match is None:
-                raise ValueError(
-                    "HTMLParser: p-list item text mismatch, "
-                    + f"got [{elem.text}], "
-                    + "the format of the USN page has changed!"
-                )
-            package, version, need_ubuntu_pro = match.groups()
-            vuln = USNVulnInfo(package, version, need_ubuntu_pro is not None)
-            self.vulns[self._series].append(vuln)
-
-    def handle_data(self, data):
-        current = self._current
-        if current is None:
-            return
-        current.append_text(data)
+class SecurityNotice:
+    def __init__(self, json_obj: dict):
+        self.json_obj = json_obj
 
     @property
-    def _current(self) -> Optional[HTMLProjectionElement]:
-        return self._stack[-1] if len(self._stack) > 0 else None
+    def published(self) -> datetime:
+        return datetime.fromisoformat(self.json_obj["published"])
+
+    def get_packages(self, release: str) -> Sequence[Package]:
+        packages = self.json_obj["release_packages"].get(release, [])
+        return [Package(p) for p in packages]
 
 
 def eprint(*args, **kwargs):
@@ -246,7 +99,7 @@ def main(
     report: str,
     buffer_days: int,
     ignore: Callable[[str], bool],
-    series: float,
+    release: str,
 ):
     tree = ET.parse(report)
     root = tree.getroot()
@@ -327,6 +180,7 @@ def main(
         return False, ident
 
     def report_vuln_detail(elem: ET.Element, indent: str):
+        import json
         from urllib import request
 
         if identify(elem, real_tag) != "a.Hover":
@@ -336,28 +190,28 @@ def main(
         if buffer_days == 0:
             return
 
-        with request.urlopen(href) as fd:
-            raw_html = fd.read().decode("utf-8")
-        parser = USNParser()
-        parser.feed(raw_html)
-
-        if parser.published_date is None:
-            raise ValueError("Cannot find published date!")
+        endpoint = f"https://ubuntu.com/security/notices/{elem.text}.json"
+        with request.urlopen(endpoint) as fd:
+            raw_body = fd.read().decode("utf-8")
+        security_notice = SecurityNotice(json.loads(raw_body))
 
         need_fixing = False
-        for vuln in parser.vulns.get(series, []):
+        for package in security_notice.get_packages(release):
+            if not package.is_visible:
+                continue
+
             sign = "+"
-            if ignore(vuln.package):
+            if ignore(package.name):
                 sign = "-"
-            elif not vuln.need_ubuntu_pro:
+            elif not package.need_ubuntu_pro:
                 need_fixing = True
-            eprint(f"{indent}\t{sign} {vuln}")
+            eprint(f"{indent}\t{sign} {package}")
         # end for vuln
 
-        passed = datetime.now() - parser.published_date
+        passed = datetime.now() - security_notice.published
         need_fixing = need_fixing and passed.days > buffer_days
         log_lvl = "ERROR" if need_fixing else "WARNING"
-        display_date = parser.published_date.strftime("%d %B %Y")
+        display_date = security_notice.published.strftime("%d %B %Y")
         eprint(f"{indent}- [{log_lvl}] Published: {display_date}")
 
     dfs(body, ["html"], report_vuln)
@@ -387,9 +241,9 @@ if __name__ == "__main__":
     parser.add_argument("--report", metavar="report.html", required=True)
     parser.add_argument("--buffer-days", type=int, default=7)
     parser.add_argument("--include-packages", metavar="dpkg.list")
-    parser.add_argument("--series", type=float, default=22.04)
+    parser.add_argument("--release", default="jammy")
     parser.add_argument(
-        "--version", action="version", version="%(prog)s 0.3.0"
+        "--version", action="version", version="%(prog)s 0.3.1"
     )
 
     args = parser.parse_args()
@@ -397,5 +251,5 @@ if __name__ == "__main__":
         args.report,
         args.buffer_days,
         ignore_package(args.include_packages),
-        args.series,
+        args.release,
     )
