@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
 fi
 
 ADDITIONAL_OPTIONS=""
-if [ -z "$2" ]; then
+if [ -n "$2" ]; then
     ADDITIONAL_OPTIONS="--include-packages $2"
 fi
 
