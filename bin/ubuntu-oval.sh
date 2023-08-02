@@ -1,15 +1,21 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-  echo "usage: $0 {output}"
+  echo "usage: $0 {output} [dpkg.list]"
   exit 0
+fi
+
+ADDITIONAL_OPTIONS=""
+if [ -z "$2" ]; then
+    ADDITIONAL_OPTIONS="--include-packages $2"
 fi
 
 mkdir -p "$1" && cd "$1" || exit 1
 
 # See also: https://ubuntu.com/security/oval
 
-OVAL_XML=com.ubuntu.$(lsb_release -cs).usn.oval.xml
+RELEASE=$(lsb_release -cs)
+OVAL_XML=com.ubuntu.$RELEASE.usn.oval.xml
 OVAL_XML_BZ2=$OVAL_XML.bz2
 REPORT_HTML=report.html
 
@@ -23,4 +29,6 @@ bunzip2 "$OVAL_XML_BZ2"
 oscap oval eval --report "$REPORT_HTML" "$OVAL_XML" &>/dev/null
 
 oval-report.py --version
-oval-report.py --report "$REPORT_HTML"
+
+# shellcheck disable=SC2086
+oval-report.py --report "$REPORT_HTML" --release "$RELEASE" $ADDITIONAL_OPTIONS

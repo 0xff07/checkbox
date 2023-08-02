@@ -54,7 +54,7 @@ plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/cvescan
 command:
- ubuntu-oval.sh "$PLAINBOX_SESSION_SHARE/oval"
+ ubuntu-oval.sh "$PLAINBOX_SESSION_SHARE/oval" "/var/local/plainbox-provider-pc-sanity/clean-installed-dpkg.list"
 _summary: Scan if all CVEs are fixed well.
 _description:
  Refer to https://ubuntu.com/security/oval,
