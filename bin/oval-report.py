@@ -204,6 +204,8 @@ def main(
             if ignore(package.name):
                 sign = "-"
             elif not package.need_ubuntu_pro:
+                nonlocal critical_vulns
+                critical_vulns += 1
                 need_fixing = True
             eprint(f"{indent}\t{sign} {package}")
         # end for vuln
@@ -214,8 +216,9 @@ def main(
         display_date = security_notice.published.strftime("%d %B %Y")
         eprint(f"{indent}- [{log_lvl}] Published: {display_date}")
 
+    critical_vulns = 0
     dfs(body, ["html"], report_vuln)
-    sys.exit(1)
+    sys.exit(1 if critical_vulns > 0 else 0)
 
 
 def ignore_package(include_list_file: Optional[str]) -> Callable[[str], bool]:
@@ -243,7 +246,7 @@ if __name__ == "__main__":
     parser.add_argument("--include-packages", metavar="dpkg.list")
     parser.add_argument("--release", default="jammy")
     parser.add_argument(
-        "--version", action="version", version="%(prog)s 0.3.1"
+        "--version", action="version", version="%(prog)s 0.3.2"
     )
 
     args = parser.parse_args()
