@@ -132,3 +132,16 @@ _summary: Check if system using correct windowing system
 _description:
  After 22.04, machine with Nvidia GPU will using X11 as windowing system.
  And machine with AMD and Intel GPU will default to wayland.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check_production_suite
+requires:
+ lsb.release == "22.04"
+ package.name == 'oem-scripts'
+ package.name == 'lsb-release'
+user: root
+command: check-production-suite.sh
+_summary: Check if production suite is created properly
+_description:
+ Add a job to check the production suite is created correcly.
