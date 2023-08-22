@@ -60,6 +60,7 @@ include:
     com.canonical.certification::miscellanea/renderer-mesa-driver-check_.*
     com.canonical.certification::miscellanea/check-fcclock-state_.*
     com.canonical.certification::miscellanea/check_windowing_system_.*
+    com.canonical.certification::miscellanea/check_production_suite                    certification-status=blocker
 exclude:
     com.canonical.certification::bluetooth/bluetooth_obex_.*
     com.canonical.certification::suspend/bluetooth_obex_.*
@@ -135,6 +136,7 @@ include:
     com.canonical.certification::miscellanea/renderer-mesa-driver-check_.*
     com.canonical.certification::miscellanea/check-fcclock-state_.*
     com.canonical.certification::miscellanea/check_windowing_system_.*
+    com.canonical.certification::miscellanea/check_production_suite                    certification-status=blocker
 exclude:
     com.canonical.certification::after-suspend-bluetooth4/beacon_.*
     com.canonical.certification::bluetooth4/beacon_eddystone.*
