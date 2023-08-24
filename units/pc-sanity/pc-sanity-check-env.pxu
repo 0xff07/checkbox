@@ -138,7 +138,6 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_production_suite
 requires:
  lsb.release == "22.04"
- package.name == 'oem-scripts'
  package.name == 'lsb-release'
 user: root
 command: check-production-suite.sh
