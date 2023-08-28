@@ -4,11 +4,14 @@
 	dh $@
 
 override_dh_auto_clean:
+	cd $(CURDIR)/c && $(MAKE) clean
+	cd $(CURDIR)/c && $(MAKE) uninstall PREFIX=$(CURDIR)
 	python3 manage.py clean
 
 override_dh_auto_build:
 	python3 manage.py build
 	python3 manage.py i18n
+	cd $(CURDIR)/c && $(MAKE)
 
 override_dh_auto_test:
 	python3 manage.py validate
@@ -16,6 +19,7 @@ override_dh_auto_test:
 	bats test/*.bats
 
 override_dh_auto_install:
+	cd $(CURDIR)/c && $(MAKE) install PREFIX=$(CURDIR)
 	python3 manage.py install --prefix=/usr --layout=unix \
 			--root=$(CURDIR)/debian/plainbox-provider-pc-sanity/
 
