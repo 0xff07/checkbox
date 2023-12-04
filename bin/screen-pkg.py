@@ -37,7 +37,6 @@ class Platform(NamedTuple):
         return projection
 
 
-
 oem_re = re.compile(r"canonical-oem-(\w+)-")
 somerville_platform_re = re.compile(r"\+([\w-]+)\+")
 
@@ -172,7 +171,8 @@ def get_allowlist(
     )
 
     allowed_packages: AllowListInternal = {}
-    def append_allowlist(filename: str, is_generic = False):
+
+    def append_allowlist(filename: str, is_generic=False):
         try:
             with open(os.path.join(allowlist_path, filename)) as file:
                 for line in file:
