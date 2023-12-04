@@ -27,6 +27,16 @@ class Platform(NamedTuple):
             f"oem-{self.oem}-factory-{self.platform_in_metapkg}-meta",
         ]
 
+    @property
+    def generic_kwargs(self) -> Dict[str, str]:
+        projection = {
+            "name": self.oem,
+            "release": self.oem_series,
+            "platform": self.platform_in_metapkg,
+        }
+        return projection
+
+
 
 oem_re = re.compile(r"canonical-oem-(\w+)-")
 somerville_platform_re = re.compile(r"\+([\w-]+)\+")
@@ -162,18 +172,7 @@ def get_allowlist(
     )
 
     allowed_packages: AllowListInternal = {}
-    for filename in [
-        "testtools",
-        "common",
-        # jellyfish-common
-        f"{platform.oem_series}-common",
-        # somerville/common
-        f"{platform.oem}/common",
-        # somerville/jellyfish-common
-        f"{platform.oem}/{platform.oem_series}-common",
-        # somerville/jellyfish-rockruff-rpl
-        f"{platform.oem}/{platform.platform_with_release}",
-    ]:
+    def append_allowlist(filename: str, is_generic = False):
         try:
             with open(os.path.join(allowlist_path, filename)) as file:
                 for line in file:
@@ -182,11 +181,15 @@ def get_allowlist(
                     # latter format will be shown in the message.
                     pkg_name_split = line.split("#", 1)
                     pkg = pkg_name_split[0].strip()
+                    if pkg == "":
+                        continue
+                    if is_generic:
+                        # oem-{name}-{platform}-doc => oem-sutton-africa-doc
+                        pkg = pkg.format(**platform.generic_kwargs)
+
                     comment = None
                     if len(pkg_name_split) >= 2:
                         comment = pkg_name_split[1].strip()
-                    if pkg == "":
-                        continue
 
                     pkg_ver_split = pkg.split(" ", 1)
                     if len(pkg_ver_split) >= 2:
@@ -202,6 +205,30 @@ def get_allowlist(
             print(f"# allowlist {filename} not found")
             pass
 
+    for filename in [
+        "testtools",
+        "common",
+        # jellyfish-common
+        f"{platform.oem_series}-common",
+        # somerville/common
+        f"{platform.oem}/common",
+        # somerville/jellyfish-common
+        f"{platform.oem}/{platform.oem_series}-common",
+        # somerville/jellyfish-rockruff-rpl
+        f"{platform.oem}/{platform.platform_with_release}",
+    ]:
+        append_allowlist(filename)
+
+    for template in [
+        "generic",
+        # jellyfish-generic
+        f"{platform.oem_series}-generic",
+        # sutton/generic
+        f"{platform.oem}/generic",
+        # sutton/jellyfish-generic
+        f"{platform.oem}/{platform.oem_series}-generic",
+    ]:
+        append_allowlist(template, True)
     return (AllowList(allowed_packages), repo_hash)
 
 
