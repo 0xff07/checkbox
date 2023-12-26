@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if journalctl -b 0 -u thermald | grep -q -v "Unsupported condition [0-9]+ (UKNKNOWN)"; then
+if journalctl -b 0 -u thermald | grep -q -E "Unsupported condition [0-9]+ \(UKNKNOWN\)"; then
  	echo "This error occurs because OOB values appear when parsing the GDDV"
  	echo ""
  	echo "Thermald constructs conditions by parsing GDDV blob from"
