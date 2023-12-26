@@ -275,7 +275,7 @@ _description:
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check-thermald-unknown-cond
-_summary: Check if any error occurs when thernald is parsing the condition tables
+_summary: Check out-of-bound values in thermal condition tables
 _description:
     This test checks if any out-of-bound value is found when thermald is parsing
     the condition tables in the sysfs data_vault, by looking into its journal entries.
