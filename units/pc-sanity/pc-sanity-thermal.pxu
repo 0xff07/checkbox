@@ -271,3 +271,15 @@ _summary: Check if the system has thermal policy applied
 _description:
  Intel introduce thermal policy for system with designated platform device.
  The test check if the thermal policy is set by thermald.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-thermald-unknown-cond
+_summary: Check if any error occurs when thernald is parsing the condition tables
+_description:
+    This test checks if any out-of-bound value is found when thermald is parsing
+    the condition tables in the sysfs data_vault, by looking into its journal entries.
+estimated_duration: 0.5
+requires: cpuinfo.type == 'GenuineIntel'
+depends: miscellanea/thermald
+command: check-thermald-unknown-cond.sh
