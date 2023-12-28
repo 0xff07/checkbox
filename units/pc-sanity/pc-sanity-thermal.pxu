@@ -280,6 +280,9 @@ _description:
     This test checks if any out-of-bound value is found when thermald is parsing
     the condition tables in the sysfs data_vault, by looking into its journal entries.
 estimated_duration: 0.5
-requires: cpuinfo.type == 'GenuineIntel'
+requires:
+ cpuinfo.type == 'GenuineIntel'
+ cpuinfo.model_number == '6'
+ package.name == 'systemd'
 depends: miscellanea/thermald
 command: check-thermald-unknown-cond.sh
