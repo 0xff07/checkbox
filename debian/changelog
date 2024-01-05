@@ -4,6 +4,7 @@ plainbox-provider-pc-sanity (1.0.2) UNRELEASED; urgency=medium
   * bump version
 
   [ Atlas Yu ]
+  * feat(screen-pkg-generic): template support
   * use "OpenSCAP" + "Ubuntu OVAL Data" to replace CVEScan for jammy or later.
 
  -- Kai-Chuan Hsieh <kaichuan.hsieh@canonical.com>  Fri, 08 Apr 2022 11:36:18 +0800
