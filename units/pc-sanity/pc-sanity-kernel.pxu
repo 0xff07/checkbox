@@ -1,0 +1,20 @@
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/check-oem-kernel
+command:
+  case $(dpkg -l | grep linux-image-oem -c) in
+    0)
+      echo "No OEM kernel is installed"
+      exit 1
+      ;;
+    1)
+      echo "One and only one OEM kernel is installed"
+      ;;
+    *)
+      echo "More than one OEM kernel is installed"
+      exit 1
+      ;;
+  esac
+_summary: Check OEM kernel installation status
+_description:
+  Check if one and only one OEM kernel is installed. If the OEM kernel that the meta package depends on is different from bugsy-config/chroot, two oem-kernels will be installed.
