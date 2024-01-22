@@ -1,7 +1,7 @@
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
 requires:
- graphics_card.driver in ['nvidia']
+ graphics_card.driver == 'nvidia'
 id: miscellanea/check-nvidia
 command:
  set -x
@@ -18,7 +18,7 @@ template-filter:
 template-unit: job
 plugin: shell
 category_id: com.canonical.plainbox::miscellanea
-id: miscellanea/check_nvidia_modalias_{product_id}
+id: miscellanea/check_nvidia_modalias_{__index__}_{product_id}
 requires: package.name == 'ubuntu-drivers-common'
 command:
   if [[ ! $(ubuntu-drivers list --gpgpu) ]]; then
