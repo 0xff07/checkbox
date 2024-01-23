@@ -190,3 +190,18 @@ command:
  done
 _description:
  Attach WWAN module FW info.
+
+plugin: shell
+category_id: com.canonical.plainbox::miscellanea
+id: miscellanea/boot-up-time-under-2-min
+estimated_duration: 2.0
+requires:
+ package.name == 'systemd'
+ dmi.product in ['Notebook','Laptop']
+command: boot-up-time-check.sh
+_summary:
+ Check if boot up finished under 2 minutes
+_description:
+ This test verifies that boot up time was less than 2 minutes on Notebook and Laptop
+_purpose:
+ This test verifies that boot up time was less than 2 minutes on Notebook and Laptop
