@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR=$(mktemp -d)
-curl -L -o "$DIR"/CSME_Version_Detection_Tool_Linux.tar.gz "https://drive.google.com/uc?id=1PMbWsfooyBmXDY85_Qh3iRoIOBhYE4Th&export=download" > /dev/null 2>&1
+curl -L -o "$DIR"/CSME_Version_Detection_Tool_Linux.tar.gz "https://drive.google.com/uc?id=1u9wveOok5ZQcd_3-Z7KCPagTob2O57_R&export=download" > /dev/null 2>&1
 RET=$?
 
 if [ $RET -ne 0 ]; then
@@ -19,6 +19,6 @@ if [ $RET -ne 0 ]; then
 fi
 
 cd "$DIR" || exit
-./intel_csme_version_detection_tool
+python3 intel_csme_version_detection_tool
 
 rm -rf "$DIR"
