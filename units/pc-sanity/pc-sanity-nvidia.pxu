@@ -21,7 +21,7 @@ category_id: com.canonical.plainbox::miscellanea
 id: miscellanea/check_nvidia_modalias_{__index__}_{product_id}
 requires: package.name == 'ubuntu-drivers-common'
 command:
-  if [[ ! $(ubuntu-drivers list --gpgpu) ]]; then
+  if ! ubuntu-drivers list --gpgpu | grep -q "nvidia-driver-"; then
     echo "modalias not found in Nvidia driver"
     exit 1
   fi
