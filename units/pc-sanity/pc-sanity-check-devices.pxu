@@ -280,7 +280,9 @@ id: miscellanea/intel-hid_{model_number}_{model_version}_{model_revision}
 requires:
  sleep.mem_sleep == 's2idle'
 command:
- if grep -q HIDD /sys/bus/acpi/devices/*/path; then
+ intel_hid=$(grep HIDD /sys/bus/acpi/devices/*/path -l)
+ status=$(echo $intel_hid | sed "s/path/status/")
+ if [ -n "$intel_hid" ] && [ "$(cat $status)" == "15" ]; then
      if grep -q intel_hid /proc/modules; then
          exit 0
      else
