@@ -281,8 +281,9 @@ requires:
  sleep.mem_sleep == 's2idle'
 command:
  intel_hid=$(grep HIDD /sys/bus/acpi/devices/*/path -l)
- status=$(echo $intel_hid | sed "s/path/status/")
- if [ -n "$intel_hid" ] && [ "$(cat $status)" == "15" ]; then
+ # shellcheck disable=SC2001
+ status=$(echo "$intel_hid" | sed "s/path/status/")
+ if [ -n "$intel_hid" ] && [ "$(cat "$status")" == "15" ]; then
      if grep -q intel_hid /proc/modules; then
          exit 0
      else
