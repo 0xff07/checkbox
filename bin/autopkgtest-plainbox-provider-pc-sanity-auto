@@ -11,4 +11,4 @@ if ! valid_oem_scripts_config; then
     exit 1
 fi
 
-autopkgtest-collect-credentials ppa:checkbox-dev/ppa "$@"
+autopkgtest-collect-credentials ppa:checkbox-dev/beta "$@"

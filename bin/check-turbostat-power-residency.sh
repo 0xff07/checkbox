@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#refer to https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting
+#refer to https://web.archive.org/web/20230614200306/https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting
 set -e
 state="pass"
 command -v turbostat || exit 1
@@ -100,7 +100,7 @@ if [ "$state" != "pass" ]; then
     echo "Otherwise, please get PHM report to check which device blocking PC10 or s0ix and open bugs for HWE to check kernel modules"
     echo ""
     echo "reference:"
-    echo " - https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting"
-    echo " - https://01.org/blogs/qwang59/2018/how-achieve-s0ix-states-linux"
+    echo " - https://web.archive.org/web/20230614200306/https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting"
+    echo " - https://blog.csdn.net/yuzaipiaofei/article/details/90384456"
     exit 1
 fi
