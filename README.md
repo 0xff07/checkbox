@@ -2,7 +2,7 @@
 
 This provider contains test cases and a test plan for pc sanity testing.
 
-It depends on packages from ppa:checkbox-dev/ppa in build time.
+It depends on packages from ppa:checkbox-dev/beta in build time.
 The launchpad recipe build it daily : https://code.launchpad.net/~oem-solutions-engineers/+recipe/plainbox-provider-pc-sanity-daily-1
 
 ## Run autopkgtest to check build time and installation time sanity.
