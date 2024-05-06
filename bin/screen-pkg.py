@@ -311,7 +311,7 @@ def check_public_scanning(
         item
         for item in pkgs_installed
         if item.k.name in metapkg_names
-        and not pkg_is_uploaded_metapkg(item.pkg, metapkg_names)
+        and not pkg_is_uploaded_metapkg(item.pkg, metapkg_names)  # noqa: W503
     ]
     if pkgs_metapkg_not_uploaded:
         print("\n" "The following metapackages are not uploaded:")
@@ -356,7 +356,7 @@ def check_component_scanning(
         item
         for item in pkgs_installed
         if not pkg_in_component(item.pkg, ["main", "restricted"])
-        and item.pkg.name not in metapkg_names
+        and item.pkg.name not in metapkg_names  # noqa: W503
     ]
 
     pkgs_not_allowed = [
@@ -415,7 +415,7 @@ def pkg_is_public(pkg: Package) -> bool:
     for origin in ver.origins:
         if (
             "security.ubuntu.com" in origin.site
-            or "archive.ubuntu.com" in origin.site
+            or "archive.ubuntu.com" in origin.site  # noqa: W503
         ) and origin.trusted:
             return True
     return False

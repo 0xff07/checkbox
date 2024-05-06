@@ -3,6 +3,8 @@
 %:
 	dh $@
 
+UBUNTU_MAJOR_VERSION := $(shell lsb_release -rs| cut -d '.' -f 1)
+
 override_dh_auto_clean:
 	cd $(CURDIR)/c && $(MAKE) clean
 	cd $(CURDIR)/c && $(MAKE) uninstall PREFIX=$(CURDIR)
@@ -24,5 +26,10 @@ override_dh_auto_install:
 			--root=$(CURDIR)/debian/plainbox-provider-pc-sanity/
 
 override_dh_gencontrol:
-	python3 manage.py packaging
-	dh_gencontrol
+	python3 manage.py packaging;\
+	#Noble replaced libopenscap8 by lopenscap-common and libopenscap25t64
+	if [ "$(UBUNTU_MAJOR_VERSION)" -gt "22" ];then \
+		dh_gencontrol -- -V"plainbox:Depends=openscap-common,libopenscap25t64";\
+	else\
+		dh_gencontrol;\
+	fi

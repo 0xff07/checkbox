@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# shellcheck disable=SC2317
 export LANG=C
 set -euo pipefail
 

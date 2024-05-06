@@ -33,6 +33,8 @@ Depends: git,
          python3-pip,
          sudo,
          xautomation,
+         wget,
+         bzip2,
          ${misc:Depends},
          ${shlibs:Depends},
          ${plainbox:Depends}

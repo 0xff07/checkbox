@@ -9,7 +9,7 @@ if (systemctl is-active graphical.target); then
         systemctl is-active --quiet gdm3.service || RET=$?
         if [[ "$RET" -ne 0 ]]; then
             echo "gdm3.service is not active. Exit code: $RET"
-            exit $RET
+            exit "$RET"
         fi
 
         OUTPUT=$(systemd-analyze)
