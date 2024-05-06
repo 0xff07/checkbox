@@ -51,7 +51,7 @@ def get_edid_version(value_of_12h, value_of_13h):
 
 
 def get_horizontal_addressable_video_in_pixels(data_block_of_DTD):
-    """ Get Horizontal Addressable Video in pixels from Detailed Timing Definition
+    """ Get Horizontal Addressable Video in pixels from Detailed Timing Definition # noqa: E501
         Address: 0x36h
         Size: 18 bytes
     """

@@ -138,7 +138,7 @@ def main(
     if not is_valid:
         raise ValueError(
             "Cannot find target css under <style>, it is very likely "
-            + "that this script is outdated!"
+            + "that this script is outdated!"  # noqa: W503
         )
 
     has_vuln = False
@@ -147,7 +147,7 @@ def main(
         ident = identify(elem, real_tag)
         if (
             paths[-2:] != ["table", "tr.LightRow.Center"]
-            or ident != "td.SmallText.resultbadB"
+            or ident != "td.SmallText.resultbadB"   # noqa: W503
         ):
             return False, ident
         nonlocal has_vuln
@@ -160,7 +160,7 @@ def main(
     if not is_valid:
         raise ValueError(
             "Cannot find target HTML element, it is very likely "
-            + "that this script is outdated!"
+            + "that this script is outdated!"   # noqa: W503
         )
     if not has_vuln:
         print("All avaliable CVEs are patched!")

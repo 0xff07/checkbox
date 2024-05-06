@@ -47,23 +47,23 @@ show_error() {
 collect_nvidia_debug_info() {
     local logs_folder="$OUTPUT_FOLDER/nvidia-debug-logs"
     mkdir -p "$logs_folder"
-    echo "/proc/driver/nvidia/params:" >> $OUTPUT_FOLDER/nvidia-debug-log
+    echo "/proc/driver/nvidia/params:" >> "$OUTPUT_FOLDER"/nvidia-debug-log
     if [ -f /proc/driver/nvidia/params ]; then
-        cat /proc/driver/nvidia/params >> $OUTPUT_FOLDER/nvidia-debug-log
+        cat /proc/driver/nvidia/params >> "$OUTPUT_FOLDER"/nvidia-debug-log
     else
-        echo "file is not there" >> $OUTPUT_FOLDER/nvidia-debug-log
+        echo "file is not there" >> "$OUTPUT_FOLDER"/nvidia-debug-log
     fi
 
-    echo "/var/log/gpu-manager.log:" >> $OUTPUT_FOLDER/nvidia-debug-log
+    echo "/var/log/gpu-manager.log:" >> "$OUTPUT_FOLDER"/nvidia-debug-log
     if [ -f /var/log/gpu-manager.log ]; then
-        cp /var/log/gpu-manager.log $logs_folder
-        echo "Copied file to $logs_folder" >> $OUTPUT_FOLDER/nvidia-debug-log
+        cp /var/log/gpu-manager.log "$logs_folder"
+        echo "Copied file to $logs_folder" >> "$OUTPUT_FOLDER"/nvidia-debug-log
     else
-        echo "file is not there" >> $OUTPUT_FOLDER/nvidia-debug-log
+        echo "file is not there" >> "$OUTPUT_FOLDER"/nvidia-debug-log
     fi
 
-    echo "nvidia-smi:" >> $OUTPUT_FOLDER/nvidia-debug-log
-    nvidia-smi >> $OUTPUT_FOLDER/nvidia-debug-log
+    echo "nvidia-smi:" >> "$OUTPUT_FOLDER"/nvidia-debug-log
+    nvidia-smi >> "$OUTPUT_FOLDER"/nvidia-debug-log
 }
 
 is_nv_bootvga() {

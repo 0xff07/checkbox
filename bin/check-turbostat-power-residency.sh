@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# shellcheck disable=SC2317
 #refer to https://web.archive.org/web/20230614200306/https://01.org/blogs/qwang59/2020/linux-s0ix-troubleshooting
 set -e
 state="pass"

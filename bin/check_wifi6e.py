@@ -18,9 +18,9 @@ def main():
     _6g_end = 7125
 
     data = subprocess.run(
-            ["iw", sys.argv[1], "info"],
-            capture_output=True,
-            encoding='utf-8')
+        ["iw", sys.argv[1], "info"],
+        capture_output=True,
+        encoding='utf-8')
     if data.returncode:
         print(sys.argv[1] + " is not valid wireless interface")
         return 0
