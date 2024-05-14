@@ -1,6 +1,7 @@
 name: Sanity Debian package build
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'contrib/pc-sanity/**'
