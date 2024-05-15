@@ -24,13 +24,13 @@ jobs:
       - uses: Wandalen/wretry.action/main@v3.4.0_js_action
         name: Make LP pull the monorepo
         env:
-          #LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
+          LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
           PYTHONUNBUFFERED: 1
         with:
           attempt_delay: 6000 # 1 min
           attempt_limit: 60   # max 1 hour of retries
           command: |
-            echo 'tools/release/lp_request_import.py "~checkbox-dev/checkbox/+git/checkbox"'
+            tools/release/lp_request_import.py "~0xff07/experimental/+git/checkbox"
   ppa_build:
     name: Trigger and monitor PPA builds
     #runs-on: [self-hosted, linux, jammy, large]
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         recipe:
-        - checkbox-provider-pc-sanity
+        - checkbox-provider-pc-sanity-edge
     steps:
       - name: Install dependencies
         run: |
@@ -54,13 +54,13 @@ jobs:
       - uses: Wandalen/wretry.action/main@v3.4.0_js_action
         name: Update the recipe in the checkbox PPA
         env:
-          # LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
+          LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
           PYTHONUNBUFFERED: 1
         with:
           attempt_delay: 6000 # 1 min
           attempt_limit: 60   # max 1 hour of retries
           command: |
-            echo 'tools/release/lp_update_recipe.py checkbox --recipe ${{ matrix.recipe }} --new-version $(tools/release/get_version.py --dev-suffix --output-format deb) --revision $GITHUB_SHA'
+            tools/release/lp_update_recipe_sanity.py experimental --recipe ${{ matrix.recipe }} --new-version $(tools/release/get_version.py --dev-suffix --output-format deb) --revision $GITHUB_SHA
       - uses: Wandalen/wretry.action/main@v3.4.0_js_action
         name: Build and wait result
         timeout-minutes: 780 # 13hours
