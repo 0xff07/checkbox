@@ -8,7 +8,7 @@ UBUNTU_MAJOR_VERSION := $(shell lsb_release -rs| cut -d '.' -f 1)
 
 override_dh_auto_clean:
 	cd $(SRCTOP)/c && $(MAKE) clean
-	cd $(SRCTOP)/c && $(MAKE) uninstall PREFIX=$(SRCTOP)
+	cd $(SRCTOP)/c && $(MAKE) uninstall PREFIX=$(CURDIR)/$(SRCTOP)
 	python3 $(SRCTOP)/manage.py clean
 
 override_dh_auto_build:
@@ -19,7 +19,7 @@ override_dh_auto_build:
 override_dh_auto_test:
 	python3 $(SRCTOP)/manage.py validate
 	python3 $(SRCTOP)/manage.py test
-	bats test/*.bats
+	bats $(SRCTOP)/test/*.bats
 
 override_dh_auto_install:
 	cd $(SRCTOP)/c && $(MAKE) install PREFIX=$(SRCTOP)
