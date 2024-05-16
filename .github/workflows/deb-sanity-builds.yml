@@ -65,10 +65,10 @@ jobs:
         name: Build and wait result
         timeout-minutes: 780 # 13hours
         env:
-          # LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
+          LP_CREDENTIALS: ${{ secrets.LP_CREDS }}
           PYTHONUNBUFFERED: 1
         with:
           attempt_delay: 60000 # 10min
           attempt_limit: 3
           command: |
-            echo 'tools/release/lp_build_monitor_recipe.py checkbox ${{ matrix.recipe }}'
+            tools/release/lp_build_monitor_recipe.py checkbox ${{ matrix.recipe }}
