@@ -51,8 +51,8 @@ def get_updated_build_recipe(
         f"""
         # git-build-recipe format 0.4 deb-version {version}
         lp:~checkbox-dev/checkbox/+git/support empty
-        nest-part packaging lp:~0xff07/experimental/+git/checkbox {target_path}/debian debian {revision}
-        nest-part monorepo lp:~0xff07/experimental/+git/checkbox {target_path} {target_path} {revision}
+        nest-part packaging lp:~0xff07/0xff07/+git/checkbox {target_path}/debian debian {revision}
+        nest-part monorepo lp:~0xff07/0xff07/+git/checkbox {target_path} {target_path} {revision}
         """
     ).strip()
     return new_recipe

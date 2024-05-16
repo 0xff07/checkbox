@@ -30,7 +30,7 @@ jobs:
           attempt_delay: 6000 # 1 min
           attempt_limit: 60   # max 1 hour of retries
           command: |
-            tools/release/lp_request_import.py "~0xff07/experimental/+git/checkbox"
+            tools/release/lp_request_import.py "~0xff07/0xff07/+git/checkbox"
   ppa_build:
     name: Trigger and monitor PPA builds
     #runs-on: [self-hosted, linux, jammy, large]
@@ -60,7 +60,7 @@ jobs:
           attempt_delay: 6000 # 1 min
           attempt_limit: 60   # max 1 hour of retries
           command: |
-            tools/release/lp_update_recipe_sanity.py experimental --recipe ${{ matrix.recipe }} --new-version $(tools/release/get_version.py --dev-suffix --output-format deb) --revision $GITHUB_SHA
+            tools/release/lp_update_recipe_sanity.py "0xff07" --recipe ${{ matrix.recipe }} --new-version $(tools/release/get_version.py --dev-suffix --output-format deb) --revision $GITHUB_SHA
       - uses: Wandalen/wretry.action/main@v3.4.0_js_action
         name: Build and wait result
         timeout-minutes: 780 # 13hours
