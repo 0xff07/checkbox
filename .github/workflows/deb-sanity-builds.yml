@@ -71,4 +71,4 @@ jobs:
           attempt_delay: 60000 # 10min
           attempt_limit: 3
           command: |
-            tools/release/lp_build_monitor_recipe.py checkbox ${{ matrix.recipe }}
+            tools/release/lp_build_monitor_recipe.py "0xff07" ${{ matrix.recipe }}
